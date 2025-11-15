@@ -1,8 +1,6 @@
 package com.aissummarizer.jennet.service;
-import com.aissummarizer.jennet.model.ImageData;
-import com.aissummarizer.jennet.model.PDFPageText;
-import com.aissummarizer.jennet.model.PptxContent;
-import com.aissummarizer.jennet.model.SlideContent;
+import com.aissummarizer.jennet.model.*;
+import com.aissummarizer.jennet.tools.DocxExtractor;
 import com.aissummarizer.jennet.tools.PptxExtractor;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
@@ -11,20 +9,15 @@ import com.openai.models.chat.completions.*;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static com.aissummarizer.jennet.tools.TxtExtractor.extractContent;
 
 @Service
 public class FileService {
@@ -32,21 +25,218 @@ public class FileService {
     @Autowired
     private final PptxContent pptxContent;
 
+    @Autowired
+    private final DocxContent docxContent;
+
     private static final OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-    public FileService(PptxContent pptxContent) {
+    public FileService(PptxContent pptxContent, DocxContent docxContent) {
         this.pptxContent = pptxContent;
+        this.docxContent = docxContent;
     }
 
-    public List<String>DOCXExtractor(MultipartFile file) throws IOException {
-        XWPFDocument document = new XWPFDocument(file.getInputStream());
-            List<XWPFParagraph> paragraphs = document.getParagraphs();
-            return paragraphs.stream()
-                    .map(XWPFParagraph::getText)
-                    .filter(p -> !p.isBlank())
-                    .collect(Collectors.toList());
+//    =================================DOCX================================================================
+//    public List<String>DOCXExtractor(MultipartFile file) throws IOException {
+//        XWPFDocument document = new XWPFDocument(file.getInputStream());
+//            List<XWPFParagraph> paragraphs = document.getParagraphs();
+//            return paragraphs.stream()
+//                    .map(XWPFParagraph::getText)
+//                    .filter(p -> !p.isBlank())
+//                    .collect(Collectors.toList());
+//
+//    }
 
+    public void DOCXExtract(MultipartFile file) {
+        try {
+            // Step 1: Extract content from DOCX
+            System.out.println("=== EXTRACTING DOCX CONTENT ===");
+            DocxContent content = DocxExtractor.extractContent(file);
+
+            System.out.println("Extracted:");
+            System.out.println("- " + content.getParagraphs().size() + " paragraphs");
+            System.out.println("- " + content.getTables().size() + " tables");
+            System.out.println("- " + content.getImages().size() + " images");
+            System.out.println();
+
+            // Step 2: Send to OpenAI for summarization
+            System.out.println("=== SENDING TO OPENAI ===");
+
+            // Option 1: General summary
+            String summary = defaultSummarizeDocx(content);
+            System.out.println("\n=== SUMMARY ===\n");
+            System.out.println(summary);
+
+            // Option 2: Executive summary
+            // String execSummary = summarizer.generateExecutiveSummary(content);
+            // System.out.println("\n=== EXECUTIVE SUMMARY ===\n");
+            // System.out.println(execSummary);
+
+            // Option 3: Extract key information
+            // String keyInfo = summarizer.extractKeyInfo(content);
+            // System.out.println("\n=== KEY INFORMATION ===\n");
+            // System.out.println(keyInfo);
+
+            // Option 4: Analyze tables
+            // String tableAnalysis = summarizer.analyzeTables(content);
+            // System.out.println("\n=== TABLE ANALYSIS ===\n");
+            // System.out.println(tableAnalysis);
+
+            // Option 5: Ask specific question
+            // String answer = summarizer.askQuestion(content, "What are the main recommendations?");
+            // System.out.println("\n=== ANSWER ===\n");
+            // System.out.println(answer);
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
+    /**
+     * Summarize DOCX content using OpenAI
+     *
+     * @param content The extracted DOCX content
+     * @return AI-generated summary
+     */
+    public String summarizeDocx(DocxContent content) {
+        return summarizeDocx(content, getDefaultPrompt());
+    }
+
+    public String summarizeDocx(DocxContent content, String customPrompt) {
+        // Build the prompt with formatted content
+        StringBuilder promptBuilder = new StringBuilder();
+        promptBuilder.append(customPrompt).append("\n\n");
+        promptBuilder.append(content.getFormattedContent());
+
+        // Create content parts list
+        List<ChatCompletionContentPart> contentParts = new ArrayList<>();
+
+        // Add text content part
+        contentParts.add(
+                ChatCompletionContentPart.ofText(
+                        ChatCompletionContentPartText.builder()
+                                .text(promptBuilder.toString())
+                                .build()
+                )
+        );
+
+        // Add all images as content parts
+        List<DocxImageData> allImages = content.getImages();
+        for (DocxImageData image : allImages) {
+            contentParts.add(
+                    ChatCompletionContentPart.ofImageUrl(
+                            ChatCompletionContentPartImage.builder().imageUrl(
+                                    ChatCompletionContentPartImage.ImageUrl.builder().url(image.getDataUrl()).build()
+                            ).build()
+                    )
+            );
+        }
+
+        // Build the user message with all content parts
+        ChatCompletionUserMessageParam userMessage = ChatCompletionUserMessageParam.builder()
+                .content(ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(contentParts))
+                .build();
+
+        // Build the API request
+        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+                .model(ChatModel.GPT_5_NANO)
+                .addMessage(userMessage)
+                .build();
+
+        // Call OpenAI API
+        System.out.println("Sending request to OpenAI...");
+        System.out.println("- Model: " + ChatModel.GPT_5_NANO);
+        System.out.println("- Paragraphs: " + content.getParagraphs().size());
+        System.out.println("- Tables: " + content.getTables().size());
+        System.out.println("- Images: " + allImages.size());
+
+        ChatCompletion completion = client.chat().completions().create(params);
+
+        String response = completion.choices().getFirst().message().content().orElse("");
+        System.out.println("Received response from OpenAI");
+
+        return response;
+    }
+
+    /**
+     * Get default summarization prompt
+     */
+    private String getDefaultPromptDocx() {
+        return "Please provide a comprehensive summary of this Word document. " +
+                "Analyze the text, tables, and images provided. " +
+                "Include:\n" +
+                "1. Main topic/theme of the document\n" +
+                "2. Key points and arguments\n" +
+                "3. Analysis of tables and data presented\n" +
+                "4. Description of visual elements (charts, diagrams, images)\n" +
+                "5. Important conclusions and takeaways";
+    }
+
+    /**
+     * Extract key information from the document
+     */
+    public String extractKeyInfoDocx(DocxContent docxContent) {
+        String prompt = "Please extract and list the key information from this document. " +
+                "Focus on:\n" +
+                "1. Main facts and figures\n" +
+                "2. Important names, dates, and locations\n" +
+                "3. Key statistics from tables\n" +
+                "4. Action items or recommendations\n" +
+                "Present this as a bulleted list.";
+
+        return summarizeDocx(docxContent, prompt);
+    }
+
+    /**
+     * Analyze tables in the document
+     */
+    public String analyzeTablesDocx(DocxContent content) {
+        if (content.getTables().isEmpty()) {
+            return "No tables found in the document.";
+        }
+
+        String prompt = "Please analyze the tables in this document. " +
+                "For each table:\n" +
+                "1. Describe what data it contains\n" +
+                "2. Identify trends or patterns\n" +
+                "3. Highlight important values\n" +
+                "4. Explain the significance of the data";
+
+        return summarizeDocx(content, prompt);
+    }
+
+    /**
+     * Ask a custom question about the document
+     */
+    public String askQuestionDocx(DocxContent content, String question) {
+        String prompt = "Based on this document, please answer the following question:\n\n" +
+                question + "\n\n" +
+                "Document content:\n";
+
+        return summarizeDocx(content, prompt);
+    }
+
+    public String defaultSummarizeDocx(DocxContent content) throws IOException {
+        String prompt = "Please, tell me what is this document about. I have extracted text for you.:\n\n" +
+                "Document content:\n" +
+                content.getAllText();
+        return summarizeDocx(content, prompt);
+    }
+
+    /**
+     * Generate a professional summary for business use
+     */
+    public String generateExecutiveSummaryDocx(DocxContent content) {
+        String prompt = "Create a professional executive summary of this document. " +
+                "The summary should be:\n" +
+                "- Concise (2-3 paragraphs maximum)\n" +
+                "- Written in formal business language\n" +
+                "- Focused on key decisions, findings, and recommendations\n" +
+                "- Suitable for senior management review";
+
+        return summarizeDocx(content, prompt);
+    }
+
 
     public void PPTXExtract (MultipartFile file) throws Exception {
         PptxContent pptxContent1 = PptxExtractor.extractContent(file);
@@ -222,8 +412,157 @@ public class FileService {
         return pages;
     }
 
-    public String TXTExtractor(MultipartFile file) throws IOException {
-        return new String(file.getBytes(), StandardCharsets.UTF_8);
+    public void TXTExtractor(MultipartFile file) throws Exception {
+        TxtContent content = extractContent(file);
+
+        System.out.println("=== TXT EXTRACTION RESULTS ===\n");
+        System.out.println("Total paragraphs: " + content.getParagraphs().size());
+        System.out.println("Total characters: " + content.getAllText().length());
+        System.out.println("Total words (approx): " + content.getWordCount());
+        System.out.println();
+
+        // Display first few paragraphs
+        System.out.println("--- FIRST 3 PARAGRAPHS ---");
+        List<String> paragraphs = content.getParagraphs();
+        for (int i = 0; i < Math.min(3, paragraphs.size()); i++) {
+            System.out.println("Paragraph " + (i + 1) + ":");
+            System.out.println(paragraphs.get(i));
+            System.out.println();
+        }
+        System.out.println(createBriefSummaryTxt(content));
+    }
+
+    public String summarizeTxt(TxtContent content) {
+        return summarizeTxt(content, getDefaultPrompt());
+    }
+
+    /**
+     * Summarize TXT content with custom prompt
+     *
+     * @param content The extracted TXT content
+     * @param customPrompt Your custom instructions
+     * @return AI-generated summary
+     */
+    public String summarizeTxt(TxtContent content, String customPrompt) {
+        // Build the prompt with content
+        StringBuilder promptBuilder = new StringBuilder();
+        promptBuilder.append(customPrompt).append("\n\n");
+        promptBuilder.append(content.getFormattedContent());
+
+        // Create content parts list (only text for TXT files)
+        List<ChatCompletionContentPart> contentParts = new ArrayList<>();
+
+        // Add text content part
+        contentParts.add(
+                ChatCompletionContentPart.ofText(
+                        ChatCompletionContentPartText.builder()
+                                .text(promptBuilder.toString())
+                                .build())
+                );
+
+        // Build the user message
+        ChatCompletionUserMessageParam userMessage = ChatCompletionUserMessageParam.builder()
+                .content(ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(contentParts))
+                .build();
+
+        // Build the API request
+        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+                .model(ChatModel.GPT_5_NANO)
+                .addMessage(userMessage)
+                .build();
+
+        // Call OpenAI API
+        System.out.println("Sending request to OpenAI...");
+        System.out.println("- Model: " + ChatModel.GPT_5_NANO);
+        System.out.println("- Lines: " + content.getParagraphs().size());
+        System.out.println("- Words: " + content.getWordCount());
+
+        ChatCompletion completion = client.chat().completions().create(params);
+
+        String response = completion.choices().getFirst().message().content().orElse("");
+        System.out.println("Received response from OpenAI");
+
+        return response;
+    }
+
+    /**
+     * Get default summarization prompt
+     */
+    private String getDefaultPromptTxt() {
+        return "Please provide a comprehensive summary of this text document. " +
+                "Include:\n" +
+                "1. Main topic/theme\n" +
+                "2. Key points and arguments\n" +
+                "3. Important details and facts\n" +
+                "4. Conclusions or recommendations\n" +
+                "5. Overall structure and purpose";
+    }
+
+    /**
+     * Create a concise summary (2-3 sentences)
+     */
+    public String createBriefSummaryTxt(TxtContent content) {
+        String prompt = "Summarize this text sentences. " +
+                "Focus only on the most important information.";
+
+        return summarizeTxt(content, prompt);
+    }
+
+    /**
+     * Extract key points as bullet list
+     */
+    public String extractKeyPointsTxt(TxtContent content) {
+        String prompt = "Extract the key points from this text. " +
+                "Present them as a bulleted list. " +
+                "Focus on the most important facts, arguments, and conclusions.";
+
+        return summarizeTxt(content, prompt);
+    }
+
+    /**
+     * Analyze sentiment and tone
+     */
+    public String analyzeSentimentTxt(TxtContent content) {
+        String prompt = "Analyze the sentiment and tone of this text. " +
+                "Describe:\n" +
+                "1. Overall sentiment (positive, negative, neutral)\n" +
+                "2. Tone (formal, informal, technical, etc.)\n" +
+                "3. Emotional elements\n" +
+                "4. Author's perspective or bias";
+
+        return summarizeTxt(content, prompt);
+    }
+
+    /**
+     * Ask a custom question about the text
+     */
+    public String askQuestion(TxtContent content, String question) {
+        String prompt = "Based on this text, please answer the following question:\n\n" +
+                question;
+
+        return summarizeTxt(content, prompt);
+    }
+
+    /**
+     * Translate or rewrite in different style
+     */
+    public String rewriteTxt(TxtContent content, String style) {
+        String prompt = "Rewrite this text in a " + style + " style. " +
+                "Maintain the core message but adapt the language and tone.";
+
+        return summarizeTxt(content, prompt);
+    }
+
+    /**
+     * Generate title and tags
+     */
+    public String generateMetadata(TxtContent content) {
+        String prompt = "Based on this text, generate:\n" +
+                "1. A suitable title (one line)\n" +
+                "2. 5-7 relevant tags or keywords\n" +
+                "3. A one-sentence description";
+
+        return summarizeTxt(content, prompt);
     }
 
 }

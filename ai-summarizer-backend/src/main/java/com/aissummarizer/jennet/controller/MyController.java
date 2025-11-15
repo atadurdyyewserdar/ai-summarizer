@@ -21,8 +21,9 @@ public class MyController {
         this.fileService = fileService;
     }
 
-    @PostMapping("/msg_text")
-    public ResponseEntity<String> msgText(@RequestParam("txt")String text) {
+    @PostMapping("/msg_txt")
+    public ResponseEntity<String> msgText(@RequestParam("file")MultipartFile file) throws Exception {
+        fileService.TXTExtractor(file);
         return ResponseEntity.ok().body("Success");
     }
 
@@ -45,7 +46,8 @@ public class MyController {
     }
 
     @PostMapping("/msg_docx")
-    public ResponseEntity<String> msgDOCX(@RequestParam("file")String file) {
+    public ResponseEntity<String> msgDOCX(@RequestParam("file")MultipartFile file) {
+        fileService.DOCXExtract(file);
         return ResponseEntity.ok().body("Success");
     }
 }
