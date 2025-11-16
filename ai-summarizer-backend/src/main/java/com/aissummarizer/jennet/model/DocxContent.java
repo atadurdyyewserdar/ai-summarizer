@@ -1,7 +1,6 @@
 package com.aissummarizer.jennet.model;
 
 import lombok.Data;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

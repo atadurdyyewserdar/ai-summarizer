@@ -1,11 +1,14 @@
 package com.aissummarizer.jennet.model;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Data for a single table
  */
+@Data
 public class TableData {
     private int tableNumber;
     private List<List<String>> rows = new ArrayList<>();

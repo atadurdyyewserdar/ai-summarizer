@@ -1,7 +1,6 @@
 package com.aissummarizer.jennet.controller;
 
 import com.aissummarizer.jennet.model.PDFPageText;
-import com.aissummarizer.jennet.model.SlideContent;
 import com.aissummarizer.jennet.service.FileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

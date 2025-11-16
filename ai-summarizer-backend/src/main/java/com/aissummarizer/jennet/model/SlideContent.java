@@ -1,8 +1,11 @@
 package com.aissummarizer.jennet.model;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 public class SlideContent {
     private int slideNumber;
     private List<String> textItems = new ArrayList<>();

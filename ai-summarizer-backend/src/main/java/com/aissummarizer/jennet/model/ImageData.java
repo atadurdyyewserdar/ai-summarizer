@@ -8,8 +8,6 @@ import lombok.Setter;
  * Data for a single image
  */
 @Data
-@Getter
-@Setter
 public class ImageData {
     private String base64Data;
     private String format;
