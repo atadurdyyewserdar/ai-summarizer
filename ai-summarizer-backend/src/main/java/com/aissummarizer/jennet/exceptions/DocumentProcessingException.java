@@ -1,4 +1,14 @@
 package com.aissummarizer.jennet.exceptions;
 
-public class DocumentProcessingException {
+/**
+ * Base exception for document processing errors
+ */
+public class DocumentProcessingException extends Exception {
+    public DocumentProcessingException(String message) {
+        super(message);
+    }
+
+    public DocumentProcessingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
