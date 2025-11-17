@@ -34,17 +34,6 @@ public class FileService {
         this.docxContent = docxContent;
     }
 
-//    =================================DOCX================================================================
-//    public List<String>DOCXExtractor(MultipartFile file) throws IOException {
-//        XWPFDocument document = new XWPFDocument(file.getInputStream());
-//            List<XWPFParagraph> paragraphs = document.getParagraphs();
-//            return paragraphs.stream()
-//                    .map(XWPFParagraph::getText)
-//                    .filter(p -> !p.isBlank())
-//                    .collect(Collectors.toList());
-//
-//    }
-
     public void DOCXExtract(MultipartFile file) {
         try {
             // Step 1: Extract content from DOCX
