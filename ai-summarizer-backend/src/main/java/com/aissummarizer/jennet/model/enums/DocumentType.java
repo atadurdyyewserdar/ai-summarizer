@@ -1,4 +1,4 @@
-package com.aissummarizer.jennet.model.request;
+package com.aissummarizer.jennet.model.enums;
 
 import com.aissummarizer.jennet.exceptions.UnsupportedDocumentTypeException;
 

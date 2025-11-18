@@ -8,11 +8,11 @@ import com.aissummarizer.jennet.model.request.SummaryOptions;
 import com.aissummarizer.jennet.model.response.SummaryResult;
 import com.aissummarizer.jennet.tools.FileUtils;
 import com.aissummarizer.jennet.tools.FileValidator;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

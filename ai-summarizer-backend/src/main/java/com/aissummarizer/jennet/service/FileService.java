@@ -23,23 +23,23 @@ import static com.aissummarizer.jennet.tools.TxtExtractor.extractContent;
 public class FileService {
 
     @Autowired
-    private final PptxContent pptxContent;
+    private final PptxDocumentContent pptxDocumentContent;
 
     @Autowired
-    private final DocxContent docxContent;
+    private final DocxDocumentContent docxDocumentContent;
 
     private static final OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-    public FileService(PptxContent pptxContent, DocxContent docxContent) {
-        this.pptxContent = pptxContent;
-        this.docxContent = docxContent;
+    public FileService(PptxDocumentContent pptxDocumentContent, DocxDocumentContent docxDocumentContent) {
+        this.pptxDocumentContent = pptxDocumentContent;
+        this.docxDocumentContent = docxDocumentContent;
     }
 
     public void DOCXExtract(MultipartFile file) {
         try {
             // Step 1: Extract content from DOCX
             System.out.println("=== EXTRACTING DOCX CONTENT ===");
-            DocxContent content = DocxExtractor.extractContent(file);
+            DocxDocumentContent content = DocxExtractor.extractContent(file);
 
             System.out.println("Extracted:");
             System.out.println("- " + content.getParagraphs().size() + " paragraphs");
@@ -87,11 +87,11 @@ public class FileService {
      * @param content The extracted DOCX content
      * @return AI-generated summary
      */
-    public String summarizeDocx(DocxContent content) {
+    public String summarizeDocx(DocxDocumentContent content) {
         return summarizeDocx(content, getDefaultPrompt());
     }
 
-    public String summarizeDocx(DocxContent content, String customPrompt) {
+    public String summarizeDocx(DocxDocumentContent content, String customPrompt) {
         // Build the prompt with formatted content
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append(customPrompt).append("\n\n");
@@ -110,8 +110,8 @@ public class FileService {
         );
 
         // Add all images as content parts
-        List<DocxImageData> allImages = content.getImages();
-        for (DocxImageData image : allImages) {
+        List<ImageData> allImages = content.getImages();
+        for (ImageData image : allImages) {
             contentParts.add(
                     ChatCompletionContentPart.ofImageUrl(
                             ChatCompletionContentPartImage.builder().imageUrl(
@@ -164,7 +164,7 @@ public class FileService {
     /**
      * Extract key information from the document
      */
-    public String extractKeyInfoDocx(DocxContent docxContent) {
+    public String extractKeyInfoDocx(DocxDocumentContent docxDocumentContent) {
         String prompt = "Please extract and list the key information from this document. " +
                 "Focus on:\n" +
                 "1. Main facts and figures\n" +
@@ -173,13 +173,13 @@ public class FileService {
                 "4. Action items or recommendations\n" +
                 "Present this as a bulleted list.";
 
-        return summarizeDocx(docxContent, prompt);
+        return summarizeDocx(docxDocumentContent, prompt);
     }
 
     /**
      * Analyze tables in the document
      */
-    public String analyzeTablesDocx(DocxContent content) {
+    public String analyzeTablesDocx(DocxDocumentContent content) {
         if (content.getTables().isEmpty()) {
             return "No tables found in the document.";
         }
@@ -197,7 +197,7 @@ public class FileService {
     /**
      * Ask a custom question about the document
      */
-    public String askQuestionDocx(DocxContent content, String question) {
+    public String askQuestionDocx(DocxDocumentContent content, String question) {
         String prompt = "Based on this document, please answer the following question:\n\n" +
                 question + "\n\n" +
                 "Document content:\n";
@@ -205,7 +205,7 @@ public class FileService {
         return summarizeDocx(content, prompt);
     }
 
-    public String defaultSummarizeDocx(DocxContent content) throws IOException {
+    public String defaultSummarizeDocx(DocxDocumentContent content) throws IOException {
         String prompt = "Please, tell me what is this document about. I have extracted text for you.:\n\n" +
                 "Document content:\n" +
                 content.getAllText();
@@ -215,7 +215,7 @@ public class FileService {
     /**
      * Generate a professional summary for business use
      */
-    public String generateExecutiveSummaryDocx(DocxContent content) {
+    public String generateExecutiveSummaryDocx(DocxDocumentContent content) {
         String prompt = "Create a professional executive summary of this document. " +
                 "The summary should be:\n" +
                 "- Concise (2-3 paragraphs maximum)\n" +
@@ -228,13 +228,13 @@ public class FileService {
 
 
     public void PPTXExtract (MultipartFile file) throws Exception {
-        PptxContent pptxContent1 = PptxExtractor.extractContent(file);
+        PptxDocumentContent pptxDocumentContent1 = PptxExtractor.extractContent(file);
         System.out.println("=== PPTX EXTRACTION RESULTS ===\n");
-        System.out.println("Total slides: " + pptxContent1.getSlides().size());
-        System.out.println("Total images: " + pptxContent1.getTotalImageCount());
+        System.out.println("Total slides: " + pptxDocumentContent1.getSlides().size());
+        System.out.println("Total images: " + pptxDocumentContent1.getTotalImageCount());
         System.out.println();
 
-        for (SlideContent slide : pptxContent1.getSlides()) {
+        for (SlideContent slide : pptxDocumentContent1.getSlides()) {
             System.out.println("--- Slide " + slide.getSlideNumber() + " ---");
             System.out.println("Text items: " + slide.getTextItems().size());
             System.out.println("Images: " + slide.getImages().size());
@@ -253,18 +253,18 @@ public class FileService {
         }
 
         // Get all images across all slides
-        List<ImageData> allImages = pptxContent1.getAllImages();
+        List<ImageData> allImages = pptxDocumentContent1.getAllImages();
         System.out.println("All images extracted: " + allImages.size());
 
         // Get all text concatenated
-        String allText = pptxContent1.getAllText();
+        String allText = pptxDocumentContent1.getAllText();
         System.out.println("Total text length: " + allText.length() + " characters");
 
         System.out.println("--------------------------------------------------------");
-        System.out.println(summarize(pptxContent1));
+        System.out.println(summarize(pptxDocumentContent1));
     }
 
-    public String summarize(PptxContent content) throws IOException {
+    public String summarize(PptxDocumentContent content) throws IOException {
         return defaultSummarize(content);
     }
 
@@ -276,7 +276,7 @@ public class FileService {
      * @return AI-generated summary
      */
 
-    public String summarize(PptxContent content, String customPrompt) throws IOException {
+    public String summarize(PptxDocumentContent content, String customPrompt) throws IOException {
         // Build the prompt with text content
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append(customPrompt).append("\n\n");
@@ -356,7 +356,7 @@ public class FileService {
     /**
      * Ask a custom question about the presentation
      */
-    public String askQuestion(PptxContent content, String question) throws IOException {
+    public String askQuestion(PptxDocumentContent content, String question) throws IOException {
         String prompt = "Based on this presentation, please answer the following question:\n\n" +
                 question + "\n\n" +
                 "Presentation content:\n" +
@@ -365,7 +365,7 @@ public class FileService {
         return summarize(content, prompt);
     }
 
-    public String defaultSummarize(PptxContent content) throws IOException {
+    public String defaultSummarize(PptxDocumentContent content) throws IOException {
         String prompt = "Based on this presentation, can you briefly summarize this presentation:\n\n" +
                 "Presentation content:\n" +
                 content.getAllText();
@@ -402,7 +402,7 @@ public class FileService {
     }
 
     public void TXTExtractor(MultipartFile file) throws Exception {
-        TxtContent content = extractContent(file);
+        TxtDocumentContent content = extractContent(file);
 
         System.out.println("=== TXT EXTRACTION RESULTS ===\n");
         System.out.println("Total paragraphs: " + content.getParagraphs().size());
@@ -421,7 +421,7 @@ public class FileService {
         System.out.println(createBriefSummaryTxt(content));
     }
 
-    public String summarizeTxt(TxtContent content) {
+    public String summarizeTxt(TxtDocumentContent content) {
         return summarizeTxt(content, getDefaultPrompt());
     }
 
@@ -432,7 +432,7 @@ public class FileService {
      * @param customPrompt Your custom instructions
      * @return AI-generated summary
      */
-    public String summarizeTxt(TxtContent content, String customPrompt) {
+    public String summarizeTxt(TxtDocumentContent content, String customPrompt) {
         // Build the prompt with content
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append(customPrompt).append("\n\n");
@@ -490,7 +490,7 @@ public class FileService {
     /**
      * Create a concise summary (2-3 sentences)
      */
-    public String createBriefSummaryTxt(TxtContent content) {
+    public String createBriefSummaryTxt(TxtDocumentContent content) {
         String prompt = "Summarize this text sentences. " +
                 "Focus only on the most important information.";
 
@@ -500,7 +500,7 @@ public class FileService {
     /**
      * Extract key points as bullet list
      */
-    public String extractKeyPointsTxt(TxtContent content) {
+    public String extractKeyPointsTxt(TxtDocumentContent content) {
         String prompt = "Extract the key points from this text. " +
                 "Present them as a bulleted list. " +
                 "Focus on the most important facts, arguments, and conclusions.";
@@ -511,7 +511,7 @@ public class FileService {
     /**
      * Analyze sentiment and tone
      */
-    public String analyzeSentimentTxt(TxtContent content) {
+    public String analyzeSentimentTxt(TxtDocumentContent content) {
         String prompt = "Analyze the sentiment and tone of this text. " +
                 "Describe:\n" +
                 "1. Overall sentiment (positive, negative, neutral)\n" +
@@ -525,7 +525,7 @@ public class FileService {
     /**
      * Ask a custom question about the text
      */
-    public String askQuestion(TxtContent content, String question) {
+    public String askQuestion(TxtDocumentContent content, String question) {
         String prompt = "Based on this text, please answer the following question:\n\n" +
                 question;
 
@@ -535,7 +535,7 @@ public class FileService {
     /**
      * Translate or rewrite in different style
      */
-    public String rewriteTxt(TxtContent content, String style) {
+    public String rewriteTxt(TxtDocumentContent content, String style) {
         String prompt = "Rewrite this text in a " + style + " style. " +
                 "Maintain the core message but adapt the language and tone.";
 
@@ -545,7 +545,7 @@ public class FileService {
     /**
      * Generate title and tags
      */
-    public String generateMetadata(TxtContent content) {
+    public String generateMetadata(TxtDocumentContent content) {
         String prompt = "Based on this text, generate:\n" +
                 "1. A suitable title (one line)\n" +
                 "2. 5-7 relevant tags or keywords\n" +

@@ -1,8 +1,10 @@
 package com.aissummarizer.jennet.model.domain;
 
+import com.aissummarizer.jennet.model.enums.DocumentType;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,8 +14,12 @@ import java.util.List;
 /**
  * Container for TXT content
  */
-public class TxtContent {
-    private List<String> paragraphs = new ArrayList<>();
+public class TxtDocumentContent implements DocumentContent{
+    private final List<String> paragraphs;
+
+    public TxtDocumentContent(List<String> paragraphs) {
+        this.paragraphs = Collections.unmodifiableList(new ArrayList<>(paragraphs));
+    }
 
     public void addParagraph(String paragraph) {
         if (paragraph != null && !paragraph.trim().isEmpty()) {
@@ -54,6 +60,21 @@ public class TxtContent {
             }
         }
         return count;
+    }
+
+    @Override
+    public DocumentType getType() {
+        return DocumentType.TXT;
+    }
+
+    @Override
+    public boolean hasImages() {
+        return false;
+    }
+
+    @Override
+    public List<ImageData> getImages() {
+        return Collections.emptyList();
     }
 
     /**

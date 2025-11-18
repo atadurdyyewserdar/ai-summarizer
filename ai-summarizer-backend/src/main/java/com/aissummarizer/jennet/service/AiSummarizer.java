@@ -2,6 +2,8 @@ package com.aissummarizer.jennet.service;
 
 import com.aissummarizer.jennet.exceptions.AiSummarizationException;
 import com.aissummarizer.jennet.model.domain.DocumentContent;
+import com.aissummarizer.jennet.model.request.SummaryOptions;
+import com.aissummarizer.jennet.model.response.SummaryResult;
 
 /**
  * Strategy pattern for AI summarization

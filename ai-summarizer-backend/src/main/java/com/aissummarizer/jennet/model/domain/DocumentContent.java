@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.model.domain;
 
+import com.aissummarizer.jennet.model.enums.DocumentType;
+
 import java.util.List;
 
 /**

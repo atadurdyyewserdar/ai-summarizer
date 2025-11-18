@@ -1,7 +1,7 @@
 package com.aissummarizer.jennet.tools;
 
-import com.aissummarizer.jennet.model.domain.DocxContent;
-import com.aissummarizer.jennet.model.domain.DocxImageData;
+import com.aissummarizer.jennet.model.domain.DocxDocumentContent;
+import com.aissummarizer.jennet.model.domain.ImageData;
 import com.aissummarizer.jennet.model.domain.TableData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +22,7 @@ public class DocxExtractor {
      * @return DocxContent containing all text and images
      * @throws Exception if file cannot be read
      */
-    public static DocxContent extractContent(MultipartFile multipartFile) throws Exception {
+    public static DocxDocumentContent extractContent(MultipartFile multipartFile) throws Exception {
         try (InputStream is = multipartFile.getInputStream();
              XWPFDocument document = new XWPFDocument(is)) {
             return extractFromDocument(document);
@@ -36,7 +36,7 @@ public class DocxExtractor {
      * @return DocxContent containing all text and images
      * @throws Exception if file cannot be read
      */
-    public static DocxContent extractContent(File docxFile) throws Exception {
+    public static DocxDocumentContent extractContent(File docxFile) throws Exception {
         try (FileInputStream fis = new FileInputStream(docxFile);
              XWPFDocument document = new XWPFDocument(fis)) {
             return extractFromDocument(document);
@@ -50,7 +50,7 @@ public class DocxExtractor {
      * @return DocxContent containing all text and images
      * @throws Exception if file cannot be read
      */
-    public static DocxContent extractContent(InputStream inputStream) throws Exception {
+    public static DocxDocumentContent extractContent(InputStream inputStream) throws Exception {
         try (XWPFDocument document = new XWPFDocument(inputStream)) {
             return extractFromDocument(document);
         }
@@ -59,8 +59,8 @@ public class DocxExtractor {
     /**
      * Core extraction logic from XWPFDocument
      */
-    private static DocxContent extractFromDocument(XWPFDocument document) throws Exception {
-        DocxContent content = new DocxContent();
+    private static DocxDocumentContent extractFromDocument(XWPFDocument document) throws Exception {
+        DocxDocumentContent content = new DocxDocumentContent();
 
         // Extract paragraphs
         List<XWPFParagraph> paragraphs = document.getParagraphs();
@@ -94,7 +94,7 @@ public class DocxExtractor {
             String base64Image = Base64.getEncoder().encodeToString(imageBytes);
             String imageFormat = getImageFormat(contentType);
 
-            DocxImageData imageData = new DocxImageData(
+            ImageData imageData = new ImageData(
                     base64Image,
                     imageFormat,
                     imageBytes.length
@@ -112,7 +112,7 @@ public class DocxExtractor {
     /**
      * Extract images from paragraph runs
      */
-    private static void extractImagesFromParagraph(XWPFParagraph paragraph, DocxContent content) {
+    private static void extractImagesFromParagraph(XWPFParagraph paragraph, DocxDocumentContent content) {
         for (XWPFRun run : paragraph.getRuns()) {
             List<XWPFPicture> pictures = run.getEmbeddedPictures();
             for (XWPFPicture picture : pictures) {
@@ -123,7 +123,7 @@ public class DocxExtractor {
                 String base64Image = Base64.getEncoder().encodeToString(imageBytes);
                 String imageFormat = getImageFormat(contentType);
 
-                DocxImageData imageData = new DocxImageData(
+                ImageData imageData = new ImageData(
                         base64Image,
                         imageFormat,
                         imageBytes.length

@@ -2,7 +2,7 @@ package com.aissummarizer.jennet.factory;
 
 import com.aissummarizer.jennet.exceptions.UnsupportedDocumentTypeException;
 import com.aissummarizer.jennet.extractor.DocumentExtractor;
-import com.aissummarizer.jennet.model.request.DocumentType;
+import com.aissummarizer.jennet.model.enums.DocumentType;
 import com.aissummarizer.jennet.tools.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

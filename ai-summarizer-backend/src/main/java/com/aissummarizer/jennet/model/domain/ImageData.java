@@ -3,19 +3,17 @@ package com.aissummarizer.jennet.model.domain;
 import lombok.Data;
 
 /**
- * Data for a single image
+ * Data for a single image (reusing from PPTX extractor)
  */
 @Data
 public class ImageData {
     private String base64Data;
     private String format;
-    private int slideNumber;
     private int sizeBytes;
 
-    public ImageData(String base64Data, String format, int slideNumber, int sizeBytes) {
+    public ImageData(String base64Data, String format, int sizeBytes) {
         this.base64Data = base64Data;
         this.format = format;
-        this.slideNumber = slideNumber;
         this.sizeBytes = sizeBytes;
     }
 

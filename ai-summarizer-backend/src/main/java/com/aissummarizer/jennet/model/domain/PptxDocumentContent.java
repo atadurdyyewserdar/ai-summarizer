@@ -1,9 +1,11 @@
 package com.aissummarizer.jennet.model.domain;
 
+import com.aissummarizer.jennet.model.enums.DocumentType;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,12 +13,18 @@ import java.util.List;
  */
 @Service
 @Data
-public class PptxContent {
-    private List<SlideContent> slides = new ArrayList<>();
+public final class PptxDocumentContent implements DocumentContent {
+    private final List<SlideContent> slides;
+
+    public PptxDocumentContent(List<SlideContent> slides) {
+        this.slides = Collections.unmodifiableList(new ArrayList<>(slides));
+    }
 
     public void addSlide(SlideContent slide) {
         slides.add(slide);
     }
+
+
 
     /**
      * Get all images from all slides
@@ -54,4 +62,31 @@ public class PptxContent {
         }
         return count;
     }
+
+    @Override
+    public int getWordCount() {
+        int count = 0;
+        for (SlideContent slide : slides) {
+            for (String text : slide.getTextItems()) {
+                count += text.split("\\s+").length;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public DocumentType getType() {
+        return DocumentType.PPTX;
+    }
+
+    @Override
+    public boolean hasImages() {
+        return !getAllImages().isEmpty();
+    }
+
+    @Override
+    public List<ImageData> getImages() {
+        return getAllImages();
+    }
+
 }

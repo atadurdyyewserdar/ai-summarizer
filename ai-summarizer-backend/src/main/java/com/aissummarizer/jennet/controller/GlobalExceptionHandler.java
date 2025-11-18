@@ -1,9 +1,7 @@
 package com.aissummarizer.jennet.controller;
 
 import com.aissummarizer.jennet.model.enums.ErrorCode;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
+import com.aissummarizer.jennet.model.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,13 +12,16 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
-@Slf4j
 public class GlobalExceptionHandler {
 
-    /**
-     * Handle validation errors
-     */
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidationException(
             MethodArgumentNotValidException ex) {
@@ -36,9 +37,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR, errors));
     }
 
-    /**
-     * Handle constraint violations
-     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(
             ConstraintViolationException ex) {
@@ -54,9 +52,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR, errors));
     }
 
-    /**
-     * Handle missing request parameters
-     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<Void>> handleMissingParameter(
             MissingServletRequestParameterException ex) {
@@ -69,9 +64,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorCode.MISSING_PARAMETER, message));
     }
 
-    /**
-     * Handle multipart file size exceeded
-     */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiResponse<Void>> handleMaxUploadSizeExceeded(
             MaxUploadSizeExceededException ex) {
@@ -86,9 +78,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    /**
-     * Handle generic exceptions
-     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
         log.error("Unexpected error", ex);

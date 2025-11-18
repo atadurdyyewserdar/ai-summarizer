@@ -1,18 +1,26 @@
 package com.aissummarizer.jennet.model.domain;
 
+import com.aissummarizer.jennet.model.enums.DocumentType;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
 @Service
-public class DocxContent {
-    private List<String> paragraphs = new ArrayList<>();
-    private List<TableData> tables = new ArrayList<>();
-    private List<DocxImageData> images = new ArrayList<>();
+public class DocxDocumentContent implements DocumentContent{
 
+    private final List<String> paragraphs;
+    private final List<TableData> tables;
+    private final List<ImageData> images;
+
+    public DocxDocumentContent(List<String> paragraphs, List<TableData> tables, List<ImageData> images) {
+        this.paragraphs = Collections.unmodifiableList(new ArrayList<>(paragraphs));
+        this.tables = Collections.unmodifiableList(new ArrayList<>(tables));
+        this.images = Collections.unmodifiableList(new ArrayList<>(images));
+    }
     public void addParagraph(String paragraph) {
         paragraphs.add(paragraph);
     }
@@ -21,7 +29,7 @@ public class DocxContent {
         tables.add(table);
     }
 
-    public void addImage(DocxImageData image) {
+    public void addImage(ImageData image) {
         images.add(image);
     }
 
@@ -33,7 +41,7 @@ public class DocxContent {
         return tables;
     }
 
-    public List<DocxImageData> getImages() {
+    public List<ImageData> getImages() {
         return images;
     }
 
@@ -41,7 +49,7 @@ public class DocxContent {
      * Check if image already exists (by base64 data)
      */
     public boolean hasImage(String base64Data) {
-        for (DocxImageData img : images) {
+        for (ImageData img : images) {
             if (img.getBase64Data().equals(base64Data)) {
                 return true;
             }
@@ -69,6 +77,25 @@ public class DocxContent {
         }
 
         return allText.toString();
+    }
+
+    @Override
+    public int getWordCount() {
+        int count = 0;
+        for (String paragraph : paragraphs) {
+            count += paragraph.split("\\s+").length;
+        }
+        return count;
+    }
+
+    @Override
+    public DocumentType getType() {
+        return DocumentType.DOCX;
+    }
+
+    @Override
+    public boolean hasImages() {
+        return !images.isEmpty();
     }
 
     /**

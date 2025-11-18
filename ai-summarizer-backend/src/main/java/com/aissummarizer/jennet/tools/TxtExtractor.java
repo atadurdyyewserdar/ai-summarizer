@@ -1,7 +1,7 @@
 package com.aissummarizer.jennet.tools;
 
 
-import com.aissummarizer.jennet.model.domain.TxtContent;
+import com.aissummarizer.jennet.model.domain.TxtDocumentContent;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -19,7 +19,7 @@ public class TxtExtractor {
      * @return TxtContent containing all text
      * @throws Exception if file cannot be read
      */
-    public static TxtContent extractContent(MultipartFile multipartFile) throws Exception {
+    public static TxtDocumentContent extractContent(MultipartFile multipartFile) throws Exception {
         try (InputStream is = multipartFile.getInputStream();
              BufferedReader reader = new BufferedReader(
                      new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -34,7 +34,7 @@ public class TxtExtractor {
      * @return TxtContent containing all text
      * @throws Exception if file cannot be read
      */
-    public static TxtContent extractContent(File txtFile) throws Exception {
+    public static TxtDocumentContent extractContent(File txtFile) throws Exception {
         try (BufferedReader reader = new BufferedReader(
                 new FileReader(txtFile, StandardCharsets.UTF_8))) {
             return extractFromReader(reader);
@@ -48,7 +48,7 @@ public class TxtExtractor {
      * @return TxtContent containing all text
      * @throws Exception if file cannot be read
      */
-    public static TxtContent extractContent(InputStream inputStream) throws Exception {
+    public static TxtDocumentContent extractContent(InputStream inputStream) throws Exception {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             return extractFromReader(reader);
@@ -61,8 +61,8 @@ public class TxtExtractor {
      * @param textContent The text content
      * @return TxtContent containing the text
      */
-    public static TxtContent extractContent(String textContent) {
-        TxtContent content = new TxtContent();
+    public static TxtDocumentContent extractContent(String textContent) {
+        TxtDocumentContent content = new TxtDocumentContent();
         String[] paragraphs = textContent.split("\\n\\s*\\n"); // Split by empty lines
 
         for (String paragraph : paragraphs) {
@@ -79,8 +79,8 @@ public class TxtExtractor {
     /**
      * Core extraction logic from BufferedReader
      */
-    private static TxtContent extractFromReader(BufferedReader reader) throws IOException {
-        TxtContent content = new TxtContent();
+    private static TxtDocumentContent extractFromReader(BufferedReader reader) throws IOException {
+        TxtDocumentContent content = new TxtDocumentContent();
         StringBuilder currentParagraph = new StringBuilder();
         String line;
 

@@ -1,18 +1,18 @@
 package com.aissummarizer.jennet.model.domain;
 
 import lombok.Data;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class SlideContent {
-    private int slideNumber;
-    private List<String> textItems = new ArrayList<>();
-    private List<ImageData> images = new ArrayList<>();
+    private final int slideNumber;
+    private final List<String> textItems;
+    private final List<ImageData> images;
 
-    public SlideContent(int slideNumber) {
+    public SlideContent(int slideNumber, List<String> textItems, List<ImageData> images) {
         this.slideNumber = slideNumber;
+        this.textItems = List.copyOf(textItems);
+        this.images = List.copyOf(images);
     }
 
     public void addText(String text) {

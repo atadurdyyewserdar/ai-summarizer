@@ -3,18 +3,24 @@ package com.aissummarizer.jennet.model.domain;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Data for a single table
  */
 @Data
-public class TableData {
-    private int tableNumber;
-    private List<List<String>> rows = new ArrayList<>();
+public final class TableData {
+    private final int tableNumber;
+    private final List<List<String>> rows;
 
-    public TableData(int tableNumber) {
+    public TableData(int tableNumber, List<List<String>> rows) {
         this.tableNumber = tableNumber;
+        this.rows = Collections.unmodifiableList(
+                rows.stream()
+                        .map(row -> Collections.unmodifiableList(new ArrayList<>(row)))
+                        .collect(java.util.stream.Collectors.toList())
+        );
     }
 
     public void addRow(List<String> row) {

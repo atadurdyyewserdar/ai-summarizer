@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.model.request;
 
+import com.aissummarizer.jennet.model.enums.SummaryType;
+
 import java.util.Objects;
 
 /**

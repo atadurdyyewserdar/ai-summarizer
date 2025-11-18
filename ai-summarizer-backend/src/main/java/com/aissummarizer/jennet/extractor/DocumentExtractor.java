@@ -1,5 +1,11 @@
 package com.aissummarizer.jennet.extractor;
 
+import com.aissummarizer.jennet.exceptions.DocumentProcessingException;
+import com.aissummarizer.jennet.model.domain.DocumentContent;
+import com.aissummarizer.jennet.model.enums.DocumentType;
+
+import java.io.InputStream;
+
 /**
  * Strategy pattern for different document extractors
  * @param <T> Type of document content this extractor produces

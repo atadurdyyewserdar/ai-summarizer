@@ -1,7 +1,6 @@
 package com.aissummarizer.jennet.tools;
 
-import com.aissummarizer.jennet.model.domain.ImageData;
-import com.aissummarizer.jennet.model.domain.PptxContent;
+import com.aissummarizer.jennet.model.domain.PptxDocumentContent;
 import com.aissummarizer.jennet.model.domain.SlideContent;
 import org.apache.poi.xslf.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +20,8 @@ public class PptxExtractor {
      * @throws Exception if file cannot be read
      */
 
-    public static PptxContent extractContent(MultipartFile pptxFile) throws Exception {
-        PptxContent content = new PptxContent();
+    public static PptxDocumentContent extractContent(MultipartFile pptxFile) throws Exception {
+        PptxDocumentContent content;
 
         try (InputStream is = pptxFile.getInputStream();
              XMLSlideShow ppt = new XMLSlideShow(is)) {
@@ -39,8 +38,8 @@ public class PptxExtractor {
      * @return PptxContent containing all text and images
      * @throws Exception if file cannot be read
      */
-    public static PptxContent extractContent(File pptxFile) throws Exception {
-        PptxContent content = new PptxContent();
+    public static PptxDocumentContent extractContent(File pptxFile) throws Exception {
+        PptxDocumentContent content;
 
         try (FileInputStream fis = new FileInputStream(pptxFile);
              XMLSlideShow ppt = new XMLSlideShow(fis)) {
@@ -58,8 +57,8 @@ public class PptxExtractor {
      * @return PptxContent containing all text and images
      * @throws Exception if file cannot be read
      */
-    public static PptxContent extractContent(InputStream inputStream) throws Exception {
-        PptxContent content = new PptxContent();
+    public static PptxDocumentContent extractContent(InputStream inputStream) throws Exception {
+        PptxDocumentContent content;
 
         try (XMLSlideShow ppt = new XMLSlideShow(inputStream)) {
             content = extractFromSlideShow(ppt);
@@ -71,8 +70,8 @@ public class PptxExtractor {
     /**
      * Core extraction logic from XMLSlideShow
      */
-    private static PptxContent extractFromSlideShow(XMLSlideShow ppt) {
-        PptxContent content = new PptxContent();
+    private static void extractFromSlideShow(XMLSlideShow ppt) {
+        PptxDocumentContent content;
 
         List<XSLFSlide> slides = ppt.getSlides();
 
@@ -121,8 +120,6 @@ public class PptxExtractor {
 
             content.addSlide(slideContent);
         }
-
-        return content;
     }
 
     /**
