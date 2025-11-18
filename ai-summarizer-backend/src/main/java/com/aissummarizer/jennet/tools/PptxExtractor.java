@@ -1,8 +1,8 @@
 package com.aissummarizer.jennet.tools;
 
-import com.aissummarizer.jennet.model.ImageData;
-import com.aissummarizer.jennet.model.PptxContent;
-import com.aissummarizer.jennet.model.SlideContent;
+import com.aissummarizer.jennet.model.domain.ImageData;
+import com.aissummarizer.jennet.model.domain.PptxContent;
+import com.aissummarizer.jennet.model.domain.SlideContent;
 import org.apache.poi.xslf.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 

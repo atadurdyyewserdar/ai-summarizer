@@ -1,5 +1,6 @@
 package com.aissummarizer.jennet.service;
 import com.aissummarizer.jennet.model.*;
+import com.aissummarizer.jennet.model.domain.*;
 import com.aissummarizer.jennet.tools.DocxExtractor;
 import com.aissummarizer.jennet.tools.PptxExtractor;
 import com.openai.client.OpenAIClient;

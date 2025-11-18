@@ -1,8 +1,8 @@
 package com.aissummarizer.jennet.tools;
 
-import com.aissummarizer.jennet.model.DocxContent;
-import com.aissummarizer.jennet.model.DocxImageData;
-import com.aissummarizer.jennet.model.TableData;
+import com.aissummarizer.jennet.model.domain.DocxContent;
+import com.aissummarizer.jennet.model.domain.DocxImageData;
+import com.aissummarizer.jennet.model.domain.TableData;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 

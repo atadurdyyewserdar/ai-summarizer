@@ -1,4 +1,4 @@
-package com.aissummarizer.jennet.model;
+package com.aissummarizer.jennet.model.request;
 
 import com.aissummarizer.jennet.exceptions.UnsupportedDocumentTypeException;
 

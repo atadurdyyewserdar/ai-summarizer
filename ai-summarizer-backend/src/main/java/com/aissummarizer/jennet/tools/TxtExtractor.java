@@ -1,7 +1,7 @@
 package com.aissummarizer.jennet.tools;
 
 
-import com.aissummarizer.jennet.model.TxtContent;
+import com.aissummarizer.jennet.model.domain.TxtContent;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;

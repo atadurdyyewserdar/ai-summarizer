@@ -1,4 +1,4 @@
-package com.aissummarizer.jennet.model;
+package com.aissummarizer.jennet.model.domain;
 
 import lombok.Data;
 import org.springframework.stereotype.Service;

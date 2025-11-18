@@ -1,8 +1,6 @@
-package com.aissummarizer.jennet.model;
+package com.aissummarizer.jennet.model.domain;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Data for a single image
