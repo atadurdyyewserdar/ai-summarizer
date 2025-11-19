@@ -40,6 +40,12 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:5.4.1'
 	implementation 'org.apache.pdfbox:pdfbox:3.0.6'
 	implementation 'javax.validation:validation-api:2.0.1.Final'
+	implementation 'org.apache.pdfbox:pdfbox:3.0.6'
+	implementation 'org.springframework.boot:spring-boot-starter-security:3.5.7'
+	implementation 'org.hibernate.orm:hibernate-community-dialects:7.1.8.Final'
+	implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 }
 
 tasks.named('test') {
