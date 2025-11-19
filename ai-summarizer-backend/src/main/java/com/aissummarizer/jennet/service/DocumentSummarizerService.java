@@ -7,7 +7,7 @@ import com.aissummarizer.jennet.model.domain.DocumentContent;
 import com.aissummarizer.jennet.model.request.SummaryOptions;
 import com.aissummarizer.jennet.model.response.SummaryResult;
 import com.aissummarizer.jennet.tools.FileUtils;
-import com.aissummarizer.jennet.tools.FileValidator;
+import com.aissummarizer.jennet.validator.FileValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

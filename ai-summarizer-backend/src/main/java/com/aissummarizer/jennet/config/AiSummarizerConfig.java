@@ -22,7 +22,7 @@ public class AiSummarizerConfig {
 
     @DecimalMin(value = "0.0", message = "Temperature must be at least 0.0")
     @DecimalMax(value = "2.0", message = "Temperature cannot exceed 2.0")
-    private double defaultTemperature = 0.7;
+    private double defaultTemperature = 1;
 
     @Min(value = 1, message = "Max file size must be positive")
     private long maxFileSizeBytes = 50_000_000; // 50MB

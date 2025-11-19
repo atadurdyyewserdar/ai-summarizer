@@ -12,8 +12,7 @@ public class OpenAiClientConfig {
 
     @Bean
     public OpenAIClient openAiClient(AiSummarizerConfig config) {
-        return OpenAIOkHttpClient.builder()
-                .apiKey(config.getApiKey())
+        return OpenAIOkHttpClient.builder().fromEnv()
                 .timeout(Duration.ofMillis(config.getRequestTimeoutMs()))
                 .build();
     }

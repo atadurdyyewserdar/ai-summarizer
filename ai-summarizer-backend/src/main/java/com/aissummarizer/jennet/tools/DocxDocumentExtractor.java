@@ -13,7 +13,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class DocxExtractor {
+public class DocxDocumentExtractor {
+
+    public DocxDocumentExtractor() {
+
+    }
 
     /**
      * Extract all content from a MultipartFile (Spring Boot file upload)
@@ -60,7 +64,7 @@ public class DocxExtractor {
      * Core extraction logic from XWPFDocument
      */
     private static DocxDocumentContent extractFromDocument(XWPFDocument document) throws Exception {
-        DocxDocumentContent content = new DocxDocumentContent();
+        DocxDocumentContent content = new DocxDocumentContent(null, null, null);
 
         // Extract paragraphs
         List<XWPFParagraph> paragraphs = document.getParagraphs();
@@ -138,7 +142,7 @@ public class DocxExtractor {
      * Extract table data
      */
     private static TableData extractTable(XWPFTable table, int tableNumber) {
-        TableData tableData = new TableData(tableNumber);
+        TableData tableData = new TableData(tableNumber, new ArrayList<>());
 
         List<XWPFTableRow> rows = table.getRows();
         for (XWPFTableRow row : rows) {

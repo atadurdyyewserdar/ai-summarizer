@@ -1,8 +1,8 @@
 package com.aissummarizer.jennet.service;
 import com.aissummarizer.jennet.model.*;
 import com.aissummarizer.jennet.model.domain.*;
-import com.aissummarizer.jennet.tools.DocxExtractor;
-import com.aissummarizer.jennet.tools.PptxExtractor;
+import com.aissummarizer.jennet.tools.DocxDocumentExtractor;
+import com.aissummarizer.jennet.tools.PptxDocumentExtractor;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 
-import static com.aissummarizer.jennet.tools.TxtExtractor.extractContent;
+import static com.aissummarizer.jennet.tools.TxtDocumentExtractor.extractContent;
 
 @Service
 public class FileService {
@@ -39,7 +39,7 @@ public class FileService {
         try {
             // Step 1: Extract content from DOCX
             System.out.println("=== EXTRACTING DOCX CONTENT ===");
-            DocxDocumentContent content = DocxExtractor.extractContent(file);
+            DocxDocumentContent content = DocxDocumentExtractor.extractContent(file);
 
             System.out.println("Extracted:");
             System.out.println("- " + content.getParagraphs().size() + " paragraphs");
@@ -228,7 +228,7 @@ public class FileService {
 
 
     public void PPTXExtract (MultipartFile file) throws Exception {
-        PptxDocumentContent pptxDocumentContent1 = PptxExtractor.extractContent(file);
+        PptxDocumentContent pptxDocumentContent1 = PptxDocumentExtractor.extractContent(file);
         System.out.println("=== PPTX EXTRACTION RESULTS ===\n");
         System.out.println("Total slides: " + pptxDocumentContent1.getSlides().size());
         System.out.println("Total images: " + pptxDocumentContent1.getTotalImageCount());

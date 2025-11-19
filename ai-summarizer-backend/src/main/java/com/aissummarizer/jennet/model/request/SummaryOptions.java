@@ -44,7 +44,7 @@ public final class SummaryOptions {
     public static final class Builder {
         private SummaryType type = SummaryType.COMPREHENSIVE;
         private int maxTokens = 2000;
-        private double temperature = 0.7;
+        private double temperature = 1;
         private String customPrompt = null;
 
         public Builder type(SummaryType type) {

@@ -2,6 +2,7 @@ package com.aissummarizer.jennet.extractor;
 
 import com.aissummarizer.jennet.exceptions.DocumentProcessingException;
 import com.aissummarizer.jennet.model.domain.ImageData;
+import com.aissummarizer.jennet.model.domain.PptxDocumentContent;
 import com.aissummarizer.jennet.model.domain.SlideContent;
 import com.aissummarizer.jennet.model.enums.DocumentType;
 import com.aissummarizer.jennet.util.ImageUtils;
@@ -17,7 +18,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
-public class PptxDocumentExtractor<PptxDocumentContent> implements DocumentExtractor<PptxDocumentContent> {
+public class PptxDocumentExtractor implements DocumentExtractor<PptxDocumentContent> {
 
     private static final Logger logger = LoggerFactory.getLogger(PptxDocumentExtractor.class);
 

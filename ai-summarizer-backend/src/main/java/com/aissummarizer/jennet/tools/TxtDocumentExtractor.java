@@ -6,11 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 /**
  * Extracts content from TXT files
  */
-public class TxtExtractor {
+public class TxtDocumentExtractor {
 
     /**
      * Extract all content from a MultipartFile (Spring Boot file upload)
@@ -62,7 +63,7 @@ public class TxtExtractor {
      * @return TxtContent containing the text
      */
     public static TxtDocumentContent extractContent(String textContent) {
-        TxtDocumentContent content = new TxtDocumentContent();
+        TxtDocumentContent content = new TxtDocumentContent(new ArrayList<>());
         String[] paragraphs = textContent.split("\\n\\s*\\n"); // Split by empty lines
 
         for (String paragraph : paragraphs) {
@@ -80,7 +81,7 @@ public class TxtExtractor {
      * Core extraction logic from BufferedReader
      */
     private static TxtDocumentContent extractFromReader(BufferedReader reader) throws IOException {
-        TxtDocumentContent content = new TxtDocumentContent();
+        TxtDocumentContent content = new TxtDocumentContent(new ArrayList<>());
         StringBuilder currentParagraph = new StringBuilder();
         String line;
 

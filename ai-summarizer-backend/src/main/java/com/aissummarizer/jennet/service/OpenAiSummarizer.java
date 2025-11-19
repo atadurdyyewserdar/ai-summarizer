@@ -2,10 +2,7 @@ package com.aissummarizer.jennet.service;
 
 import com.aissummarizer.jennet.config.AiSummarizerConfig;
 import com.aissummarizer.jennet.exceptions.AiSummarizationException;
-import com.aissummarizer.jennet.model.domain.DocumentContent;
-import com.aissummarizer.jennet.model.domain.DocxDocumentContent;
-import com.aissummarizer.jennet.model.domain.PptxDocumentContent;
-import com.aissummarizer.jennet.model.domain.TxtDocumentContent;
+import com.aissummarizer.jennet.model.domain.*;
 import com.aissummarizer.jennet.model.request.SummaryOptions;
 import com.aissummarizer.jennet.model.response.SummaryMetadata;
 import com.aissummarizer.jennet.model.response.SummaryResult;
@@ -76,18 +73,25 @@ public class OpenAiSummarizer implements AiSummarizer {
         List<ChatCompletionContentPart> parts = new ArrayList<>();
 
         // Add text
-        parts.add(ChatCompletionContentPartText.builder()
-                .text(prompt)
-                .build());
+
+        parts.add(
+                ChatCompletionContentPart.ofText(
+                        ChatCompletionContentPartText.builder()
+                                .text(prompt)
+                                .build()
+                )
+        );
 
         // Add images if present
         if (content.hasImages()) {
             for (ImageData image : content.getImages()) {
-                parts.add(ChatCompletionContentPartImage.builder()
-                        .imageUrl(ChatCompletionContentPartImage.ImageUrl.builder()
-                                .url(image.getDataUrl())
-                                .build())
-                        .build());
+                parts.add(
+
+                        ChatCompletionContentPart.ofImageUrl(
+                                ChatCompletionContentPartImage.builder().imageUrl(
+                                        ChatCompletionContentPartImage.ImageUrl.builder().url(image.getDataUrl()).build()
+                                ).build()
+                        ));
             }
         }
 
@@ -110,7 +114,7 @@ public class OpenAiSummarizer implements AiSummarizer {
                 .build();
 
         ChatCompletion completion = client.chat().completions().create(params);
-        return completion.choices().get(0).message().content().orElse("");
+        return completion.choices().getFirst().message().content().orElse("");
     }
 
     private SummaryMetadata buildMetadata(DocumentContent content, long startTime) {
@@ -119,15 +123,12 @@ public class OpenAiSummarizer implements AiSummarizer {
                 .imageCount(content.getImages().size())
                 .processingTimeMs(System.currentTimeMillis() - startTime);
 
-        if (content instanceof PptxDocumentContent) {
-            PptxDocumentContent pptx = (PptxDocumentContent) content;
+        if (content instanceof PptxDocumentContent pptx) {
             builder.slideCount(pptx.getSlides().size());
-        } else if (content instanceof DocxDocumentContent) {
-            DocxDocumentContent docx = (DocxDocumentContent) content;
+        } else if (content instanceof DocxDocumentContent docx) {
             builder.paragraphCount(docx.getParagraphs().size())
                     .tableCount(docx.getTables().size());
-        } else if (content instanceof TxtDocumentContent) {
-            TxtDocumentContent txt = (TxtDocumentContent) content;
+        } else if (content instanceof TxtDocumentContent txt) {
             builder.paragraphCount(txt.getParagraphs().size());
         }
 

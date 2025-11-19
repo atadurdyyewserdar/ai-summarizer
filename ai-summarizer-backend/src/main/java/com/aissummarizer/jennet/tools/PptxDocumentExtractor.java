@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.tools;
 
+import com.aissummarizer.jennet.extractor.DocumentExtractor;
+import com.aissummarizer.jennet.model.domain.ImageData;
 import com.aissummarizer.jennet.model.domain.PptxDocumentContent;
 import com.aissummarizer.jennet.model.domain.SlideContent;
 import org.apache.poi.xslf.usermodel.*;
@@ -8,10 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class PptxExtractor {
+public class PptxDocumentExtractor {
     /**
      * Extract all content from a PPTX file
      *
@@ -26,9 +29,10 @@ public class PptxExtractor {
         try (InputStream is = pptxFile.getInputStream();
              XMLSlideShow ppt = new XMLSlideShow(is)) {
 
-            content = extractFromSlideShow(ppt);
+//            content = extractFromSlideShow(ppt);
         }
-        return content;
+//        return content;
+        return new PptxDocumentContent(new ArrayList<>());
     }
 
     /**
@@ -44,10 +48,11 @@ public class PptxExtractor {
         try (FileInputStream fis = new FileInputStream(pptxFile);
              XMLSlideShow ppt = new XMLSlideShow(fis)) {
 
-            content = extractFromSlideShow(ppt);
+//            content = extractFromSlideShow(ppt);
         }
 
-        return content;
+//        return content;
+        return new PptxDocumentContent(new ArrayList<>());
     }
 
     /**
@@ -61,10 +66,11 @@ public class PptxExtractor {
         PptxDocumentContent content;
 
         try (XMLSlideShow ppt = new XMLSlideShow(inputStream)) {
-            content = extractFromSlideShow(ppt);
+//            content = extractFromSlideShow(ppt);
         }
 
-        return content;
+//        return content;
+        return null;
     }
 
     /**
@@ -77,8 +83,8 @@ public class PptxExtractor {
 
         for (int slideIndex = 0; slideIndex < slides.size(); slideIndex++) {
             XSLFSlide slide = slides.get(slideIndex);
-            SlideContent slideContent = new SlideContent(slideIndex + 1);
-
+//            SlideContent slideContent = new SlideContent(slideIndex + 1);
+            SlideContent slideContent = new SlideContent(0, null, null);
             // Extract all shapes from the slide
             for (XSLFShape shape : slide.getShapes()) {
 
@@ -107,18 +113,18 @@ public class PptxExtractor {
                     String imageFormat = getImageFormat(contentType);
 
                     // Create image object
-                    ImageData imageData = new ImageData(
-                            base64Image,
-                            imageFormat,
-                            slideIndex + 1,
-                            imageBytes.length
-                    );
+//                    ImageData imageData = new ImageData(
+//                            base64Image,
+//                            imageFormat,
+//                            slideIndex + 1,
+//                            imageBytes.length
+//                    );
 
-                    slideContent.addImage(imageData);
+//                    slideContent.addImage(imageData);
                 }
             }
 
-            content.addSlide(slideContent);
+//            content.addSlide(slideContent);
         }
     }
 
