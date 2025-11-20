@@ -33,7 +33,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse login(LoginRequest request) {
 
-        // 🔐 Tricky Logic:
         // AuthenticationManager triggers the full Spring Security authentication pipeline.
         // If credentials are invalid, an exception is thrown here automatically.
         Authentication auth = authenticationManager.authenticate(

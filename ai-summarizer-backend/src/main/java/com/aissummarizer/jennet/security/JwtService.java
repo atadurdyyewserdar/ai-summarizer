@@ -26,7 +26,6 @@ public class JwtService {
 
     @PostConstruct
     private void initKey() {
-        // MUST be SecretKey type for verifyWith()
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -38,15 +37,15 @@ public class JwtService {
                 .subject(username)
                 .issuedAt(now)
                 .expiration(expiry)
-                .signWith(signingKey)   // NEW JJWT 0.13.x style
+                .signWith(signingKey)
                 .compact();
     }
 
     public String extractUsername(String token) {
         return Jwts.parser()
-                .verifyWith(signingKey)  // NEW verifyWith()
+                .verifyWith(signingKey)
                 .build()
-                .parseSignedClaims(token)  // NEW parseSignedClaims()
+                .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
     }

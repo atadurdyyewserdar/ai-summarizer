@@ -44,7 +44,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         tokenRepository.save(token);
 
-        // In production, send via email instead of returning
+        // TODO Send via email instead of returning
         return tokenValue;
     }
 
@@ -61,7 +61,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new BadRequestException("Reset token has expired");
         }
 
-        // Load user by ID (since we only store userId now)
+        // Load user by ID (since we only store userId)
         UserEntity user = userService.getById(token.getUserId());
 
         // Change password
