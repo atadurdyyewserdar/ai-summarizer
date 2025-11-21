@@ -1,0 +1,32 @@
+package com.aissummarizer.jennet.dto;
+
+import com.aissummarizer.jennet.model.user.UserEntity;
+
+/**
+ * Lightweight representation of user profile data to expose via APIs.
+ */
+public record UserProfileDto(
+        String id,
+        String username,
+        String firstName,
+        String lastName,
+        String email,
+        String profileImageUrl,
+        String role
+) {
+
+    /**
+     * Builds a DTO from a {@link UserEntity}.
+     */
+    public static UserProfileDto from(UserEntity user) {
+        return new UserProfileDto(
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getProfileImageUrl(),
+                user.getRole()
+        );
+    }
+}

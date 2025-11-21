@@ -1,9 +1,14 @@
 package com.aissummarizer.jennet.dto;
 
 /**
- * Request payload for registering a new user account.
- *
- * @param username the desired username
- * @param password the chosen password
+ * Registration request payload.
+ * <p>
+ * Extends basic username/password input with profile fields.
  */
-public record RegisterRequest(String username, String password) {}
+public record RegisterRequest(
+        String username,
+        String password,
+        String firstName,
+        String lastName,
+        String email
+) { }

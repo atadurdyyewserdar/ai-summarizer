@@ -17,7 +17,11 @@ public interface UserService {
      * @param rawPassword plain text password (will be encoded)
      * @return persisted user
      */
-    UserEntity registerUser(String username, String rawPassword);
+    UserEntity registerUser(String username,
+                            String rawPassword,
+                            String firstName,
+                            String lastName,
+                            String email);
 
     /**
      * Retrieves a user by username.

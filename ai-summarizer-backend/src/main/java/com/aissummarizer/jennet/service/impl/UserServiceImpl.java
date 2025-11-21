@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 /**
  * Implementation of the UserService interface.
  * <p>
@@ -22,15 +24,26 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
 
     @Override
-    public UserEntity registerUser(String username, String rawPassword) {
+    public UserEntity registerUser(String username,
+                                   String rawPassword,
+                                   String firstName,
+                                   String lastName,
+                                   String email) {
         userRepository.findByUsername(username).ifPresent(u -> {
             throw new BadRequestException("Username already exists");
         });
 
         UserEntity user = UserEntity.builder()
+                // ID will be generated in @PrePersist
                 .username(username)
                 .password(encoder.encode(rawPassword))
                 .role("ROLE_USER")
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .profileImageUrl(null)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return userRepository.save(user);
