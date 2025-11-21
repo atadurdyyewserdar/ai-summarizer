@@ -28,6 +28,11 @@ public class AuthController {
         return authService.login(request);
     }
 
+    @PostMapping("/refresh")
+    public JwtResponse refresh(@RequestParam String refreshToken) {
+        return authService.refresh(refreshToken);
+    }
+
     /**
      * Registers a new user account.
      *
