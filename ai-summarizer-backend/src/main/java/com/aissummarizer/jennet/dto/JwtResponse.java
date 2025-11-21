@@ -3,6 +3,7 @@ package com.aissummarizer.jennet.dto;
 /**
  * Response payload containing a generated JWT token.
  *
- * @param token the signed JSON Web Token
+ * @param accessToken the signed JSON Web Token
+ * @param refreshToken the signed refresh JSON Web Token
  */
-public record JwtResponse(String token) {}
+public record JwtResponse(String accessToken, String refreshToken) {}

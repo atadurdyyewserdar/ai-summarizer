@@ -20,6 +20,14 @@ public interface AuthService {
     JwtResponse login(LoginRequest request);
 
     /**
+     * Return new token if previous one has expired.
+     *
+     * @param token expired token
+     * @return response containing a signed JWT
+     */
+    JwtResponse refresh(String token);
+
+    /**
      * Registers a new user account.
      *
      * @param request registration information

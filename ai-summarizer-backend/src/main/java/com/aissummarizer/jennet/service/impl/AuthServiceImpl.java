@@ -32,7 +32,6 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public JwtResponse login(LoginRequest request) {
-
         // AuthenticationManager triggers the full Spring Security authentication pipeline.
         // If credentials are invalid, an exception is thrown here automatically.
         Authentication auth = authenticationManager.authenticate(
@@ -43,8 +42,11 @@ public class AuthServiceImpl implements AuthService {
         );
 
         // Generate a signed JWT for the successfully authenticated user.
-        String token = jwtService.generate(auth.getName());
-        return new JwtResponse(token);
+        String accessToken = jwtService.generateAccessToken(auth.getName());
+
+        // Generate a signed JWT refresh token for the successfully authenticated user.
+        String refreshToken = jwtService.generateRefreshToken(request.username());
+        return new JwtResponse(accessToken, refreshToken);
     }
 
     /**
@@ -69,5 +71,23 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void completePasswordReset(ResetPasswordRequest request) {
         passwordResetService.resetPassword(request.token(), request.newPassword());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JwtResponse refresh(String refreshToken) {
+
+        String username = jwtService.extractUsername(refreshToken);
+
+        if (!jwtService.isTokenValid(refreshToken, username)) {
+            throw new RuntimeException("Invalid refresh token");
+        }
+
+        String newAccess = jwtService.generateAccessToken(username);
+        String newRefresh = jwtService.generateRefreshToken(username);
+
+        return new JwtResponse(newAccess, newRefresh);
     }
 }
