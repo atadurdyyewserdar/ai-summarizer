@@ -1,7 +1,5 @@
 package com.aissummarizer.jennet.summarization.service;
 
-import com.aissummarizer.jennet.summarization.entity.SummarizationHistoryEntity;
-import com.aissummarizer.jennet.summarization.repository.SummarizationHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,11 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Default implementation of {@link SummarizationHistoryService}.
+ * Default implementation of {@link SummarizationService}.
  */
 @Service
 @RequiredArgsConstructor
-public class SummarizationHistoryServiceImpl implements SummarizationHistoryService {
+public class SummarizationServiceImpl implements SummarizationService {
 
     private final SummarizationHistoryRepository repository;
 

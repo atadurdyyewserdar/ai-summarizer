@@ -1,7 +1,5 @@
 package com.aissummarizer.jennet.summarization.dto;
 
-import com.aissummarizer.jennet.summarization.entity.SummarizationHistoryEntity;
-
 import java.time.LocalDateTime;
 
 /**
@@ -14,12 +12,12 @@ public record SummarizationHistoryResponse(
         LocalDateTime createdAt
 ) {
 
-    public static SummarizationHistoryResponse from(SummarizationHistoryEntity e) {
-        return new SummarizationHistoryResponse(
-                e.getId(),
-                e.getInputText(),
-                e.getSummaryText(),
-                e.getCreatedAt()
-        );
-    }
+//    public static SummarizationHistoryResponse from(SummarizationHistoryEntity e) {
+//        return new SummarizationHistoryResponse(
+//                e.getId(),
+//                e.getInputText(),
+//                e.getSummaryText(),
+//                e.getCreatedAt()
+//        );
+//    }
 }

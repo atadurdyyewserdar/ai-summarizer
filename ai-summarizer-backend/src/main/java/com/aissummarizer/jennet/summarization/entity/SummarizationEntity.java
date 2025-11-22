@@ -1,6 +1,6 @@
-package com.aissummarizer.jennet.document.entity;
+package com.aissummarizer.jennet.summarization.entity;
 
-import com.aissummarizer.jennet.document.enums.DocumentType;
+import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Represents an uploaded document (optional for text-based summarization).
+ * Represents a single summarization request performed by a user.
  */
 @Entity
-@Table(name = "document_uploads")
+@Table(name = "summarizations")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor @Builder
-public class DocumentUploadEntity {
+public class SummarizationEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -31,17 +31,20 @@ public class DocumentUploadEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(nullable = false, length = 255)
-    private String fileName;
-
-    @Column(nullable = false, length = 500)
-    private String fileUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DocumentType documentType;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String inputText;
 
     @CreationTimestamp
     @Column(nullable = false)
-    private LocalDateTime uploadedAt;
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SummaryType summaryType;
+
+    /**
+     * One summarization → one result.
+     */
+    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SummaryResultEntity result;
 }

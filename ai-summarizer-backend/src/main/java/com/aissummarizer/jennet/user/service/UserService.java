@@ -11,8 +11,6 @@ import com.aissummarizer.jennet.user.entity.UserEntity;
  */
 public interface UserService {
 
-
-    UserProfileResponse getUserProfile(String username);
     /**
      * Registers a new user with the given username and raw password.
      *
@@ -49,4 +47,29 @@ public interface UserService {
      * @param rawNewPassword new password before encoding
      */
     void changePassword(String userId, String rawNewPassword);
+
+    /**
+     * Generates UserProfileResponse DTO including
+     * profile info + summarization stats.
+     *
+     * @param userName username
+     * @return populated profile response
+     */
+    UserProfileResponse getUserProfile(String userName);
+
+    /**
+     * Updates user's profile info (name, lastname, image, email).
+     *
+     * @param userId user ID
+     * @param firstName new firstname
+     * @param lastName new lastname
+     * @param email new email
+     * @param profileImageUrl new profile image URL
+     * @return updated UserEntity
+     */
+    UserEntity updateProfile(String userId,
+                             String firstName,
+                             String lastName,
+                             String email,
+                             String profileImageUrl);
 }
