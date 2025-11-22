@@ -4,6 +4,7 @@ import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.document.dto.ImageData;
 import com.aissummarizer.jennet.document.dto.TableData;
 import com.aissummarizer.jennet.document.service.DocumentContent;
+import com.aissummarizer.jennet.summarization.model.SummaryMetadata;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class DocxDocumentContent implements DocumentContent {
     private final List<String> paragraphs;
     private final List<TableData> tables;
     private final List<ImageData> images;
+    private final SummaryMetadata  metadata;
 
     public DocxDocumentContent(List<String> paragraphs, List<TableData> tables, List<ImageData> images) {
         this.paragraphs = Collections.unmodifiableList(new ArrayList<>(paragraphs));
