@@ -1,7 +1,7 @@
 package com.aissummarizer.jennet.security;
 
-import com.aissummarizer.jennet.model.user.UserEntity;
-import com.aissummarizer.jennet.repository.UserRepository;
+import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.aissummarizer.jennet.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;

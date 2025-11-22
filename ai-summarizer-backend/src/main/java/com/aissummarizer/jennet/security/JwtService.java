@@ -99,4 +99,16 @@ public class JwtService {
     public boolean isTokenValid(String token, String expectedUsername) {
         return expectedUsername.equals(extractUsername(token)) && !isExpired(token);
     }
+
+    /**
+     * Validates a REFRESH TOKEN and extracts the username.
+     *
+     * @param refreshToken raw refresh token sent by client
+     * @return username if valid
+     * @throws JwtException if verification fails
+     */
+    public String validateAndExtractUsernameFromRefreshToken(String refreshToken) {
+        // ✔ Refresh tokens have same structure, only expiration differs.
+        return extractUsername(refreshToken);
+    }
 }
