@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PasswordResetTokenEntity {
+public class    PasswordResetTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

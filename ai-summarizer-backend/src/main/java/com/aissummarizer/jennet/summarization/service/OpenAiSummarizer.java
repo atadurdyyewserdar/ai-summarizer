@@ -2,7 +2,11 @@ package com.aissummarizer.jennet.summarization.service;
 
 import com.aissummarizer.jennet.config.AiSummarizerConfig;
 import com.aissummarizer.jennet.common.exception.AiSummarizationException;
+import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.document.service.DocumentContent;
+import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
+import com.aissummarizer.jennet.summarization.entity.SummaryMetadataEntity;
+import com.aissummarizer.jennet.summarization.entity.SummaryResultEntity;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
 import com.aissummarizer.jennet.summarization.model.SummaryMetadata;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
@@ -11,6 +15,9 @@ import com.aissummarizer.jennet.document.model.DocxDocumentContent;
 import com.aissummarizer.jennet.document.dto.ImageData;
 import com.aissummarizer.jennet.document.model.PptxDocumentContent;
 import com.aissummarizer.jennet.document.model.TxtDocumentContent;
+import com.aissummarizer.jennet.summarization.repository.SummaryMetadataRepository;
+import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.aissummarizer.jennet.user.service.UserService;
 import com.openai.client.OpenAIClient;
 import com.openai.models.chat.completions.*;
 import org.slf4j.Logger;
@@ -18,8 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OpenAiSummarizer implements AiSummarizer {
@@ -29,19 +38,26 @@ public class OpenAiSummarizer implements AiSummarizer {
     private final OpenAIClient client;
     private final AiSummarizerConfig config;
     private final PromptBuilder promptBuilder;
+    private final SummarizationServiceImpl summarizationService;
+    private final SummaryMetadataRepository metadataRepository;
+    private final UserService userService;
 
     @Autowired
     public OpenAiSummarizer(
             OpenAIClient client,
             AiSummarizerConfig config,
-            PromptBuilder promptBuilder) {
+            PromptBuilder promptBuilder,
+            SummarizationServiceImpl service, SummaryMetadataRepository metadataRepository, UserService userService) {
         this.client = client;
         this.config = config;
         this.promptBuilder = promptBuilder;
+        this.summarizationService = service;
+        this.metadataRepository = metadataRepository;
+        this.userService = userService;
     }
 
     @Override
-    public SummaryResult summarize(DocumentContent content, SummaryOptions options) {
+    public SummaryResult summarize(DocumentContent content, SummaryOptions options, String userName, DocumentUploadEntity uploadEntity) {
         try {
             long startTime = System.currentTimeMillis();
 
@@ -56,6 +72,41 @@ public class OpenAiSummarizer implements AiSummarizer {
 
             // Build metadata
             SummaryMetadata metadata = buildMetadata(content, startTime);
+
+            UserEntity user = userService.getByUsername(userName);
+
+            SummarizationEntity summarization = new SummarizationEntity();
+            summarization.setId(UUID.randomUUID().toString());
+            summarization.setUser(user);
+            summarization.setDocumentUpload(uploadEntity);
+            summarization.setInputText(prompt);
+            summarization.setSummaryText(summary);
+            summarization.setDocumentType(content.getType());
+            summarization.setSummaryType(options.getType());
+            summarization.setCreatedAt(LocalDateTime.now());
+
+            SummaryMetadataEntity metadataEntity = new SummaryMetadataEntity();
+            metadataEntity.setId(UUID.randomUUID().toString());
+            metadataEntity.setSummarization(summarization);
+            metadataEntity.setWordCount(metadata.getWordCount());
+            metadataEntity.setImageCount(metadata.getImageCount());
+            metadataEntity.setSlideCount(metadata.getSlideCount());
+            metadataEntity.setParagraphCount(metadata.getParagraphCount());
+            metadataEntity.setTableCount(metadata.getTableCount());
+            metadataEntity.setProcessingTime(metadataEntity.getProcessingTime());
+
+            metadataEntity = metadataRepository.save(metadataEntity);
+
+            SummaryResultEntity result = new SummaryResultEntity();
+            result.setId(UUID.randomUUID().toString());
+            result.setSummarization(summarization);
+            result.setSummary(summary);
+            result.setDocumentType(content.getType());
+            result.setSummaryType(options.getType());
+            summarization.setMetadata(metadataEntity);
+            summarization.setResult(result);
+
+            summarizationService.saveSummarization(summarization);
 
             return new SummaryResult(
                     summary,

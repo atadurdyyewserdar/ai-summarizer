@@ -26,6 +26,10 @@ public class SummaryMetadataEntity {
     @JoinColumn(name = "summary_result_id", nullable = false)
     private SummaryResultEntity summaryResult;
 
+    @OneToOne(optional = false)
+    @JoinColumn(name = "summarization_id", nullable = false, unique = true)
+    private SummarizationEntity summarization;
+
     private int wordCount;
     private int imageCount;
     private int slideCount;

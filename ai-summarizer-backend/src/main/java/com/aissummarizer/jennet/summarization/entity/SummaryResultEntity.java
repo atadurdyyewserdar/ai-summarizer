@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.summarization.entity;
 
 import com.aissummarizer.jennet.document.enums.DocumentType;
+import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
@@ -33,6 +34,10 @@ public class SummaryResultEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentType documentType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "summary_type", length = 30, nullable = false)
+    private SummaryType summaryType;
 
     /**
      * One result → one metadata record.

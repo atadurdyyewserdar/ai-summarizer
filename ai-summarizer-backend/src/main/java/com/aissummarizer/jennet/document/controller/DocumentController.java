@@ -5,6 +5,11 @@ import com.aissummarizer.jennet.common.exception.DocumentProcessingException;
 import com.aissummarizer.jennet.common.exception.InvalidFileException;
 import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeException;
 import com.aissummarizer.jennet.common.enums.ErrorCode;
+import com.aissummarizer.jennet.common.validator.FileValidator;
+import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
+import com.aissummarizer.jennet.document.service.DocumentUploadService;
+import com.aissummarizer.jennet.document.tools.FileUtils;
+import com.aissummarizer.jennet.security.JwtService;
 import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
@@ -13,6 +18,12 @@ import com.aissummarizer.jennet.document.model.DocumentTypeInfo;
 import com.aissummarizer.jennet.common.model.HealthStatus;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
 import com.aissummarizer.jennet.document.service.DocumentSummarizerService;
+import com.aissummarizer.jennet.summarization.repository.SummarizationRepository;
+import com.aissummarizer.jennet.summarization.repository.SummaryMetadataRepository;
+import com.aissummarizer.jennet.summarization.repository.SummaryResultRepository;
+import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.aissummarizer.jennet.user.service.UserService;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,50 +36,54 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/documents")
 @Validated
+@AllArgsConstructor
 public class DocumentController {
 
     private static final Logger log = LoggerFactory.getLogger(DocumentController.class);
 
     private final DocumentSummarizerService summarizerService;
+    private final FileValidator fileValidator;
+    private final DocumentUploadService documentUploadService;
 
-    @Autowired
-    public DocumentController(DocumentSummarizerService summarizerService) {
-        this.summarizerService = Objects.requireNonNull(summarizerService);
-    }
-
+    /**
+     * Uploads a file, extracts content, summarizes it, computes metadata,
+     * stores all details, and returns summary output.
+     *
+     * @param file uploaded document (txt, pdf, docx, pptx)
+     * @param type type of summary (BRIEF, COMPREHENSIVE, KEY_POINTS, etc.)
+     */
     @PostMapping(value = "/summarize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<SummaryResult>> summarize(
             @RequestParam("file") @NotNull MultipartFile file,
+            @RequestParam("userName") @NotNull String userName,
             @RequestParam(value = "type", defaultValue = "COMPREHENSIVE")
             @Valid SummaryType type,
             @RequestParam(value = "maxTokens", required = false)
-            @Min(100) @Max(10000) Integer maxTokens,
-            @RequestParam(value = "temperature", required = false)
-            @DecimalMin("0.0") @DecimalMax("2.0") Double temperature) {
+            @Min(100) @Max(10000) Integer maxTokens
+    ) throws InvalidFileException {
 
         log.info("Received summarization request: file={}, type={}",
                 file.getOriginalFilename(), type);
 
+        fileValidator.validate(file);
+
+        DocumentUploadEntity uploadEntity = documentUploadService.uploadDocument(file, userName);
         try {
             SummaryOptions.Builder optionsBuilder = SummaryOptions.builder()
                     .type(type);
-
             if (maxTokens != null) {
                 optionsBuilder.maxTokens(maxTokens);
             }
 
-            if (temperature != null) {
-                optionsBuilder.temperature(temperature);
-            }
-
             SummaryOptions options = optionsBuilder.build();
-            SummaryResult result = summarizerService.summarizeDocument(file, options);
+            SummaryResult result = summarizerService.summarizeDocument(file, options, userName, uploadEntity);
 
             log.info("Successfully summarized: file={}, processingTime={}ms",
                     file.getOriginalFilename(), result.getMetadata().getProcessingTimeMs());
@@ -115,7 +130,7 @@ public class DocumentController {
 
     @PostMapping(value = "/summarize/custom", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<SummaryResult>> summarizeWithCustomPrompt(
-            @RequestParam("file") @NotNull MultipartFile file,
+            @RequestParam("file") @NotNull MultipartFile file, @RequestParam("userName") String userName,
             @RequestParam("prompt") @NotBlank @Size(min = 10, max = 1000) String customPrompt) {
 
         log.info("Received custom summarization request: file={}", file.getOriginalFilename());
@@ -125,7 +140,9 @@ public class DocumentController {
                     .customPrompt(customPrompt)
                     .build();
 
-            SummaryResult result = summarizerService.summarizeDocument(file, options);
+            DocumentUploadEntity uploadEntity = documentUploadService.uploadDocument(file, userName);
+
+            SummaryResult result = summarizerService.summarizeDocument(file, options, userName,uploadEntity);
             return ResponseEntity.ok(ApiResponse.success(result));
 
         } catch (DocumentProcessingException e) {

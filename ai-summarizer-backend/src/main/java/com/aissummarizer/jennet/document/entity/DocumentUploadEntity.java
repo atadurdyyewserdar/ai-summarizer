@@ -15,7 +15,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "document_uploads")
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@AllArgsConstructor @Builder
+@NoArgsConstructor
 public class DocumentUploadEntity {
 
     @Id
@@ -31,12 +32,6 @@ public class DocumentUploadEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(nullable = false, length = 255)
-    private String fileName;
-
-    @Column(nullable = false, length = 500)
-    private String fileUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DocumentType documentType;
@@ -44,4 +39,38 @@ public class DocumentUploadEntity {
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
+
+    /** Original filename uploaded by the user. */
+    @Column(name = "original_filename", nullable = false)
+    private String originalFilename;
+
+    /** Stored file path or location (disk, S3, etc.). */
+    @Column(name = "stored_file_path", nullable = false)
+    private String storedFilePath;
+
+    /** File extension such as txt, pdf, docx, pptx. */
+    @Column(name = "file_extension", nullable = false, length = 10)
+    private String fileExtension;
+
+    /** MIME type (optional but useful for consistency). */
+    @Column(name = "mime_type")
+    private String mimeType;
+
+    /** File size in bytes. */
+    @Column(name = "file_size")
+    private long fileSize;
+
+    /**
+     * Whether extraction was successful or not.
+     * Helps UI show status when listing uploaded files.
+     */
+    @Column(name = "extraction_success")
+    private boolean extractionSuccess;
+
+    /**
+     * Optional field: if extraction fails, record reason.
+     */
+    @Column(name = "extraction_error_message")
+    private String extractionErrorMessage;
+
 }

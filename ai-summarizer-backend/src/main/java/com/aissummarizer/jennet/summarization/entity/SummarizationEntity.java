@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.summarization.entity;
 
+import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
+import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import jakarta.persistence.*;
@@ -47,4 +49,19 @@ public class SummarizationEntity {
      */
     @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true)
     private SummaryResultEntity result;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "document_upload_id")
+    private DocumentUploadEntity documentUpload;
+
+    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SummaryMetadataEntity metadata;
+
+    @Column(name = "summary_text", columnDefinition = "text")
+    private String summaryText;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_type", length = 20, nullable = false)
+    private DocumentType documentType;
+    
 }

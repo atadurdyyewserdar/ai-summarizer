@@ -1,5 +1,6 @@
 package com.aissummarizer.jennet.config;
 
+import com.aissummarizer.jennet.apilog.filter.ApiUsageLoggingFilter;
 import com.aissummarizer.jennet.security.CustomUserDetailsService;
 import com.aissummarizer.jennet.security.JwtAuthFilter;
 import com.google.common.collect.ImmutableList;
@@ -31,6 +32,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final ApiUsageLoggingFilter apiUsageLoggingFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,7 +47,8 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(apiUsageLoggingFilter, JwtAuthFilter.class);
 
         return http.build();
     }

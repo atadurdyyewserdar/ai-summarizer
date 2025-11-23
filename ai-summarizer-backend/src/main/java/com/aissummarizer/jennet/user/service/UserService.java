@@ -3,6 +3,8 @@ package com.aissummarizer.jennet.user.service;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 
+import java.util.Optional;
+
 /**
  * Defines the business operations related to users.
  * <p>
@@ -72,4 +74,8 @@ public interface UserService {
                              String lastName,
                              String email,
                              String profileImageUrl);
+
+    void saveRefreshToken(String userId, String refreshToken);
+
+    Optional<UserEntity> findByRefreshToken(String refreshToken);
 }

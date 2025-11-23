@@ -33,8 +33,20 @@ public class ApiUsageLogEntity {
     @Column(nullable = false, length = 100)
     private String endpoint;
 
+    /** HTTP method used (GET, POST, PUT, DELETE...). */
+    @Column(nullable = false)
+    private String httpMethod;
+
     @Column(nullable = false)
     private long responseTimeMs;
+
+    /** Size of the request payload in bytes. */
+    @Column(name = "request_size_bytes")
+    private long requestSizeBytes;
+
+    /** Size of the response payload in bytes. */
+    @Column(name = "response_size_bytes")
+    private long responseSizeBytes;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -45,4 +57,16 @@ public class ApiUsageLogEntity {
 
     @Column(columnDefinition = "TEXT")
     private String errorMessage;
+
+    @Column(name = "tokens_used")
+    private Integer tokensUsed;
+
+    /** Timestamp of the request. */
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    /** How long the API call took (in milliseconds). */
+    @Column(name = "processing_time_ms")
+    private long processingTimeMs;
+
 }

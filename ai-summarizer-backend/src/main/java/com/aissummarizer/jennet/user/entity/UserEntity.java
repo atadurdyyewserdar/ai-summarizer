@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.user.entity;
 
+import com.aissummarizer.jennet.apilog.entity.ApiUsageLogEntity;
+import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -143,4 +145,17 @@ public class UserEntity {
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SummarizationEntity> summarizations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<ApiUsageLogEntity> apiUsageLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<DocumentUploadEntity> documentUploads = new ArrayList<>();
+
+    @Column(name = "refresh_token", length = 512)
+    private String refreshToken;
+
+    @Column(name = "refresh_token_expires_at")
+    private LocalDateTime refreshTokenExpiresAt;
+
 }

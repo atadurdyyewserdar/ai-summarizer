@@ -19,7 +19,7 @@ public class DocxDocumentContent implements DocumentContent {
     private final List<String> paragraphs;
     private final List<TableData> tables;
     private final List<ImageData> images;
-    private final SummaryMetadata  metadata;
+    private SummaryMetadata  metadata;
 
     public DocxDocumentContent(List<String> paragraphs, List<TableData> tables, List<ImageData> images) {
         this.paragraphs = Collections.unmodifiableList(new ArrayList<>(paragraphs));

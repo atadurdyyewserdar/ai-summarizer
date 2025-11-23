@@ -1,12 +1,15 @@
 package com.aissummarizer.jennet.document.service;
 
 import com.aissummarizer.jennet.common.exception.DocumentProcessingException;
+import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.document.factory.DocumentExtractorFactory;
+import com.aissummarizer.jennet.summarization.entity.SummaryMetadataEntity;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
 import com.aissummarizer.jennet.document.tools.FileUtils;
 import com.aissummarizer.jennet.common.validator.FileValidator;
 import com.aissummarizer.jennet.summarization.service.AiSummarizer;
+import com.aissummarizer.jennet.user.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +55,10 @@ public class DocumentSummarizerService {
     @Transactional(readOnly = true)
     public SummaryResult summarizeDocument(
             MultipartFile file,
-            SummaryOptions options) throws DocumentProcessingException {
+            SummaryOptions options,
+            String userName,
+            DocumentUploadEntity documentUploadEntity
+            ) throws DocumentProcessingException {
 
         Objects.requireNonNull(file, "file cannot be null");
         Objects.requireNonNull(options, "options cannot be null");
@@ -75,7 +81,9 @@ public class DocumentSummarizerService {
             DocumentContent content = extractWithLogging(extractor, file);
 
             // 4. Summarize with AI
-            SummaryResult result = aiSummarizer.summarize(content, options);
+            SummaryResult result = aiSummarizer.summarize(content, options, userName, documentUploadEntity);
+
+
 
             long duration = System.currentTimeMillis() - startTime;
             logger.info("Successfully processed {} in {}ms", filename, duration);
