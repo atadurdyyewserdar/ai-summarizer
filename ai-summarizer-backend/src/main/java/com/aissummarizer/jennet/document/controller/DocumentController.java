@@ -67,7 +67,7 @@ public class DocumentController {
             @Valid SummaryType type,
             @RequestParam(value = "maxTokens", required = false)
             @Min(100) @Max(10000) Integer maxTokens
-    ) throws InvalidFileException {
+    ) throws InvalidFileException, UnsupportedDocumentTypeException {
 
         log.info("Received summarization request: file={}, type={}",
                 file.getOriginalFilename(), type);
@@ -75,6 +75,7 @@ public class DocumentController {
         fileValidator.validate(file);
 
         DocumentUploadEntity uploadEntity = documentUploadService.uploadDocument(file, userName);
+
         try {
             SummaryOptions.Builder optionsBuilder = SummaryOptions.builder()
                     .type(type);

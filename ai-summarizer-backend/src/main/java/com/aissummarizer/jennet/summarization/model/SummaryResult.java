@@ -2,13 +2,16 @@ package com.aissummarizer.jennet.summarization.model;
 
 import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.document.enums.DocumentType;
+import lombok.Getter;
 
 import java.util.Objects;
 
 /**
  * Immutable summary result
  */
+@Getter
 public final class SummaryResult {
+    // Getters
     private final String summary;
     private final DocumentType documentType;
     private final SummaryType summaryType;
@@ -21,12 +24,6 @@ public final class SummaryResult {
         this.summaryType = Objects.requireNonNull(summaryType, "summaryType cannot be null");
         this.metadata = Objects.requireNonNull(metadata, "metadata cannot be null");
     }
-
-    // Getters
-    public String getSummary() { return summary; }
-    public DocumentType getDocumentType() { return documentType; }
-    public SummaryType getSummaryType() { return summaryType; }
-    public SummaryMetadata getMetadata() { return metadata; }
 
     @Override
     public String toString() {

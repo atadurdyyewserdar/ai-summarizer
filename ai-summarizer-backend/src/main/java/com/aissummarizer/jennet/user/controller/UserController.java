@@ -1,8 +1,10 @@
 package com.aissummarizer.jennet.user.controller;
 
+import com.aissummarizer.jennet.common.model.ApiResponse;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +24,11 @@ public class UserController {
      * The username is extracted from the Authentication object injected by Spring Security after
      * successful JWT validation in JwtAuthFilter.
      *
-     * @param authentication Spring Security authentication context
+     * @param userName is username or email
      * @return User profile response DTO (name, lastname, email, profile image, role, etc.)
      */
     @GetMapping("/profile")
-    public UserProfileResponse getProfile(Authentication authentication) {
-        String username = authentication.getName();
-        return userService.getUserProfile(username);
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(@RequestParam String userName) {
+        return ResponseEntity.ok(ApiResponse.success(userService.getUserProfile(userName)));
     }
 }

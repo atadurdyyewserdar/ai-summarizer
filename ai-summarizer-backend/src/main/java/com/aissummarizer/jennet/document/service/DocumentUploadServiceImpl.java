@@ -1,13 +1,14 @@
 package com.aissummarizer.jennet.document.service;
 
 import com.aissummarizer.jennet.common.exception.InvalidFileException;
-import com.aissummarizer.jennet.common.validator.FileValidator;
+import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeException;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
+import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.document.repository.DocumentUploadRepository;
 import com.aissummarizer.jennet.document.tools.FileUtils;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.user.service.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,15 +25,13 @@ import java.util.UUID;
  * - ensuring uploaded files can be extracted using the supported extractors
  */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class DocumentUploadServiceImpl implements DocumentUploadService {
 
     private final DocumentUploadRepository documentUploadRepository;
-    private final FileUtils fileUtils;
-    private final FileValidator fileValidator;
     private final UserService userService;
     @Override
-    public DocumentUploadEntity uploadDocument(MultipartFile file, String userId) throws InvalidFileException {
+    public DocumentUploadEntity uploadDocument(MultipartFile file, String userName) throws InvalidFileException, UnsupportedDocumentTypeException {
 
         if (file.isEmpty()) {
             throw new InvalidFileException("Uploaded file is empty");
@@ -44,16 +43,16 @@ public class DocumentUploadServiceImpl implements DocumentUploadService {
         }
 
         // Extract file extension
-        String extension = FileUtils.getFileExtension(originalFilename);
+//        String extension = FileUtils.getFileExtension(originalFilename);
 
         // Validate extension (throws if unsupported)
-        FileUtils.getFileExtension(extension);
+        FileUtils.getFileExtension(originalFilename);
 
         // ─────────────────────────────────────────────
         // STORE METADATA IN DATABASE
         // ─────────────────────────────────────────────
 
-        UserEntity user = userService.getById(userId);
+        UserEntity user = userService.getByUsername(userName);
 
         DocumentUploadEntity entity = DocumentUploadEntity.builder()
                 .id(UUID.randomUUID().toString())
@@ -61,15 +60,15 @@ public class DocumentUploadServiceImpl implements DocumentUploadService {
                 .originalFilename(originalFilename)
                 .fileSize(file.getSize())
                 .uploadedAt(LocalDateTime.now())
+                .documentType(DocumentType.fromExtension(FileUtils.getFileExtension(file.getOriginalFilename())))
+                .fileExtension(FileUtils.getFileExtension(file.getOriginalFilename()))
                 .build();
-
-        DocumentUploadEntity saved = documentUploadRepository.save(entity);
 
         // You may store file physically (local or S3)
         // NOT IMPLEMENTED HERE — depends on your chosen storage path.
         // file.transferTo(...)
 
-        return saved;
+        return documentUploadRepository.save(entity);
     }
 
 

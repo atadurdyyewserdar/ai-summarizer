@@ -2,6 +2,7 @@ package com.aissummarizer.jennet.document.service;
 
 
 import com.aissummarizer.jennet.common.exception.InvalidFileException;
+import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeException;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,7 @@ public interface DocumentUploadService {
      * @param userId the user uploading the file
      * @return saved DocumentUploadEntity
      */
-    DocumentUploadEntity uploadDocument(MultipartFile file, String userId) throws InvalidFileException;
+    DocumentUploadEntity uploadDocument(MultipartFile file, String userId) throws InvalidFileException, UnsupportedDocumentTypeException;
 
 
     /**

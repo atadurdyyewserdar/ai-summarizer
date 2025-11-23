@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiUsageLogServiceImpl.class);
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final ApiUsageLogRepository apiUsageLogRepository;
 
     @Override
@@ -49,7 +50,15 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
             long processingTimeMs
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserEntity user = userService.getByUsername(authentication.getName());
+        UserEntity user = null;
+        if (authentication != null && authentication.isAuthenticated() && authentication.getName() != null) {
+            try {
+                user = userRepository.findByUsername(authentication.getName()).orElse(null);
+            } catch (Exception e) {
+                // If user lookup fails, keep user null and continue logging
+                logger.debug("Could not resolve user for authentication name '{}': {}", authentication.getName(), e.getMessage());
+            }
+        }
         ApiUsageLogEntity log = ApiUsageLogEntity.builder()
                 .user(user)
                 .endpoint(endpoint)

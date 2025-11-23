@@ -1,10 +1,13 @@
 package com.aissummarizer.jennet.common.model;
 
 import com.aissummarizer.jennet.common.enums.ErrorCode;
+import lombok.Getter;
 
 import java.util.Objects;
 
+@Getter
 public final class ApiResponse<T> {
+    // Getters
     private final boolean success;
     private final T data;
     private final ErrorInfo error;
@@ -25,26 +28,12 @@ public final class ApiResponse<T> {
         return new ApiResponse<>(false, null, new ErrorInfo(code, message));
     }
 
-    // Getters
-    public boolean isSuccess() { return success; }
-    public T getData() { return data; }
-    public ErrorInfo getError() { return error; }
-    public long getTimestamp() { return timestamp; }
+        public record ErrorInfo(ErrorCode code, String message) {
+            public ErrorInfo(ErrorCode code, String message) {
+                this.code = Objects.requireNonNull(code);
+                this.message = Objects.requireNonNull(message);
+            }
 
-    /**
-     * Error information
-     */
-    public static final class ErrorInfo {
-        private final ErrorCode code;
-        private final String message;
-
-        public ErrorInfo(ErrorCode code, String message) {
-            this.code = Objects.requireNonNull(code);
-            this.message = Objects.requireNonNull(message);
         }
-
-        public ErrorCode getCode() { return code; }
-        public String getMessage() { return message; }
-    }
 }
 

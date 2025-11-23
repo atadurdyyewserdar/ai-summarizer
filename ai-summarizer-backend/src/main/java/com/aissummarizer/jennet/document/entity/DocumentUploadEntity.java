@@ -44,10 +44,6 @@ public class DocumentUploadEntity {
     @Column(name = "original_filename", nullable = false)
     private String originalFilename;
 
-    /** Stored file path or location (disk, S3, etc.). */
-    @Column(name = "stored_file_path", nullable = false)
-    private String storedFilePath;
-
     /** File extension such as txt, pdf, docx, pptx. */
     @Column(name = "file_extension", nullable = false, length = 10)
     private String fileExtension;
