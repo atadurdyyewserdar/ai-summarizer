@@ -81,7 +81,7 @@ public class OpenAiSummarizer implements AiSummarizer {
             // Build metadata model
             SummaryMetadata metadata = buildMetadata(content, startTime);
 
-            UserEntity user = userService.getByUsername(userName);
+            UserEntity user = userService.getByUserName(userName);
 
             // Create and persist summarization first (owner of neither result nor metadata)
             SummarizationEntity summarization = new SummarizationEntity();
@@ -95,9 +95,8 @@ public class OpenAiSummarizer implements AiSummarizer {
             summarization.setCreatedAt(LocalDateTime.now());
 
             summarization = summarizationRepository.save(summarization);
-             optional: summarizationRepository.flush();
+//             optional: summarizationRepository.flush();
 
-            // Create result (owning side for summarization FK)
             SummaryResultEntity result = new SummaryResultEntity();
             result.setId(UUID.randomUUID().toString());
             result.setSummarization(summarization); // owning side set before save
@@ -116,7 +115,6 @@ public class OpenAiSummarizer implements AiSummarizer {
             metadataEntity.setSlideCount(metadata.getSlideCount());
             metadataEntity.setParagraphCount(metadata.getParagraphCount());
             metadataEntity.setTableCount(metadata.getTableCount());
-            // FIXED: use metadata.getProcessingTime() not metadataEntity.getProcessingTime()
             metadataEntity.setProcessingTime(metadata.getProcessingTimeMs());
             metadataEntity.setSummaryResult(result);
             metadataEntity = metadataRepository.save(metadataEntity);
@@ -126,8 +124,6 @@ public class OpenAiSummarizer implements AiSummarizer {
             summarization.setMetadata(metadataEntity);
             summarization.setResult(result);
             summarizationService.saveSummarization(summarization);
-
-//            save(summarization, metadataEntity, result);
 
             return new SummaryResult(
                     summary,

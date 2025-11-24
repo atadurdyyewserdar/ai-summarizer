@@ -29,7 +29,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
     @Override
     public String createResetToken(String username) {
-        UserEntity user = userService.getByUsername(username);
+        UserEntity user = userService.getByUserName(username);
 
         String tokenValue = tokenGenerator.generateToken();
 

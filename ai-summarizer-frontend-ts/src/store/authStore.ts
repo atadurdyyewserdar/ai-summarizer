@@ -18,6 +18,8 @@ interface LoginPayload {
 }
 
 interface RegisterPayload {
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
   password: string;
@@ -37,6 +39,33 @@ interface ChangePasswordPayload {
   newPassword: string;
 }
 
+interface UpdateProfilePayload {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface SummarizationItem {
+  id: string;
+  createdAt: string;
+  inputText: string;
+  summaryText: string;
+  summaryType: string;
+}
+
+export interface ProfileData {
+  id: string;
+  username: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  profileImageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  summarizationHistoryList: SummarizationItem[];
+}
+
 interface AuthState {
   user: User | null;
   accessToken: string | null;
@@ -49,12 +78,19 @@ interface AuthState {
   loading: boolean;
   error: string | null;
 
+  // profile
+  profile: ProfileData | null;
+  loadingProfile: boolean;
+  profileError: string | null;
+
   // actions
   login: (data: LoginPayload) => Promise<void>;
   register: (data: RegisterPayload) => Promise<void>;
   forgotPassword: (data: ForgotPasswordPayload) => Promise<void>;
   resetPassword: (data: ResetPasswordPayload) => Promise<void>;
   changePassword: (data: ChangePasswordPayload) => Promise<void>;
+  fetchProfile: () => Promise<void>;
+  updateProfile: (data: UpdateProfilePayload) => Promise<void>;
 
   logout: (opts?: { sessionExpired?: boolean }) => void;
   setTokens: (accessToken: string | null, refreshToken: string | null) => void;
@@ -68,6 +104,8 @@ const initialState: Omit<
   AuthState,
   | "login"
   | "register"
+  | "fetchProfile"
+  | "updateProfile"
   | "forgotPassword"
   | "resetPassword"
   | "changePassword"
@@ -86,9 +124,12 @@ const initialState: Omit<
   sessionExpired: false,
   loading: false,
   error: null,
+  profile: null,
+  loadingProfile: false,
+  profileError: null,
 };
 
-type AuthResponse = { user: User; accessToken: string; refreshToken: string };
+type AuthResponse = { profile: User; accessToken: string; refreshToken: string };
 
 const getErrorMessage = (err: unknown, fallback: string) => {
   const e = err as any;
@@ -112,15 +153,23 @@ export const useAuthStore = create<AuthState>()(
 
           const res = await apiClient.post<AuthResponse>("/auth/login", data);
           const resData = res.data;
+            console.log("Login response data:", resData);
+          // Ensure username is preserved from login payload if not in response
+          const user = {
+            ...resData.profile,
+            username: resData.profile.username || data.username,
+          };
+
+          console.log("Derived user object:", user);
 
           set({
-            user: resData.user,
+            user,
             accessToken: resData.accessToken,
             refreshToken: resData.refreshToken,
             isAuthenticated: isAuthenticatedFromState({
               accessToken: resData.accessToken,
               refreshToken: resData.refreshToken,
-              user: resData.user,
+              user,
             }),
             loading: false,
             error: null,
@@ -137,25 +186,76 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true, error: null });
 
-          const res = await apiClient.post<AuthResponse>("/auth/register", data);
-          const resData = res.data;
+          await apiClient.post("/auth/register", data);
 
-          set({
-            user: resData.user,
-            accessToken: resData.accessToken,
-            refreshToken: resData.refreshToken,
-            isAuthenticated: isAuthenticatedFromState({
-              accessToken: resData.accessToken,
-              refreshToken: resData.refreshToken,
-              user: resData.user,
-            }),
-            loading: false,
-            error: null,
-            sessionExpired: false,
-          });
+          set({ loading: false, error: null });
         } catch (err: any) {
           const message = getErrorMessage(err, "Registration failed. Please try again.");
           set({ loading: false, error: message });
+          throw err;
+        }
+      },
+
+      async fetchProfile() {
+        return new Promise<void>((resolve, reject) => {
+          const performFetch = async (state?: AuthState) => {
+            try {
+              set({ loadingProfile: true, profileError: null });
+              const finalState = state || get();
+              const user = finalState.user;
+
+              if (!user?.username) {
+                throw new Error("No username available");
+              }
+              const res = await apiClient.get(
+                `/user/profile?username=${user.username}`
+              );
+              const payload =
+                res.data && res.data.data ? res.data.data : res.data;
+              set({ profile: payload as ProfileData, loadingProfile: false });
+              console.log("Fetched profile:", payload);
+              resolve();
+            } catch (err: any) {
+              const message =
+                err?.response?.data?.message ||
+                err?.message ||
+                "Could not load profile";
+              set({ profileError: message, loadingProfile: false });
+              reject(err);
+            }
+          };
+
+          if (useAuthStore.persist.hasHydrated()) {
+            performFetch();
+          } else {
+            const unsub = useAuthStore.persist.onFinishHydration((state) => {
+              performFetch(state as AuthState);
+              unsub(); // Unsubscribe to avoid memory leaks
+            });
+          }
+        });
+      },
+
+      async updateProfile(data) {
+        try {
+          set({ loadingProfile: true, profileError: null });
+          const user = get().user;
+          data.username = user?.username || data.username;
+          if (!user?.username) {
+            throw new Error("User not authenticated");
+          }
+          const res = await apiClient.post(
+            `/user/update-profile`,
+            data
+          );
+          const payload = (res.data && res.data.data) ? res.data.data : res.data;
+          set({ profile: payload as ProfileData, loadingProfile: false });
+        } catch (err: any) {
+          const message =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Could not update profile";
+          set({ profileError: message, loadingProfile: false });
           throw err;
         }
       },

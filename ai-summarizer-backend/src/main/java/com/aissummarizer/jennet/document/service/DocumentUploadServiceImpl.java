@@ -52,7 +52,7 @@ public class DocumentUploadServiceImpl implements DocumentUploadService {
         // STORE METADATA IN DATABASE
         // ─────────────────────────────────────────────
 
-        UserEntity user = userService.getByUsername(userName);
+        UserEntity user = userService.getByUserName(userName);
 
         DocumentUploadEntity entity = DocumentUploadEntity.builder()
                 .id(UUID.randomUUID().toString())

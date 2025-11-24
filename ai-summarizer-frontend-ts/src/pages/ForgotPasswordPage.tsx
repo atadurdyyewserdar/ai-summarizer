@@ -2,7 +2,7 @@ import { type FormEvent, useState } from "react";
 import { useAuthStore } from "../store/authStore";
 
 export const ForgotPasswordPage = () => {
-  const [username, setUsername] = useState("");
+  const [username, setusername] = useState("");
   const [success, setSuccess] = useState(false);
 
   const { forgotPassword, loading, error, clearError } = useAuthStore();
@@ -10,7 +10,7 @@ export const ForgotPasswordPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await forgotPassword({ username });
+      await forgotPassword({ username: username });
       clearError();
       setSuccess(true);
     } catch {}
@@ -39,11 +39,11 @@ export const ForgotPasswordPage = () => {
 
           <form onSubmit={handleSubmit} className="w-full">
             <input
-              placeholder="Username"
+              placeholder="username"
               type="text"
               className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setusername(e.target.value)}
             />
 
             <div className="w-full m-3 text-right">

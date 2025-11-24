@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 /**
  * Concrete implementation of authentication operations.
  * <p>
@@ -42,13 +44,16 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        UserEntity user = userService.getByUsername(request.username());
+        UserEntity user = userService.getByUserName(request.username());
 
         // Generate a signed JWT for the successfully authenticated user.
         String accessToken = jwtService.generateAccessToken(auth.getName());
 
         // Generate a signed JWT refresh token for the successfully authenticated user.
         String refreshToken = jwtService.generateRefreshToken(request.username());
+
+        System.out.println("-=======================================");
+        System.out.println(UserProfileDto.from(user).toString());
         return new AuthResponse(
                 accessToken,
                 refreshToken,
@@ -62,11 +67,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(RegisterRequest request) {
         userService.registerUser(
-                request.username(),
-                request.password(),
-                request.firstName(),
-                request.lastName(),
-                request.email()
+                request
         );
     }
 
@@ -93,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse refresh(String refreshToken) {
         // Example logic: validate refresh token and issue new tokens
         String username = jwtService.validateAndExtractUsernameFromRefreshToken(refreshToken);
-        UserEntity user = userService.getByUsername(username);
+        UserEntity user = userService.getByUserName(username);
 
         String newAccessToken = jwtService.generateAccessToken(username);
         String newRefreshToken = jwtService.generateRefreshToken(username);

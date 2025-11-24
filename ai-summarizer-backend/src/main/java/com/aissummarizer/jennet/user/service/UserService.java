@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.user.service;
 
+import com.aissummarizer.jennet.auth.dto.RegisterRequest;
+import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 
@@ -20,11 +22,7 @@ public interface UserService {
      * @param rawPassword plain text password (will be encoded)
      * @return persisted user
      */
-    UserEntity registerUser(String username,
-                            String rawPassword,
-                            String firstName,
-                            String lastName,
-                            String email);
+    UserEntity registerUser(RegisterRequest registerRequest);
 
     /**
      * Retrieves a user by username.
@@ -32,7 +30,7 @@ public interface UserService {
      * @param username username to look up
      * @return the matching UserEntity
      */
-    UserEntity getByUsername(String username);
+    UserEntity getByUserName(String username);
 
     /**
      * Retrieves a user by ID.
@@ -61,19 +59,8 @@ public interface UserService {
 
     /**
      * Updates user's profile info (name, lastname, image, email).
-     *
-     * @param userId user ID
-     * @param firstName new firstname
-     * @param lastName new lastname
-     * @param email new email
-     * @param profileImageUrl new profile image URL
-     * @return updated UserEntity
      */
-    UserEntity updateProfile(String userId,
-                             String firstName,
-                             String lastName,
-                             String email,
-                             String profileImageUrl);
+    String updateProfile(UserProfileDto userProfileDto);
 
     void saveRefreshToken(String userId, String refreshToken);
 

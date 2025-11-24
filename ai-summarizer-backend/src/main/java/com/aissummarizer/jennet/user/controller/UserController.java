@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.user.controller;
 
 import com.aissummarizer.jennet.common.model.ApiResponse;
+import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,16 @@ public class UserController {
      * The username is extracted from the Authentication object injected by Spring Security after
      * successful JWT validation in JwtAuthFilter.
      *
-     * @param userName is username or email
+     * @param username is username or email
      * @return User profile response DTO (name, lastname, email, profile image, role, etc.)
      */
     @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(@RequestParam String userName) {
-        return ResponseEntity.ok(ApiResponse.success(userService.getUserProfile(userName)));
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(@RequestParam String username) {
+        return ResponseEntity.ok(ApiResponse.success(userService.getUserProfile(username)));
+    }
+
+    @PostMapping("/update-profile")
+    public ResponseEntity<String> updateProfile(@RequestBody UserProfileDto userProfileDto) {
+        return ResponseEntity.ok(userService.updateProfile(userProfileDto));
     }
 }

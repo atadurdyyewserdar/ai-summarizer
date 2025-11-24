@@ -49,7 +49,6 @@ public class DocumentExtractorFactory {
      */
     public DocumentExtractor<?> getExtractor(String filename)
             throws UnsupportedDocumentTypeException {
-
         String extension = FileUtils.getFileExtension(filename);
         logger.info(("extension is: " + extension));
         DocumentType type = DocumentType.fromExtension(extension);
@@ -58,7 +57,6 @@ public class DocumentExtractorFactory {
         if (extractor == null) {
             throw new UnsupportedDocumentTypeException(extension);
         }
-
         return extractor;
     }
 

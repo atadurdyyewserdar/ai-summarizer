@@ -106,22 +106,22 @@ public class UserEntity {
         if (id == null) id = UUID.randomUUID().toString();
     }
 
-    @Column(nullable = false, unique = true, length = 120)
-    private String username;
+    @Column(name = "user_name", nullable = false, unique = true, length = 120)
+    private String userName;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 180)
+    @Column(name = "email", nullable = false, unique = true, length = 180)
     private String email;
 
     @Column(nullable = false)
     private String role; // e.g. ROLE_USER, ROLE_ADMIN
 
-    @Column(length = 60)
+    @Column(name = "first_name", length = 60)
     private String firstName;
 
-    @Column(length = 60)
+    @Column(name = "last_name", length = 60)
     private String lastName;
 
     @Column(length = 500)
@@ -133,12 +133,6 @@ public class UserEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-//    private List<ApiUsageLogEntity> apiUsageLogs = new ArrayList<>();
-
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-//    private List<DocumentUploadEntity> documentUploads = new ArrayList<>();
 
     @Column(name = "refresh_token", length = 512)
     private String refreshToken;

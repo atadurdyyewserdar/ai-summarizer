@@ -53,7 +53,7 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
         UserEntity user = null;
         if (authentication != null && authentication.isAuthenticated() && authentication.getName() != null) {
             try {
-                user = userRepository.findByUsername(authentication.getName()).orElse(null);
+                user = userRepository.findByUserName(authentication.getName()).orElse(null);
             } catch (Exception e) {
                 // If user lookup fails, keep user null and continue logging
                 logger.debug("Could not resolve user for authentication name '{}': {}", authentication.getName(), e.getMessage());

@@ -1,5 +1,7 @@
 package com.aissummarizer.jennet.document.tools;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
  * File utility methods
  */
@@ -19,13 +21,11 @@ public final class FileUtils {
         if (filename == null || filename.isBlank()) {
             throw new IllegalArgumentException("Filename cannot be null or empty");
         }
-
-        int lastDot = filename.lastIndexOf('.');
-        if (lastDot == -1 || lastDot == filename.length() - 1) {
+        String extension = FilenameUtils.getExtension(filename);
+        if (extension.isEmpty()) {
             throw new IllegalArgumentException("Filename has no extension: " + filename);
         }
-
-        return filename.substring(lastDot + 1).toLowerCase();
+        return extension;
     }
 
     /**

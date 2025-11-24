@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
 function SignUpPage() {
-  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -22,9 +23,15 @@ function SignUpPage() {
         return;
       }
 
-      await register({ username, email, password });
+      await register({
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+      });
       clearError();
-      navigate("/", { replace: true });
+      navigate("/signin", { replace: true });
     } catch {}
   };
 
@@ -32,12 +39,20 @@ function SignUpPage() {
     <>
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-4">
-          <div className="title text-xl font-mono m-3 text-center">Please, fill in forms</div>
+          <div className="title text-xl font-mono m-3 text-center">
+            Please, fill in forms
+          </div>
 
           {(localError || error) && (
             <div className="w-full m-3 text-center text-sm text-red-700 bg-red-100 border border-red-300 rounded p-2">
               {localError || error}
-              <button onClick={() => { setLocalError(null); clearError(); }} className="ml-3 underline">
+              <button
+                onClick={() => {
+                  setLocalError(null);
+                  clearError();
+                }}
+                className="ml-3 underline"
+              >
                 Clear
               </button>
             </div>
@@ -45,9 +60,9 @@ function SignUpPage() {
 
           <form onSubmit={handleSubmit} className="w-full">
             <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="First Name"
               type="text"
               className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
             />
@@ -55,6 +70,13 @@ function SignUpPage() {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Last Name"
+              type="text"
+              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
+            />
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
               type="text"
               className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
             />
@@ -91,7 +113,9 @@ function SignUpPage() {
           </form>
 
           <div className="font-mono text-left m-3 w-full p-1">
-            <a className="underline" href="http://localhost:5173/signin">I already have an account</a>
+            <Link className="underline" to="/signin">
+              I already have an account
+            </Link>
           </div>
         </div>
       </div>

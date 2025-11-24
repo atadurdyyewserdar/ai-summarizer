@@ -1,16 +1,17 @@
 package com.aissummarizer.jennet.user.service;
 
+import com.aissummarizer.jennet.auth.dto.RegisterRequest;
 import com.aissummarizer.jennet.common.exception.BadRequestException;
 import com.aissummarizer.jennet.common.exception.NotFoundException;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
 import com.aissummarizer.jennet.summarization.service.SummarizationService;
+import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileResponse getUserProfile(String userName) {
 
         // Fetch user
-        UserEntity user = getByUsername(userName);
+        UserEntity user = getByUserName(userName);
 
         // Fetch summarization history belonging to this user
         List<SummarizationEntity> history =
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
         // Build final profile response
         return new UserProfileResponse(
                 user.getId(),
-                user.getUsername(),
+                user.getUserName(),
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
@@ -80,26 +81,22 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserEntity registerUser(String username,
-                                   String rawPassword,
-                                   String email,
-                                   String firstName,
-                                   String lastName) {
+    public UserEntity registerUser(RegisterRequest registerRequest) {
 
-        userRepository.findByUsername(username).ifPresent(u -> {
+        userRepository.findByUserName(registerRequest.username()).ifPresent(u -> {
             throw new BadRequestException("Username already exists");
         });
 
-        userRepository.findByEmail(email).ifPresent(u -> {
+        userRepository.findByEmail(registerRequest.email()).ifPresent(u -> {
             throw new BadRequestException("Email already registered");
         });
 
         UserEntity user = UserEntity.builder()
-                .username(username)
-                .password(encoder.encode(rawPassword))
-                .email(email)
-                .firstName(firstName)
-                .lastName(lastName)
+                .userName(registerRequest.username())
+                .password(encoder.encode(registerRequest.password()))
+                .email(registerRequest.email())
+                .firstName(registerRequest.firstName())
+                .lastName(registerRequest.lastName())
                 .role("ROLE_USER")
                 .profileImageUrl(null)
                 .build();
@@ -108,8 +105,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getByUsername(String username) {
-        return userRepository.findByUsername(username)
+    public UserEntity getByUserName(String username) {
+        return userRepository.findByUserName(username)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
@@ -127,27 +124,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity updateProfile(String userId,
-                                    String firstName,
-                                    String lastName,
-                                    String email,
-                                    String profileImageUrl) {
+    public String updateProfile(UserProfileDto userProfileDto) {
 
-        UserEntity user = getById(userId);
+        UserEntity user = getByUserName(userProfileDto.username());
 
         // prevent email conflict
-        userRepository.findByEmail(email).ifPresent(existing -> {
-            if (!existing.getId().equals(userId)) {
-                throw new BadRequestException("Email already in use.");
-            }
-        });
+        if (!userProfileDto.email().isBlank()) {
+            userRepository.findByEmail(userProfileDto.email()).ifPresent(existing -> {
+                if (!existing.getUserName().equals(userProfileDto.username())) {
+                    throw new BadRequestException("Email already in use.");
+                }
+            });
+        }
 
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-        user.setProfileImageUrl(profileImageUrl);
-
-        return userRepository.save(user);
+        if (!userProfileDto.firstName().isBlank()) {
+            user.setFirstName(userProfileDto.firstName());
+        }
+        if (!userProfileDto.lastName().isBlank()) {
+            user.setLastName(userProfileDto.lastName());
+        }
+        if (!userProfileDto.email().isBlank()) {
+            user.setEmail(userProfileDto.email());
+        }
+        userRepository.save(user);
+        return "Success";
     }
 
     @Override

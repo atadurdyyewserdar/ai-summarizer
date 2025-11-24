@@ -1,0 +1,24 @@
+{
+"success": true,
+    "data": {
+        "id": "",
+        "username": "",
+        "email": "",
+        "firstname": "",
+        "lastname": "",
+        "profileImageUrl": null,
+        "createdAt": "",
+        "updatedAt": "",
+        "summarizationHistoryList": [
+            {
+                "id": "",
+                "createdAt": "",
+                "inputText": "",
+                "summaryText": "",
+                "summaryType": ""
+            }
+        ]
+    },
+    "error": null,
+    "timestamp":""
+}

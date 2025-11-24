@@ -21,7 +21,7 @@ public record UserProfileDto(
     public static UserProfileDto from(UserEntity user) {
         return new UserProfileDto(
                 user.getId(),
-                user.getUsername(),
+                user.getUserName(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
