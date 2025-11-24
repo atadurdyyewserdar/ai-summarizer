@@ -24,8 +24,8 @@ public class SummaryResultEntity {
         if (id == null) id = UUID.randomUUID().toString();
     }
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "summarization_id", nullable = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "summarization_id", nullable = false, unique = true)
     private SummarizationEntity summarization;
 
     @Column(columnDefinition = "TEXT", nullable = false)
@@ -42,6 +42,6 @@ public class SummaryResultEntity {
     /**
      * One result → one metadata record.
      */
-    @OneToOne(mappedBy = "summaryResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "summaryResult", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private SummaryMetadataEntity metadata;
 }

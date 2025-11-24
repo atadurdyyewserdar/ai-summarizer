@@ -9,6 +9,8 @@ import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import java.util.Optional;
  * <p>
  * Handles high-level user operations such as registration and password updates.
  */
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -46,6 +49,9 @@ public class UserServiceImpl implements UserService {
         // Fetch summarization history belonging to this user
         List<SummarizationEntity> history =
                 summarizationService.findByUserId(user.getId());
+
+        System.out.println("SUMMARIZATION HISTORY:");
+        System.out.println(history.toString());
 
         // Convert each entity → DTO (never expose entities directly)
         List<UserSummarizationHistoryResponse> historyDtos = history.stream()

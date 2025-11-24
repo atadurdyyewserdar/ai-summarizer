@@ -7,6 +7,7 @@ import com.aissummarizer.jennet.document.service.DocumentContent;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
 import com.aissummarizer.jennet.summarization.entity.SummaryMetadataEntity;
 import com.aissummarizer.jennet.summarization.entity.SummaryResultEntity;
+import com.aissummarizer.jennet.summarization.model.SummaryClasses;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
 import com.aissummarizer.jennet.summarization.model.SummaryMetadata;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
@@ -15,6 +16,7 @@ import com.aissummarizer.jennet.document.model.DocxDocumentContent;
 import com.aissummarizer.jennet.document.dto.ImageData;
 import com.aissummarizer.jennet.document.model.PptxDocumentContent;
 import com.aissummarizer.jennet.document.model.TxtDocumentContent;
+import com.aissummarizer.jennet.summarization.repository.SummarizationRepository;
 import com.aissummarizer.jennet.summarization.repository.SummaryMetadataRepository;
 import com.aissummarizer.jennet.summarization.repository.SummaryResultRepository;
 import com.aissummarizer.jennet.user.entity.UserEntity;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,13 +46,14 @@ public class OpenAiSummarizer implements AiSummarizer {
     private final SummaryMetadataRepository metadataRepository;
     private final SummaryResultRepository summaryResultRepository;
     private final UserService userService;
+    private final SummarizationRepository summarizationRepository;
 
     @Autowired
     public OpenAiSummarizer(
             OpenAIClient client,
             AiSummarizerConfig config,
             PromptBuilder promptBuilder,
-            SummarizationServiceImpl service, SummaryMetadataRepository metadataRepository, SummaryResultRepository summaryResultRepository, UserService userService) {
+            SummarizationServiceImpl service, SummaryMetadataRepository metadataRepository, SummaryResultRepository summaryResultRepository, UserService userService, SummarizationRepository summarizationRepository) {
         this.client = client;
         this.config = config;
         this.promptBuilder = promptBuilder;
@@ -57,6 +61,7 @@ public class OpenAiSummarizer implements AiSummarizer {
         this.metadataRepository = metadataRepository;
         this.summaryResultRepository = summaryResultRepository;
         this.userService = userService;
+        this.summarizationRepository = summarizationRepository;
     }
 
     @Override
@@ -73,11 +78,12 @@ public class OpenAiSummarizer implements AiSummarizer {
             // Call OpenAI API
             String summary = callOpenAi(contentParts, options);
 
-            // Build metadata
+            // Build metadata model
             SummaryMetadata metadata = buildMetadata(content, startTime);
 
             UserEntity user = userService.getByUsername(userName);
 
+            // Create and persist summarization first (owner of neither result nor metadata)
             SummarizationEntity summarization = new SummarizationEntity();
             summarization.setId(UUID.randomUUID().toString());
             summarization.setUser(user);
@@ -88,16 +94,20 @@ public class OpenAiSummarizer implements AiSummarizer {
             summarization.setSummaryType(options.getType());
             summarization.setCreatedAt(LocalDateTime.now());
 
-            summarization = summarizationService.saveSummarization(summarization);
+            summarization = summarizationRepository.save(summarization);
+             optional: summarizationRepository.flush();
 
+            // Create result (owning side for summarization FK)
             SummaryResultEntity result = new SummaryResultEntity();
             result.setId(UUID.randomUUID().toString());
-            result.setSummarization(summarization);
+            result.setSummarization(summarization); // owning side set before save
             result.setSummary(summary);
             result.setDocumentType(content.getType());
             result.setSummaryType(options.getType());
             result = summaryResultRepository.save(result);
+//             optional: summaryResultRepository.flush();
 
+            // Create metadata (owning side for both summary_result_id and summarization_id)
             SummaryMetadataEntity metadataEntity = new SummaryMetadataEntity();
             metadataEntity.setId(UUID.randomUUID().toString());
             metadataEntity.setSummarization(summarization);
@@ -106,14 +116,18 @@ public class OpenAiSummarizer implements AiSummarizer {
             metadataEntity.setSlideCount(metadata.getSlideCount());
             metadataEntity.setParagraphCount(metadata.getParagraphCount());
             metadataEntity.setTableCount(metadata.getTableCount());
-            metadataEntity.setProcessingTime(metadataEntity.getProcessingTime());
+            // FIXED: use metadata.getProcessingTime() not metadataEntity.getProcessingTime()
+            metadataEntity.setProcessingTime(metadata.getProcessingTimeMs());
             metadataEntity.setSummaryResult(result);
             metadataEntity = metadataRepository.save(metadataEntity);
+//             optional: metadataRepository.flush();
 
+            // update inverse sides in memory for consistency
             summarization.setMetadata(metadataEntity);
             summarization.setResult(result);
             summarizationService.saveSummarization(summarization);
 
+//            save(summarization, metadataEntity, result);
 
             return new SummaryResult(
                     summary,
@@ -126,6 +140,12 @@ public class OpenAiSummarizer implements AiSummarizer {
             logger.error("Failed to summarize document", e);
             throw new AiSummarizationException("AI summarization failed", e);
         }
+    }
+
+    private void save(SummarizationEntity summarization, SummaryMetadataEntity metadata, SummaryResultEntity summaryResultEntity) {
+        summarizationService.saveSummarization(summarization);
+        metadataRepository.save(metadata);
+        summaryResultRepository.save(summaryResultEntity);
     }
 
     private List<ChatCompletionContentPart> createContentParts(
@@ -176,7 +196,7 @@ public class OpenAiSummarizer implements AiSummarizer {
                 .build();
 
         ChatCompletion completion = client.chat().completions().create(params);
-        return completion.choices().getFirst().message().content().orElse("");
+        return completion.choices().getLast().message().content().orElse("");
     }
 
     private SummaryMetadata buildMetadata(DocumentContent content, long startTime) {

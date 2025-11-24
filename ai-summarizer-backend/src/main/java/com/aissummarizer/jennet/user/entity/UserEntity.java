@@ -82,15 +82,9 @@ import java.time.LocalDateTime;
 //    private LocalDateTime updatedAt;
 //}
 
-
-import jakarta.persistence.*;
-import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -140,17 +134,11 @@ public class UserEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    /**
-     * One user → many summarizations.
-     */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SummarizationEntity> summarizations = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+//    private List<ApiUsageLogEntity> apiUsageLogs = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<ApiUsageLogEntity> apiUsageLogs = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<DocumentUploadEntity> documentUploads = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+//    private List<DocumentUploadEntity> documentUploads = new ArrayList<>();
 
     @Column(name = "refresh_token", length = 512)
     private String refreshToken;

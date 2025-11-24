@@ -68,5 +68,4 @@ public class ApiUsageLogEntity {
     /** How long the API call took (in milliseconds). */
     @Column(name = "processing_time_ms")
     private long processingTimeMs;
-
 }

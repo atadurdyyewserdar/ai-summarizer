@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface SummarizationRepository extends JpaRepository<SummarizationEntity, String> {
-
     List<SummarizationEntity> findByUserId(String userId);
     List<SummarizationEntity> findByUserIdOrderByCreatedAtDesc(String userId);
 }

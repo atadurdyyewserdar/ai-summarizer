@@ -22,11 +22,11 @@ public class SummaryMetadataEntity {
         if (id == null) id = UUID.randomUUID().toString();
     }
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "summary_result_id", nullable = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "summary_result_id", nullable = false, unique = true)
     private SummaryResultEntity summaryResult;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "summarization_id", nullable = false, unique = true)
     private SummarizationEntity summarization;
 

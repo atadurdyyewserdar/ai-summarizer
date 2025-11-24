@@ -82,6 +82,6 @@ public class SummarizationServiceImpl implements SummarizationService {
 
     @Override
     public List<SummarizationEntity> findByUserId(String userId) {
-        return summarizationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        return summarizationRepository.findByUserId(userId);
     }
 }

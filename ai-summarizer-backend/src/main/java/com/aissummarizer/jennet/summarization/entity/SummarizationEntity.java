@@ -29,33 +29,30 @@ public class SummarizationEntity {
         if (id == null) id = UUID.randomUUID().toString();
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "input_text", columnDefinition = "text", nullable = false)
     private String inputText;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "timestamp with time zone")
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "summary_type", nullable = false, length = 30)
     private SummaryType summaryType;
 
     /**
      * One summarization → one result.
      */
-    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private SummaryResultEntity result;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "document_upload_id")
     private DocumentUploadEntity documentUpload;
-
-    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true)
-    private SummaryMetadataEntity metadata;
 
     @Column(name = "summary_text", columnDefinition = "text")
     private String summaryText;
@@ -63,5 +60,8 @@ public class SummarizationEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = 20, nullable = false)
     private DocumentType documentType;
-    
+
+    @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private SummaryMetadataEntity metadata;
+
 }

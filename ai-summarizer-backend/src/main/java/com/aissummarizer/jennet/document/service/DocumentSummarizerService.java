@@ -52,7 +52,6 @@ public class DocumentSummarizerService {
      * @return Summary result
      * @throws DocumentProcessingException if processing fails
      */
-    @Transactional(readOnly = true)
     public SummaryResult summarizeDocument(
             MultipartFile file,
             SummaryOptions options,
@@ -82,8 +81,6 @@ public class DocumentSummarizerService {
 
             // 4. Summarize with AI
             SummaryResult result = aiSummarizer.summarize(content, options, userName, documentUploadEntity);
-
-
 
             long duration = System.currentTimeMillis() - startTime;
             logger.info("Successfully processed {} in {}ms", filename, duration);
