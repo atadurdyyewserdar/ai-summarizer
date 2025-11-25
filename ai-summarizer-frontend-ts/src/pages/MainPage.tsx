@@ -97,27 +97,27 @@ function MainPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex justify-center pt-8">
         <div className="w-full max-w-3xl p-4">
-          <div className="title text-3xl font-mono m-5 text-center">
+          <div className="title text-3xl font-mono mb-5 text-center">
             Hello. Welcome to AI Summarizer
           </div>
 
           {!showResult && (
             <>
-              <div className="m-5 bg-gray-200 rounded-lg p-4 flex flex-col items-center justify-center border-2 border-dashed border-gray-400">
+              <div className="mb-5 bg-gray-200 rounded-lg p-4 flex flex-col items-center justify-center border-2 border-dashed border-gray-400">
                 <div className="text-left text-lg p-4">
                   {selectedFile ? selectedFile.name : "Drag or click to upload file"}
                 </div>
                 <input type="file" className="absolute opacity-0 cursor-pointer" onChange={handleFileChange} />
               </div>
 
-              <div className="flex flex-row items-start gap-8 m-5">
+              <div className="flex flex-row items-start gap-8 mb-5">
                 <div className="flex flex-col flex-1 relative" ref={dropdownRef}>
                   <label className="mb-2 font-mono text-lg">Summary Type</label>
                   <button
                     type="button"
-                    className="border-2 border-gray-600 rounded px-4 py-2 text-base bg-gray-100 focus:outline-none focus:border-gray-800 shadow-lg w-full flex items-center justify-between cursor-pointer"
+                    className="border-2 border-gray-600 rounded px-4 py-4 text-base bg-gray-100 focus:outline-none focus:border-gray-800 shadow-lg w-full flex items-center justify-between cursor-pointer"
                     onClick={() => setDropdownOpen((open) => !open)}
                   >
                     <span>{summaryType}</span>
@@ -126,11 +126,11 @@ function MainPage() {
                     </svg>
                   </button>
                   {dropdownOpen && (
-                    <div className="absolute left-0 right-0 mt-20 bg-white border border-gray-400 rounded-xl shadow-2xl z-50 py-2 transition-all duration-150">
+                    <div className="absolute left-0 right-0 mt-24 bg-white border border-gray-400 rounded-lg shadow-2xl z-50 py-2 transition-all duration-150">
                       {SUMMARY_OPTIONS.map(option => (
                         <button
                           key={option}
-                          className={`block w-full text-left px-5 py-2 text-base rounded-lg transition-colors duration-100 ${option === summaryType ? 'bg-gray-200 font-semibold text-gray-900' : 'text-gray-700'} hover:bg-gray-100`}
+                          className={`block w-full text-left px-5 py-3 text-base rounded-md transition-colors duration-100 ${option === summaryType ? 'bg-gray-200 font-semibold text-gray-900' : 'text-gray-700'} hover:bg-gray-100`}
                           onClick={() => handleDropdownSelect(option)}
                         >
                           {option}
@@ -152,13 +152,13 @@ function MainPage() {
                 )}
               </div>
 
-              <div className="title text-3xl font-mono m-5 text-center">or</div>
+              <div className="title text-3xl font-mono mb-5 text-center">or</div>
 
-              <div className="text-container m-5">
+              <div className="text-container mb-5">
                 <textarea placeholder="Paste your text here to summarize..." className="min-h-32 p-4 w-full border-2 border-gray-400 focus:border-2 focus:border-blue-200 rounded-lg" />
               </div>
 
-              <div className="text-right p-0 m-5">
+              <div className="text-right p-0 mb-5">
                 <button
                   className="cursor-pointer m-0 p-0 border-2 border-black text-black bg-white-500 hover:bg-black hover:text-white py-2 px-4 rounded"
                   onClick={handleSubmit}

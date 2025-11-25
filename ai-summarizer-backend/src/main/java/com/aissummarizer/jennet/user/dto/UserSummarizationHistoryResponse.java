@@ -18,6 +18,8 @@ public record UserSummarizationHistoryResponse(
         LocalDateTime createdAt,
         String inputText,
         String summaryText,
-        String summaryType
+        String summaryType,
+        String documentType,
+        String fileName
 ) {
 }

@@ -34,21 +34,22 @@ export const Navbar = () => {
   }, [dropdownOpen]);
 
   return (
-    <nav className="container mx-auto p-4 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="title text-xl font-mono">AI Summarizer</div>
-      </div>
+    <nav className="w-full p-4 bg-black rounded-b shadow">
+      <div className="flex items-center justify-between" style={{marginLeft: 'auto', marginRight: 'auto', maxWidth: '1200px'}}>
+        <div className="flex items-center gap-4">
+          <div className="title text-xl font-mono text-white">AI Summarizer</div>
+        </div>
 
-      <div className="flex items-center">
+        <div className="flex items-center">
         {isAuthenticated ? (
           <div className="flex items-center relative" ref={dropdownRef}>
-            <span className="text-sm mr-4">Signed in as <span className="font-semibold">{user?.username}</span></span>
+            <span className="text-sm mr-4 text-white">Signed in as <span className="font-semibold text-yellow-300">{user?.username}</span></span>
             <button
-              className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center focus:outline-none border-2 border-gray-600 hover:border-gray-800 relative"
+              className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center focus:outline-none border-2 border-gray-400 hover:border-yellow-300 relative"
               onClick={() => setDropdownOpen((open) => !open)}
             >
               <svg
-                className="w-7 h-7 text-gray-700"
+                className="w-7 h-7 text-yellow-300"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -57,16 +58,16 @@ export const Navbar = () => {
               </svg>
             </button>
             {dropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-300 rounded shadow-lg z-50">
+              <div className="absolute right-0 top-full mt-2 w-40 bg-gray-900 border border-gray-700 rounded shadow-lg z-50">
                 <button
                   onClick={handleProfile}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
                 >
                   My profile
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t border-gray-200"
+                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800 border-t border-gray-700"
                 >
                   Logout
                 </button>
@@ -77,7 +78,7 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Link
               to="/signin"
-              className="mx-3 flex items-center justify-center hover:border-gray-800 text-center text-sm align-center cursor-pointer border-2 border-gray-600 text-black bg-white-500 hover:bg-gray-800 hover:text-white h-10 px-5 rounded"
+              className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
               style={{ minWidth: 90 }}
             >
               Sign in
@@ -85,13 +86,14 @@ export const Navbar = () => {
 
             <Link
               to="/signup"
-              className="mx-3 flex items-center justify-center hover:border-gray-800 text-center text-sm align-center cursor-pointer border-2 border-gray-600 text-black bg-white-500 hover:bg-gray-800 hover:text-white h-10 px-5 rounded"
+              className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
               style={{ minWidth: 90 }}
             >
               Sign up
             </Link>
           </div>
         )}
+      </div>
       </div>
     </nav>
   );

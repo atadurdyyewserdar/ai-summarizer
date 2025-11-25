@@ -61,7 +61,9 @@ public class UserServiceImpl implements UserService {
                         h.getCreatedAt(),
                         h.getInputText(),
                         h.getResult().getSummary(),
-                        h.getSummaryType().toString()
+                        h.getSummaryType().toString(),
+                        h.getDocumentType().getExtension(),
+                        h.getDocumentUpload().getOriginalFilename()
                 ))
                 .toList();
 

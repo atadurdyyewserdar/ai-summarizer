@@ -7,6 +7,7 @@ import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { SummarrizationPage } from "./pages/SummarrizationPage";
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/summarization/:summarizationId"
+          element={
+            <ProtectedRoute>
+              <SummarrizationPage />
             </ProtectedRoute>
           }
         />

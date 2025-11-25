@@ -52,6 +52,8 @@ export interface SummarizationItem {
   inputText: string;
   summaryText: string;
   summaryType: string;
+  documentType: "docx" | "pdf" | "txt" | "pptx";
+  fileName: string;
 }
 
 export interface ProfileData {
