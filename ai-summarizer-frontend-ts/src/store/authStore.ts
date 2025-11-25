@@ -98,6 +98,8 @@ interface AuthState {
   setLastAttemptedRoute: (route: string | null) => void;
   clearError: () => void;
   clearSessionExpired: () => void;
+
+  uploadFile: (file: File, type?: string) => Promise<any>;
 }
 
 const initialState: Omit<
@@ -115,6 +117,7 @@ const initialState: Omit<
   | "setLastAttemptedRoute"
   | "clearError"
   | "clearSessionExpired"
+  | "uploadFile"
 > = {
   user: null,
   accessToken: null,
@@ -129,7 +132,11 @@ const initialState: Omit<
   profileError: null,
 };
 
-type AuthResponse = { profile: User; accessToken: string; refreshToken: string };
+type AuthResponse = {
+  profile: User;
+  accessToken: string;
+  refreshToken: string;
+};
 
 const getErrorMessage = (err: unknown, fallback: string) => {
   const e = err as any;
@@ -153,7 +160,7 @@ export const useAuthStore = create<AuthState>()(
 
           const res = await apiClient.post<AuthResponse>("/auth/login", data);
           const resData = res.data;
-            console.log("Login response data:", resData);
+          console.log("Login response data:", resData);
           // Ensure username is preserved from login payload if not in response
           const user = {
             ...resData.profile,
@@ -176,7 +183,10 @@ export const useAuthStore = create<AuthState>()(
             sessionExpired: false,
           });
         } catch (err: any) {
-          const message = getErrorMessage(err, "Login failed. Please try again.");
+          const message = getErrorMessage(
+            err,
+            "Login failed. Please try again."
+          );
           set({ loading: false, error: message, isAuthenticated: false });
           throw err;
         }
@@ -190,7 +200,10 @@ export const useAuthStore = create<AuthState>()(
 
           set({ loading: false, error: null });
         } catch (err: any) {
-          const message = getErrorMessage(err, "Registration failed. Please try again.");
+          const message = getErrorMessage(
+            err,
+            "Registration failed. Please try again."
+          );
           set({ loading: false, error: message });
           throw err;
         }
@@ -244,11 +257,8 @@ export const useAuthStore = create<AuthState>()(
           if (!user?.username) {
             throw new Error("User not authenticated");
           }
-          const res = await apiClient.post(
-            `/user/update-profile`,
-            data
-          );
-          const payload = (res.data && res.data.data) ? res.data.data : res.data;
+          const res = await apiClient.post(`/user/update-profile`, data);
+          const payload = res.data && res.data.data ? res.data.data : res.data;
           set({ profile: payload as ProfileData, loadingProfile: false });
         } catch (err: any) {
           const message =
@@ -322,17 +332,45 @@ export const useAuthStore = create<AuthState>()(
         });
 
         if (typeof window !== "undefined") {
-          try { window.localStorage.removeItem(AUTH_PERSIST_KEY); } catch {}
+          try {
+            window.localStorage.removeItem(AUTH_PERSIST_KEY);
+          } catch {}
+        }
+      },
+
+      // Implementation:
+      async uploadFile(file, type = "BRIEF") {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("userName", get().user?.username || "");
+          formData.append("type", type);
+
+          const res = await apiClient.post("/v1/documents/summarize", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          // Return the full backend response data
+          return res.data;
+        } catch (err) {
+          throw err;
         }
       },
 
       setTokens(accessToken, refreshToken) {
-        const isAuthenticated = isAuthenticatedFromState({ accessToken, refreshToken, user: get().user });
+        const isAuthenticated = isAuthenticatedFromState({
+          accessToken,
+          refreshToken,
+          user: get().user,
+        });
         set({ accessToken, refreshToken, isAuthenticated });
       },
 
       setUser(user) {
-        const isAuthenticated = isAuthenticatedFromState({ accessToken: get().accessToken, refreshToken: get().refreshToken, user });
+        const isAuthenticated = isAuthenticatedFromState({
+          accessToken: get().accessToken,
+          refreshToken: get().refreshToken,
+          user,
+        });
         set({ user, isAuthenticated });
       },
 

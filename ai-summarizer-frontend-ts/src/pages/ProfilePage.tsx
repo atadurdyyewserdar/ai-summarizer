@@ -44,9 +44,7 @@ const ProfilePage = () => {
   useEffect(() => {
     // Only fetch the profile if the store has been hydrated and a user exists.
     if (isHydrated && user?.username) {
-      fetchProfile().catch(() => {
-        // Error is handled in the store, so we can ignore the promise rejection here.
-      });
+      fetchProfile();
     }
   }, [isHydrated, user?.username, fetchProfile]);
 
@@ -71,11 +69,16 @@ const ProfilePage = () => {
     console.log("Changed", name, "to", value);
   };
 
+  const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, email: e.target.value }));
+    console.log("Changed", "email", "to", e.target.value);
+  }
+
   const handleSave = async () => {
     try {
       await updateProfile(formData);
       setIsEditing({ firstName: false, lastName: false });
-      console.log(formData)
+      fetchProfile();
     } catch (error) {
       // Error is handled in the store
     }
@@ -108,7 +111,7 @@ const ProfilePage = () => {
             // defaultValue={formData?.email ?? ""}
             value={formData.email}
             className="text-sm italic w-70 h-10 border-1 border-gray-400 p-2 mb-2"
-            onChange={handleInputChange}
+            onChange={(e) => handleChangeEmail(e)}
           />
           <button className="hover:scale-101 w-70 mb-8 text-sm cursor-pointer bg-black text-white h-9 p-0 rounded">
             Submit
