@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
+import NewSummarizationPage from "./pages/NewSummarizationPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -15,6 +16,7 @@ function App() {
       <Routes>
        
         <Route path="/" element={<MainPage />} />
+        <Route path="/summarize" element={<NewSummarizationPage />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -37,6 +39,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/summarization" element={<SummarrizationPage />} />
         <Route
           path="/summarization/:summarizationId"
           element={

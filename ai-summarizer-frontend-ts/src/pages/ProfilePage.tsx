@@ -1,9 +1,6 @@
 import profile from "../assets/profile.jpeg";
 import { Navbar } from "../components/Navbar";
-import pptIcon from "../assets/powerpoint.png";
-import wordIcon from "../assets/word.png";
-import txtIcon from "../assets/txt.png";
-import pdfIcon from "../assets/pdf.png";
+import fileIcon from "../assets/file.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
@@ -11,20 +8,7 @@ import { useAuthStore } from "../store/authStore";
 const ProfilePage = () => {
   const navigate = useNavigate();
   // Helper to get icon by documentType
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case "docx":
-        return wordIcon;
-      case "pdf":
-        return pdfIcon;
-      case "txt":
-        return txtIcon;
-      case "pptx":
-        return pptIcon;
-      default:
-        return txtIcon;
-    }
-  };
+  const getFileIcon = () => fileIcon;
   const {
     profile: profileData,
     loadingProfile: loading,
@@ -43,8 +27,8 @@ const ProfilePage = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    username:"",
-    email:"",
+    username: "",
+    email: "",
   });
 
   useEffect(() => {
@@ -77,7 +61,7 @@ const ProfilePage = () => {
         email: profileData.email ?? "",
         firstName: profileData.firstname ?? "",
         lastName: profileData.lastname ?? "",
-        username: profileData.username ?? ""
+        username: profileData.username ?? "",
       });
     }
   }, [profileData]);
@@ -92,8 +76,6 @@ const ProfilePage = () => {
     console.log("Changed", name, "to", value);
   };
 
-
-
   const handleSave = async () => {
     try {
       await updateProfile(formData);
@@ -107,185 +89,205 @@ const ProfilePage = () => {
   const imgSrc = profileData?.profileImageUrl || profile;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="font-mono container min-w-700px min-h-screen flex mx-auto justify-between p-5">
-      <div className="border-1 border-gray-400 min-w-1/3 h-700px m-5 p-5">
-        <img
-          src={imgSrc}
-          alt="Profile"
-          className="mx-auto w-[300px] h-[300px] object-cover mb-6 border-1 border-gray-900"
-        />
-        <div className="mx-auto text-center mb-6">
-          <div className="font-mono text-xl text-black">{profileData?.username}</div>
-          <div className="font-mono text-base text-gray-600">{profileData?.email}</div>
-        </div>
-        <div className="mx-auto text-center font-mono text-2xl m-5">
-          <div className="text-sm mb-3">Set new password</div>
-          <input
-            placeholder="New Password"
-            type="text"
-            className="text-sm italic w-70 h-10 border-1 border-gray-400 p-2 mb-2"
+      <div className="w-full max-w-[1200px] mx-auto flex min-h-screen gap-x-8">
+        <div className="min-w-1/3 h-700px mt-8">
+          <img
+            src={imgSrc}
+            alt="Profile"
+            className="mx-auto w-[300px] h-[300px] object-cover mb-6 border-1 border-gray-900"
           />
-          <button className="w-70 mb-8 hover:scale-101 text-sm cursor-pointer bg-black text-white h-9 p-0">
-            Submit
-          </button>
+          <div className="mx-auto text-center mb-6">
+            <div className="text-xl text-black">{profileData?.username}</div>
+            <div className="text-base text-gray-600">{profileData?.email}</div>
+          </div>
         </div>
-      </div>
-      <div className="min-w-2/3 m-5 p-0 flex flex-col gap-8">
-        <div className="border-1 border-gray-400 rounded-none p-5 bg-white">
-          <div className="font-mono text-xl mb-5 flex justify-between items-center">
-            <span>Personal Details</span>
-            <button
-              onClick={() => fetchProfile()}
-              disabled={loading}
-              className="text-sm p-2 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-            >
-              Refresh
-            </button>
-          </div>
-          <div className="space-y-3">
-            <div className="font-mono text-sm flex flex-row gap-4 items-center">
-              <div className="w-28">Name:</div>
-              <input
-                disabled={!isEditing.firstName}
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                type="text"
-                className="w-80 text-sm italic h-10 border-1 border-gray-400 p-2 disabled:bg-gray-100"
-              />
-              <svg
-                onClick={() => handleEditToggle("firstName")}
-                className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="none"
-                viewBox="0 0 30 30"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                />
-              </svg>
+        <div className="min-w-2/3 flex flex-col mt-8">
+          <div className="rounded-none p-5 bg-white">
+            <div className="text-2xl mb-2 flex items-center">
+              <span>Personal Details</span>
             </div>
-            <div className="font-mono text-sm flex flex-row gap-4 items-center">
-              <div className="w-28">Last name:</div>
-              <input
-                disabled={!isEditing.lastName}
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                type="text"
-                className="w-80 text-sm italic h-10 border-1 border-gray-400 p-2 disabled:bg-gray-100"
-              />
-              <svg
-                onClick={() => handleEditToggle("lastName")}
-                className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="none"
-                viewBox="0 0 30 30"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                />
-              </svg>
+            <hr className="mb-5 border-gray-300" />
+            <div className="space-y-4">
+              {/* First Name */}
+              <div className="flex flex-col items-start">
+                <label className="text-sm font-bold mb-1">Name:</label>
+                <div className="flex items-center w-full">
+                  <input
+                    disabled={!isEditing.firstName}
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    type="text"
+                    className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  />
+                  <svg
+                    onClick={() => handleEditToggle("firstName")}
+                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    viewBox="0 0 30 30"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {/* Last Name */}
+              <div className="flex flex-col items-start">
+                <label className="text-sm font-bold mb-1">Last name:</label>
+                <div className="flex items-center w-full">
+                  <input
+                    disabled={!isEditing.lastName}
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    type="text"
+                    className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  />
+                  <svg
+                    onClick={() => handleEditToggle("lastName")}
+                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    viewBox="0 0 30 30"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {/* Email */}
+              <div className="flex flex-col items-start">
+                <label className="text-sm font-bold mb-1">Email:</label>
+                <div className="flex items-center w-full">
+                  <input
+                    disabled={!isEditing.email}
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    type="text"
+                    className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  />
+                  <svg
+                    onClick={() => handleEditToggle("email")}
+                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    viewBox="0 0 30 30"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {/* Set New Password */}
             </div>
-            <div className="font-mono text-sm flex flex-row gap-4 items-center">
-              <div className="w-28">Email:</div>
-              <input
-                disabled={!isEditing.email}
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                type="text"
-                className="w-80 text-sm italic h-10 border-1 border-gray-400 p-2 disabled:bg-gray-100"
-              />
-              <svg
-                onClick={() => handleEditToggle("email")}
-                className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="none"
-                viewBox="0 0 30 30"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                />
-              </svg>
-            </div>
-          </div>
 
-          <div className="text-sm mb-3 text-right">
-            <button
-              onClick={handleSave}
-              className="hover:scale-101 w-45 mb-8 text-sm cursor-pointer bg-black text-white h-9 p-0"
-            >
-              Save changes
-            </button>
+            <div className="text-sm mt-5 text-left">
+              <button
+                onClick={handleSave}
+                className="hover:scale-101 w-45 text-sm cursor-pointer bg-black text-white h-9 p-0 rounded"
+                style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+              >
+                Update
+              </button>
+            </div>
+            {/* Set New Password - now under Update button */}
+            <div className="flex flex-col items-start mt-5">
+              <label className="text-sm font-bold mb-1 text-red-700">
+                Set new password:
+              </label>
+              <input
+                placeholder="New Password"
+                type="text"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded mb-2 cursor-pointer"
+                style={{ backgroundColor: "#f8f9fa" }}
+              />
+              <button
+                className="mt-3 hover:scale-101 w-45 text-sm cursor-pointer bg-black text-white h-9 p-0 rounded cursor-pointer"
+                style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+              >
+                Submit
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="border-1 border-gray-400 rounded-none p-5 bg-white font-mono text-gray-500">
-          <div className="text-xl text-black mb-5">Your Summaries </div>
-          {loading && <div className="text-sm">Loading summaries...</div>}
-          {error && <div className="text-sm text-red-700">{error}</div>}
-          {!loading && !error && (
-            <>
-              {(profileData?.summarizationHistoryList ?? []).map((it) => (
-                <div
-                  key={it.id}
-                  className="hover:text-black hover:scale-102 cursor-pointer mb-1 border-gray-400 border-1 min-h-10 text-sm p-2 "
-                  onClick={() =>
-                    navigate(`/summarization/${it.id}`, {
-                      state: {
-                        summarizationList: profileData?.summarizationHistoryList ?? [],
-                        selectedId: it.id,
-                      },
-                    })
-                  }
-                >
-                  <div className="flex flex-col items-start mb-2 pb-2 border-b border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={getFileIcon(it.documentType)}
-                        alt={it.documentType + " icon"}
-                        className="w-8 h-8 object-contain"
-                      />
-                      <span className="font-mono text-base text-gray-700">{it.fileName}</span>
+          <div className="rounded-none p-5 bg-white text-gray-500">
+            <div className="text-xl text-black mb-5">Your Summaries </div>
+            {loading && <div className="text-sm">Loading summaries...</div>}
+            {error && <div className="text-sm text-red-700">{error}</div>}
+            {!loading && !error && (
+              <>
+                {(profileData?.summarizationHistoryList ?? []).map((it) => (
+                  <div
+                    key={it.id}
+                    className="hover:text-black hover:scale-102 cursor-pointer mb-1 border-gray-400 border-1 min-h-10 text-sm p-2 "
+                    onClick={() =>
+                      navigate(`/summarization/${it.id}`, {
+                        state: {
+                          summarizationList:
+                            profileData?.summarizationHistoryList ?? [],
+                          selectedId: it.id,
+                        },
+                      })
+                    }
+                    style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                  >
+                    <div className="flex flex-col items-start mb-2 pb-2 border-b border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={getFileIcon()}
+                          alt={it.documentType + " icon"}
+                          className="w-4 h-4 object-contain"
+                        />
+                        <span className="text-base text-gray-700">
+                          {it.fileName}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center mt-2">
+                      <span style={{ fontSize: "0.95rem" }}>
+                        {(it.summaryText || it.inputText)?.length > 80
+                          ? (it.summaryText || it.inputText).slice(0, 80) +
+                            "..."
+                          : it.summaryText || it.inputText}
+                      </span>
+                      <span className="text-xs ml-2">&#8594;</span>
                     </div>
                   </div>
-                  <div className="flex items-center mt-2">
-                    <span>
-                      {((it.summaryText || it.inputText)?.length > 80
-                        ? (it.summaryText || it.inputText).slice(0, 80) + '...'
-                        : (it.summaryText || it.inputText))}
-                    </span>
-                    <span className="text-sm ml-2">&#8594;</span>
-                  </div>
-                </div>
-              ))}
-            </>
-          )}
+                ))}
+              </>
+            )}
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

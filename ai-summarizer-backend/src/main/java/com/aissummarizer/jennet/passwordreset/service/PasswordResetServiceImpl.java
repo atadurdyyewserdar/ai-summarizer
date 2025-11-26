@@ -70,4 +70,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         token.setUsed(true);
         tokenRepository.save(token);
     }
+
+    @Override
+    public void changePassword(String userName, String newPassword) {
+        userService.changePassword(userName, newPassword);
+    }
 }

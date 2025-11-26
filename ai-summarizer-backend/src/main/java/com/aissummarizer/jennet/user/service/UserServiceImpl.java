@@ -59,12 +59,18 @@ public class UserServiceImpl implements UserService {
                 .map(h -> new UserSummarizationHistoryResponse(
                         h.getId(),
                         h.getCreatedAt(),
-                        h.getInputText(),
                         h.getResult().getSummary(),
                         h.getSummaryType().toString(),
                         h.getDocumentType().getExtension(),
-                        h.getDocumentUpload().getOriginalFilename()
-                ))
+                        h.getDocumentUpload().getOriginalFilename(),
+                        h.getMetadata().getImageCount(),
+                        h.getMetadata().getParagraphCount(),
+                        h.getMetadata().getSlideCount(),
+                        h.getMetadata().getProcessingTime(),
+                        h.getMetadata().getTableCount(),
+                        h.getMetadata().getWordCount(),
+                        h.getDocumentUpload().getFileSize()
+                        ))
                 .toList();
 
         // Build final profile response
@@ -119,8 +125,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String userId, String rawNewPassword) {
-        UserEntity user = getById(userId);
+    public void changePassword(String userName, String rawNewPassword) {
+        UserEntity user = getByUserName(userName);
         user.setPassword(encoder.encode(rawNewPassword));
         userRepository.save(user);
     }

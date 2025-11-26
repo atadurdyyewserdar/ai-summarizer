@@ -2,7 +2,9 @@ package com.aissummarizer.jennet.config;
 
 import com.aissummarizer.jennet.apilog.filter.ApiUsageLoggingFilter;
 import com.aissummarizer.jennet.security.CustomUserDetailsService;
+import com.aissummarizer.jennet.security.JwtAuthenticationEntryPoint;
 import com.aissummarizer.jennet.security.JwtAuthFilter;
+import com.aissummarizer.jennet.security.JwtAccessDeniedHandler;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
@@ -20,7 +22,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,6 +34,8 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
     private final ApiUsageLoggingFilter apiUsageLoggingFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final JwtAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,6 +51,7 @@ public class SecurityConfig {
                 )
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterAfter(apiUsageLoggingFilter, JwtAuthFilter.class);
 
         return http.build();

@@ -43,10 +43,10 @@ public interface UserService {
     /**
      * Changes the password for a given user.
      *
-     * @param userId        ID of the user
+     * @param userName        username of the user
      * @param rawNewPassword new password before encoding
      */
-    void changePassword(String userId, String rawNewPassword);
+    void changePassword(String userName, String rawNewPassword);
 
     /**
      * Generates UserProfileResponse DTO including

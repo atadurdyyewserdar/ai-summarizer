@@ -54,6 +54,14 @@ export interface SummarizationItem {
   summaryType: string;
   documentType: "docx" | "pdf" | "txt" | "pptx";
   fileName: string;
+  // Optional metadata fields
+  imageCount?: number;
+  paragraphCount?: number;
+  slideCount?: number;
+  processingTime?: number;
+  tableCount?: number;
+  wordCount?: number;
+  fileSize?: number;
 }
 
 export interface ProfileData {

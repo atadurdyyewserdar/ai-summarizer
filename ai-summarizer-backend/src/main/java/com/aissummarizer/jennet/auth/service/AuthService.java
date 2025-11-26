@@ -48,4 +48,6 @@ public interface AuthService {
      * @param request contains the token and new password
      */
     void completePasswordReset(ResetPasswordRequest request);
+
+    void updatePassword(UpdatePasswordRequest request);
 }

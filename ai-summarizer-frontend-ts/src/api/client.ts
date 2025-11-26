@@ -65,6 +65,8 @@ apiClient.interceptors.response.use(
     originalRequest._retry = true;
 
     const { refreshToken, setTokens, logout } = useAuthStore.getState();
+    
+    console.log("Refresh token:", refreshToken);
 
     if (!refreshToken) {
       logout({ sessionExpired: true });
@@ -79,19 +81,31 @@ apiClient.interceptors.response.use(
     }
 
     isRefreshing = true;
-
+    // Debug log for refresh attempts
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.log("[apiClient] Attempting to refresh access token...");
+    }
     try {
       const refreshResponse = await axios.post(
         `${API_BASE_URL}/auth/refresh`,
-        { refreshToken },
-        { withCredentials: true }
+        {},
+        { 
+          params: { refreshToken: refreshToken },
+          withCredentials: true 
+        }
       );
 
       const newAccessToken = (refreshResponse.data as any).accessToken as string;
+
+      console.log("New access token:", newAccessToken);
+      console.log("Refresh response data:", refreshResponse.data);
       const newRefreshToken =
         (refreshResponse.data as any).refreshToken || refreshToken;
 
       setTokens(newAccessToken, newRefreshToken);
+
+      // Zustand persist does not expose a flush method; setTokens is sufficient for updating state and localStorage.
 
       processQueue(null, newAccessToken);
       isRefreshing = false;

@@ -16,10 +16,16 @@ import java.time.LocalDateTime;
 public record UserSummarizationHistoryResponse(
         String id,
         LocalDateTime createdAt,
-        String inputText,
         String summaryText,
         String summaryType,
         String documentType,
-        String fileName
+        String fileName,
+        int imageCount,
+        int paragraphCount,
+        int slideCount,
+        long processingTime,
+        int tableCount,
+        int wordCount,
+        long fileSize
 ) {
 }

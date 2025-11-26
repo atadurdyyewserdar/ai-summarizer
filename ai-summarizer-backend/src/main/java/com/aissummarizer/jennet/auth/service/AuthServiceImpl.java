@@ -87,6 +87,11 @@ public class AuthServiceImpl implements AuthService {
         passwordResetService.resetPassword(request.token(), request.newPassword());
     }
 
+    @Override
+    public void updatePassword(UpdatePasswordRequest request) {
+        userService.changePassword(request.userName(), request.password());
+    }
+
     /**
      * {@inheritDoc}
      */

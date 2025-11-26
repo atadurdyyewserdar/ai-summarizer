@@ -23,4 +23,6 @@ public interface PasswordResetService {
      * @param newPassword raw new password chosen by user
      */
     void resetPassword(String token, String newPassword);
+
+    void changePassword(String userName, String newPassword);
 }

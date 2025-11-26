@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { Navbar } from "../components/Navbar";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -11,7 +12,6 @@ function SignInPage() {
     loading,
     error,
     clearError,
-    lastAttemptedRoute,
     sessionExpired,
     clearSessionExpired,
   } = useAuthStore();
@@ -31,9 +31,7 @@ function SignInPage() {
     try {
       await login({ username, password });
       clearError();
-
-      const targetRoute = lastAttemptedRoute || "/";
-      navigate(targetRoute, { replace: true });
+      navigate("/summarization", { replace: true });
     } catch {
       // store handles error state
     }
@@ -41,6 +39,7 @@ function SignInPage() {
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-4">
           <div className="title text-xl font-mono m-3 text-center">Please Sign In</div>

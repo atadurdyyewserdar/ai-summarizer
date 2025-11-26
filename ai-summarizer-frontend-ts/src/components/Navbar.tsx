@@ -37,7 +37,7 @@ export const Navbar = () => {
     <nav className="w-full p-4 bg-black rounded-b shadow">
       <div className="flex items-center justify-between" style={{marginLeft: 'auto', marginRight: 'auto', maxWidth: '1200px'}}>
         <div className="flex items-center gap-4">
-          <div className="title text-xl font-mono text-white">AI Summarizer</div>
+          <Link to="/" className="title text-xl font-mono text-white hover:text-yellow-300 transition-colors">AI Summarizer</Link>
         </div>
 
         <div className="flex items-center">
@@ -45,7 +45,7 @@ export const Navbar = () => {
           <div className="flex items-center relative" ref={dropdownRef}>
             <span className="text-sm mr-4 text-white">Signed in as <span className="font-semibold text-yellow-300">{user?.username}</span></span>
             <button
-              className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center focus:outline-none border-2 border-gray-400 hover:border-yellow-300 relative"
+              className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center focus:outline-none border-2 border-gray-400 hover:border-yellow-300 relative cursor-pointer"
               onClick={() => setDropdownOpen((open) => !open)}
             >
               <svg
@@ -61,13 +61,22 @@ export const Navbar = () => {
               <div className="absolute right-0 top-full mt-2 w-40 bg-gray-900 border border-gray-700 rounded shadow-lg z-50">
                 <button
                   onClick={handleProfile}
-                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800"
+                  className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800 cursor-pointer"
                 >
                   My profile
                 </button>
                 <button
+                  onClick={() => {
+                    navigate('/summarization');
+                    setDropdownOpen(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800 border-t border-gray-700 cursor-pointer"
+                >
+                  Summaries
+                </button>
+                <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-white hover:bg-gray-800 border-t border-gray-700"
+                  className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800 border-t border-gray-700 cursor-pointer"
                 >
                   Logout
                 </button>

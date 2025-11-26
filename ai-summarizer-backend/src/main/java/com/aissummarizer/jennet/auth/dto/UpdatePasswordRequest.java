@@ -1,4 +1,4 @@
 package com.aissummarizer.jennet.auth.dto;
 
-public class UpdatePasswordRequest {
+public record UpdatePasswordRequest(String userName, String password){
 }

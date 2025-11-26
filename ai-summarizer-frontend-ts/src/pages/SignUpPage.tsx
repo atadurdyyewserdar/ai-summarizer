@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Navbar } from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
@@ -31,12 +32,13 @@ function SignUpPage() {
         password,
       });
       clearError();
-      navigate("/signin", { replace: true });
+      navigate("/summarization", { replace: true });
     } catch {}
   };
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md p-4">
           <div className="title text-xl font-mono m-3 text-center">
