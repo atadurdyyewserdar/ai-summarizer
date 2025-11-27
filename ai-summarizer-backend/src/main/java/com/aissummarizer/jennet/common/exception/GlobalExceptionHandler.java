@@ -126,4 +126,58 @@ public class GlobalExceptionHandler {
                     .body(java.util.Map.of("error", ex.getMessage()));
      }
 
+    /**
+     * Handles AI summarization failures, including network connectivity issues.
+     *
+     * @param ex thrown exception
+     * @return HTTP 503 for network issues, HTTP 500 for other AI service errors
+     */
+    @ExceptionHandler(AiSummarizationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAiSummarizationException(
+            AiSummarizationException ex) {
+        
+        Throwable cause = ex.getCause();
+        
+        // Check if it's a network connectivity issue
+        if (isNetworkException(cause)) {
+            log.error("AI service unavailable due to network issues: {}", cause.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(ApiResponse.error(
+                            ErrorCode.AI_SERVICE_ERROR,
+                            "AI service is temporarily unavailable. Please check your network connection and try again."
+                    ));
+        }
+        
+        log.error("AI summarization failed", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(
+                        ErrorCode.AI_SERVICE_ERROR,
+                        ex.getMessage()
+                ));
+    }
+
+    /**
+     * Checks if the exception is related to network connectivity issues.
+     */
+    private boolean isNetworkException(Throwable cause) {
+        if (cause == null) {
+            return false;
+        }
+        
+        // Check the exception and its cause chain for network-related exceptions
+        Throwable current = cause;
+        while (current != null) {
+            if (current instanceof java.net.UnknownHostException ||
+                current instanceof java.net.ConnectException ||
+                current instanceof java.net.SocketTimeoutException ||
+                current instanceof java.net.SocketException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
 }
