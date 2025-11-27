@@ -150,12 +150,27 @@ public class GlobalExceptionHandler {
         }
         
         log.error("AI summarization failed", ex);
+        
+        // Build a more informative error message including the root cause
+        String errorMessage = buildErrorMessage(ex);
+        
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(
                         ErrorCode.AI_SERVICE_ERROR,
-                        ex.getMessage()
+                        errorMessage
                 ));
+    }
+    
+    /**
+     * Builds a user-friendly error message from the exception and its cause.
+     */
+    private String buildErrorMessage(AiSummarizationException ex) {
+        Throwable cause = ex.getCause();
+        if (cause != null && cause.getMessage() != null) {
+            return "AI summarization failed: " + cause.getMessage();
+        }
+        return ex.getMessage();
     }
 
     /**

@@ -111,6 +111,8 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getError());
         assertEquals(ErrorCode.AI_SERVICE_ERROR, response.getBody().getError().code());
+        // The error message should include the root cause message
+        assertTrue(response.getBody().getError().message().contains("Some other error"));
     }
 
     @Test
