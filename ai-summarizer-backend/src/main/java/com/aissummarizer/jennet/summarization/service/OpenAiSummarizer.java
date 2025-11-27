@@ -19,6 +19,7 @@ import com.aissummarizer.jennet.document.model.TxtDocumentContent;
 import com.aissummarizer.jennet.summarization.repository.SummarizationRepository;
 import com.aissummarizer.jennet.summarization.repository.SummaryMetadataRepository;
 import com.aissummarizer.jennet.summarization.repository.SummaryResultRepository;
+import com.aissummarizer.jennet.summarization.util.ChatCompletionResponseExtractor;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.user.service.UserService;
 import com.openai.client.OpenAIClient;
@@ -176,14 +177,32 @@ public class OpenAiSummarizer implements AiSummarizer {
         return parts;
     }
 
+    /**
+     * Calls the OpenAI ChatCompletions API and extracts the response content.
+     * <p>
+     * This method demonstrates how to:
+     * <ol>
+     *   <li>Build a user message with content parts (text and images)</li>
+     *   <li>Configure request parameters (model, max tokens, temperature)</li>
+     *   <li>Send the request to the OpenAI API</li>
+     *   <li>Extract the response content using {@link ChatCompletionResponseExtractor}</li>
+     * </ol>
+     * </p>
+     *
+     * @param contentParts the content parts to send to the API (text and optional images)
+     * @param options      the summary options containing model configuration
+     * @return the extracted text response from the ChatCompletion
+     */
     private String callOpenAi(
             List<ChatCompletionContentPart> contentParts,
             SummaryOptions options) {
 
+        // Step 1: Build the user message with content parts
         ChatCompletionUserMessageParam userMessage = ChatCompletionUserMessageParam.builder()
                 .content(ChatCompletionUserMessageParam.Content.ofArrayOfContentParts(contentParts))
                 .build();
 
+        // Step 2: Configure the request parameters
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .model(config.getModel())
                 .addMessage(userMessage)
@@ -191,8 +210,13 @@ public class OpenAiSummarizer implements AiSummarizer {
                 .temperature(options.getTemperature())
                 .build();
 
+        // Step 3: Send the request to OpenAI and get the ChatCompletion response
         ChatCompletion completion = client.chat().completions().create(params);
-        return completion.choices().getLast().message().content().orElse("");
+
+        // Step 4: Extract the response content using the utility class
+        // The response is contained in completion.choices().get(index).message().content()
+        // ChatCompletionResponseExtractor provides a clean way to extract this
+        return ChatCompletionResponseExtractor.extractContent(completion);
     }
 
     private SummaryMetadata buildMetadata(DocumentContent content, long startTime) {
