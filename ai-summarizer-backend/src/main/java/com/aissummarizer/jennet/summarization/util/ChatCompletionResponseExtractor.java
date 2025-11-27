@@ -58,7 +58,7 @@ public final class ChatCompletionResponseExtractor {
             return "";
         }
 
-        return choices.getLast()
+        return choices.getFirst()
                 .message()
                 .content()
                 .orElse("");

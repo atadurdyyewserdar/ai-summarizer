@@ -14,6 +14,7 @@ const getFileIcon = () => fileIcon;
 export const SummarrizationPage = () => {
   const navigate = useNavigate();
   const { summarizationId } = useParams<{ summarizationId?: string }>();
+  const isCreating = summarizationId === undefined;
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   const profile = useAuthStore((s) => s.profile);
   const loadingProfile = useAuthStore((s) => s.loadingProfile);
@@ -35,21 +36,46 @@ export const SummarrizationPage = () => {
       <div className="flex justify-center items-start min-h-[calc(100vh-80px)]">
         <div className="w-full max-w-[1200px] mx-auto bg-white border border-gray-300 rounded-lg flex min-h-[400px]" style={{ marginTop: 32, height: 'calc(100vh - 120px)' }}>
           {/* Left: List */}
-          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto min-w-[180px]" style={{ flexBasis: 'auto' }}>
-            <div className="mb-4">
+          <div className="w-1/3 border-r border-gray-200 p-0 flex flex-col min-w-[180px]" style={{ flexBasis: 'auto' }}>
+            <div className="p-4 pb-2">
               <button
-                className="bg-black text-white w-full py-2 rounded hover:bg-gray-900 text-base cursor-pointer text-center"
-                style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
+                type="button"
+                className={`relative overflow-hidden text-center text-base align-center border border-black w-full py-2 rounded transition-colors duration-200 group shadow ${isCreating ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                style={{ fontFamily: 'Segoe UI, Arial, sans-serif', fontWeight: 600, background: 'white', color: 'black' }}
                 onClick={() => {
-                  navigate('/summarization');
+                  if (!isCreating) navigate('/summarization');
                 }}
+                disabled={isCreating}
               >
-                New File
+                <span className="relative z-10 flex items-center justify-center gap-2 transition-colors duration-200 w-full group-hover:text-white">
+                  New File
+                  <svg
+                    className="w-5 h-5 animate-spin-slow group-hover:text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </span>
+                <span className="absolute left-0 top-0 h-full w-0 group-hover:w-full bg-black transition-all duration-300 ease-out z-0" style={{transitionProperty: 'width'}}></span>
               </button>
+              <style>{`
+                .group:hover .group-hover\\:w-full { width: 100% !important; }
+                .group .group-hover\\:w-full { transition-property: width; }
+                @keyframes spin-slow {
+                  100% { transform: rotate(360deg); }
+                }
+                .animate-spin-slow {
+                  animation: spin-slow 2.4s linear infinite;
+                }
+              `}</style>
             </div>
-            {loadingProfile && <div className="text-gray-400 text-center my-4">Loading...</div>}
-            {profileError && <div className="text-red-500 text-center my-4">{profileError}</div>}
-            {localList.map((item) => (
+            <div className="flex-1 overflow-y-auto p-4 pt-0">
+              {loadingProfile && <div className="text-gray-400 text-center my-4">Loading...</div>}
+              {profileError && <div className="text-red-500 text-center my-4">{profileError}</div>}
+              {localList.map((item) => (
               <div
                 key={item.id}
                 className={`flex items-center gap-2 p-2 mb-2 rounded cursor-pointer transition-all justify-between ${item.id === summarizationId
@@ -85,6 +111,7 @@ export const SummarrizationPage = () => {
                 </button>
               </div>
             ))}
+            </div>
           </div>
           {/* Right: Summary or New Summarization */}
           <div className="w-2/3 min-w-0 p-3 flex flex-col h-full overflow-x-auto" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>

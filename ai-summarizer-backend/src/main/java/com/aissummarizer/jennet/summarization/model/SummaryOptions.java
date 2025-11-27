@@ -43,7 +43,7 @@ public final class SummaryOptions {
     // Builder pattern
     public static final class Builder {
         private SummaryType type = SummaryType.COMPREHENSIVE;
-        private int maxTokens = 2000;
+        private int maxTokens = 10000;
         private double temperature = 1;
         private String customPrompt = null;
 

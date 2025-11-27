@@ -1,6 +1,51 @@
 import { useAuthStore } from "../store/authStore";
 import { useState, useEffect, useRef } from "react";
 
+// Animated loader CSS
+const loaderStyle = `
+.loader {
+  width: fit-content;
+  font-size: 17px;
+  font-family: monospace;
+  line-height: 1.4;
+  font-weight: bold;
+  --c: no-repeat linear-gradient(#000 0 0); 
+  background: var(--c),var(--c),var(--c),var(--c),var(--c),var(--c),var(--c);
+  background-size: calc(1ch + 1px) 100%;
+  border-bottom: 10px solid #0000; 
+  position: relative;
+  animation: l8-0 3s infinite linear;
+  clip-path: inset(-20px 0);
+}
+.loader::before {
+  content:"Loading";
+}
+.loader::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  background: #25adda;
+  left: -10px;
+  bottom: 100%;
+  animation: l8-1 3s infinite linear;
+}
+@keyframes l8-0{
+   0%,
+   12.5% {background-position: calc(0*100%/6) 0   ,calc(1*100%/6)    0,calc(2*100%/6)    0,calc(3*100%/6)    0,calc(4*100%/6)    0,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   25%   {background-position: calc(0*100%/6) 40px,calc(1*100%/6)    0,calc(2*100%/6)    0,calc(3*100%/6)    0,calc(4*100%/6)    0,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   37.5% {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6)    0,calc(3*100%/6)    0,calc(4*100%/6)    0,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   50%   {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6) 40px,calc(3*100%/6)    0,calc(4*100%/6)    0,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   62.5% {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6) 40px,calc(3*100%/6) 40px,calc(4*100%/6)    0,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   75%   {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6) 40px,calc(3*100%/6) 40px,calc(4*100%/6) 40px,calc(5*100%/6)    0,calc(6*100%/6) 0}
+   87.4% {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6) 40px,calc(3*100%/6) 40px,calc(4*100%/6) 40px,calc(5*100%/6) 40px,calc(6*100%/6) 0}
+   100%  {background-position: calc(0*100%/6) 40px,calc(1*100%/6) 40px,calc(2*100%/6) 40px,calc(3*100%/6) 40px,calc(4*100%/6) 40px,calc(5*100%/6) 40px,calc(6*100%/6) 40px}
+}
+@keyframes l8-1{
+  100% {left:115%}
+}
+`;
+
 const SUMMARY_OPTIONS = [
   "Brief",
   "Comprehensive",
@@ -104,7 +149,7 @@ function NewSummarizationPage() {
           setIsTypingDone(true);
           if (intervalRef.current) clearInterval(intervalRef.current);
         }
-      }, 10);
+      }, 2);
       return () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
       };
@@ -187,9 +232,9 @@ function NewSummarizationPage() {
                 <textarea placeholder="Paste your text here to summarize..." className="min-h-32 p-4 w-full border-1 border-gray-400 focus:border-2 focus:border-blue-200 rounded" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }} />
               </div>
 
-              <div className="text-right p-0 mb-5">
+              <div className="flex justify-end p-0 mb-5">
                 <button
-                  className="text-base cursor-pointer m-0 p-0 text-white bg-green-700 hover:bg-green-900 hover:text-white py-1.5 px-7 rounded"
+                  className="text-sm cursor-pointer m-0 p-0 text-white bg-green-700 hover:bg-green-900 hover:text-white py-1.5 px-7 rounded flex items-center justify-center gap-2"
                   style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
                   onClick={handleSubmit}
                 >
@@ -199,24 +244,31 @@ function NewSummarizationPage() {
             </>
           )}
 
-          {showResult && (
+          {/* Show loading GIF while waiting for backend, then show typewriter/result */}
+          {showResult && !summaryResult && (
+            <div className="flex flex-col items-center justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
+              <style>{loaderStyle}</style>
+              <div className="loader" />
+            </div>
+          )}
+          {showResult && summaryResult && (
             <>
               <div className="justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
                 <div className="p-5 text-lg mb-8 text-gray-700 w-full text-left" style={{ minHeight: 80, fontFamily: 'Segoe UI, Arial, sans-serif' }}>
                   {!isTypingDone ? (
-                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0}}>{typingText}<span className="animate-pulse">|</span></pre>
+                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0, fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '1rem'}}>{typingText}<span className="animate-pulse">|</span></pre>
                   ) : (
-                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0}}>{summaryResult}</pre>
+                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0, fontFamily: 'Segoe UI, Arial, sans-serif', fontSize: '1rem'}}>{summaryResult}</pre>
                   )}
                 </div>
               </div>
               <div className="flex justify-end">
                 <button
-                  className="px-6 py-2 rounded bg-black text-white text-base hover:bg-gray-800 shadow"
+                  className="px-5 py-1.5 rounded bg-green-700 text-white text-sm shadow cursor-pointer transition-colors duration-200 hover:bg-green-900"
                   style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
                   onClick={handleNewSummarization}
                 >
-                  New Summarization
+                  Create new
                 </button>
               </div>
             </>

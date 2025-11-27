@@ -232,7 +232,7 @@ const ProfilePage = () => {
                 className="mt-3 hover:scale-101 w-45 bg-green-700 hover:bg-green-900 text-sm cursor-pointer text-white py-1.5 px-7 rounded cursor-pointer"
                 style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
               >
-                Submit
+                Update
               </button>
             </div>
           </div>

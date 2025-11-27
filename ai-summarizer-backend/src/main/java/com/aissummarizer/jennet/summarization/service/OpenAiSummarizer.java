@@ -158,6 +158,8 @@ public class OpenAiSummarizer implements AiSummarizer {
 
         // Add text
 
+
+
         parts.add(
                 ChatCompletionContentPart.ofText(
                         ChatCompletionContentPartText.builder()
@@ -165,6 +167,11 @@ public class OpenAiSummarizer implements AiSummarizer {
                                 .build()
                 )
         );
+
+        logger.info("createContentParts () method prompt value: " + prompt);
+//        logger.info(parts.getFirst().text().toString());
+
+
 
         // Add images if present
         if (content.hasImages()) {

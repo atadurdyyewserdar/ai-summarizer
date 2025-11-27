@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useRef, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export const Navbar = () => {
+    const location = useLocation();
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -85,21 +87,29 @@ export const Navbar = () => {
           </div>
         ) : (
           <div className="flex items-center">
-            <Link
-              to="/signin"
-              className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
-              style={{ minWidth: 90 }}
-            >
-              Sign in
-            </Link>
-
-            <Link
-              to="/signup"
-              className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
-              style={{ minWidth: 90 }}
-            >
-              Sign up
-            </Link>
+            {!(location.pathname === "/signin" || location.pathname === "/signup") ? (
+              <>
+                <Link
+                  to="/signin"
+                  className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
+                  style={{ minWidth: 90 }}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="mx-3 flex items-center justify-center hover:border-yellow-300 text-center text-sm align-center cursor-pointer border-2 border-gray-400 text-white bg-black hover:bg-gray-900 hover:text-yellow-300 h-10 px-5 rounded"
+                  style={{ minWidth: 90 }}
+                >
+                  Sign up
+                </Link>
+              </>
+            ) : (
+              <>
+                <span className="mx-3 h-10 px-5" style={{ minWidth: 90, visibility: 'hidden' }}>Sign in</span>
+                <span className="mx-3 h-10 px-5" style={{ minWidth: 90, visibility: 'hidden' }}>Sign up</span>
+              </>
+            )}
           </div>
         )}
       </div>

@@ -40,85 +40,110 @@ function SignUpPage() {
     <>
       <Navbar />
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md p-4">
+        <div className="absolute inset-0 m-auto w-full max-w-md flex flex-col justify-center items-center p-4" style={{height: 'fit-content'}}>
           <div className="title text-xl font-mono m-3 text-center">
             Please, fill in forms
           </div>
 
-          {(localError || error) && (
-            <div className="w-full m-3 text-center text-sm text-red-700 bg-red-100 border border-red-300 rounded p-2">
-              {localError || error}
-              <button
-                onClick={() => {
-                  setLocalError(null);
-                  clearError();
-                }}
-                className="ml-3 underline"
-              >
-                Clear
-              </button>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="w-full">
-            <input
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="First Name"
-              type="text"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <input
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Last Name"
-              type="text"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              type="text"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              type="email"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              type="password"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <input
-              value={repeatPassword}
-              onChange={(e) => setRepeatPassword(e.target.value)}
-              placeholder="Repeat Password"
-              type="password"
-              className="text-sm italic w-full h-12 border-2 border-gray-600 rounded-lg m-3 p-5"
-            />
-            <div className="w-full m-3 text-right">
+            {(localError || error) && (
+              <div className="w-96 m-3 ml-3 text-left text-sm text-red-700 bg-red-100 border border-red-300 rounded p-2" style={{ textAlign: 'left' }}>
+                {localError || error}
+                <button
+                  onClick={() => {
+                    setLocalError(null);
+                    clearError();
+                  }}
+                  className="ml-3 underline"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="firstName">First Name</label>
+              <input
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                type="text"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="lastName">Last Name</label>
+              <input
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                type="text"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="username">Username</label>
+              <input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                type="text"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="email">Email</label>
+              <input
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="password">Password</label>
+              <input
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex flex-col items-start m-3">
+              <label className="text-sm font-bold mb-1" htmlFor="repeatPassword">Repeat Password</label>
+              <input
+                id="repeatPassword"
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
+                type="password"
+                className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded"
+                style={{ backgroundColor: '#f8f9fa' }}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-8 mb-3 w-96 ml-3">
+              <Link
+                className="underline text-sm"
+                style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
+                to="/signin"
+              >
+                I already have an account
+              </Link>
               <button
                 type="submit"
                 disabled={loading}
-                className="mx-3 hover:border-gray-800 text-center text-sm align-center cursor-pointer border-2 border-gray-600 text-black bg-white-500 hover:bg-gray-800 hover:text-white h-10 pl-5 pr-5 rounded"
+                className="hover:scale-101 w-32 text-sm cursor-pointer text-white rounded bg-green-700 hover:bg-green-900 py-1.5 px-7"
+                style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
               >
-                Sign up
+                {loading ? "Signing up..." : "Sign up"}
               </button>
             </div>
           </form>
-
-          <div className="font-mono text-left m-3 w-full p-1">
-            <Link className="underline" to="/signin">
-              I already have an account
-            </Link>
-          </div>
         </div>
       </div>
     </>

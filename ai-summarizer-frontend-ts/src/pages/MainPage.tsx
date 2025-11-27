@@ -282,7 +282,7 @@ function MainPage() {
             {/* Right: Intro Text */}
             <div className="flex flex-col h-full text-left w-[600px] min-w-[300px] max-w-[600px] p-8 mb-8" style={{ minHeight: '40rem' }}>
               <div>
-                <div className="text-3xl font-bold mb-4 text-gray-800">
+                <div className="text-3xl font-bold mb-4 text-black">
                   Summarize Anything Instantly
                 </div>
                 <div className="text-lg text-gray-600 mb-6" style={{ minHeight: '305px', maxHeight: '305px', overflow: 'hidden', fontFamily: 'Segoe UI, Arial, sans-serif' }}>
@@ -298,14 +298,14 @@ function MainPage() {
                   style={{ fontWeight: 600, fontSize: '1.15rem', display: 'block', fontFamily: 'Segoe UI, Arial, sans-serif' }}
                   onClick={() => {
                     if (isAuthenticated) {
-                      navigate("/summarize");
+                      navigate("/summarization");
                     } else {
-                      navigate("/signup");
+                      navigate("/signin");
                     }
                   }}
                 >
                   <span className="relative z-10 group-hover:text-white transition-colors duration-200">Start Now</span>
-                  <span className="absolute left-0 top-0 h-full w-0 group-hover:w-full bg-gray-800 transition-all duration-300 ease-out z-0" style={{transitionProperty: 'width'}}></span>
+                  <span className="absolute left-0 top-0 h-full w-0 group-hover:w-full bg-black transition-all duration-300 ease-out z-0" style={{transitionProperty: 'width'}}></span>
                 </button>
                 <style>{`
                   .group:hover .group-hover\\:w-full { width: 100% !important; }
