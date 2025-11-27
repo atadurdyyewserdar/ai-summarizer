@@ -1,3 +1,4 @@
+// stray deleteSummarization removed; correct version is inside zustand store below
 // src/store/authStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -108,8 +109,8 @@ interface AuthState {
   setLastAttemptedRoute: (route: string | null) => void;
   clearError: () => void;
   clearSessionExpired: () => void;
-
-  uploadFile: (file: File, type?: string) => Promise<any>;
+  uploadFile: (file: File, type?: string, customSummary?:string) => Promise<any>;
+  deleteSummarization: (summaryId: string) => Promise<void>;
 }
 
 const initialState: Omit<
@@ -140,6 +141,7 @@ const initialState: Omit<
   profile: null,
   loadingProfile: false,
   profileError: null,
+  deleteSummarization: async () => {},
 };
 
 type AuthResponse = {
@@ -237,6 +239,7 @@ export const useAuthStore = create<AuthState>()(
                 res.data && res.data.data ? res.data.data : res.data;
               set({ profile: payload as ProfileData, loadingProfile: false });
               console.log("Fetched profile:", payload);
+              set({user: payload})
               resolve();
             } catch (err: any) {
               const message =
@@ -349,18 +352,49 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // Implementation:
-      async uploadFile(file, type = "BRIEF") {
+      async uploadFile(file, type = "BRIEF", customSummary?: string) {
         try {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("userName", get().user?.username || "");
           formData.append("type", type);
+          console.log("Custom Summary:", customSummary);
+          if (customSummary) {
+            formData.append("customSummary", customSummary);
+          }
 
-          const res = await apiClient.post("/v1/documents/summarize", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+          const res = await apiClient.post(
+            "/v1/documents/summarize",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
           // Return the full backend response data
           return res.data;
+        } catch (err) {
+          throw err;
+        }
+      },
+
+      async deleteSummarization(summaryId: string) {
+        try {
+          const res = await apiClient.delete("/user/delete-summarization", {
+            params: { summaryId },
+          });
+          if (res.data === "Success") {
+            set((state) => {
+              if (!state.profile) return {};
+              return {
+                profile: {
+                  ...state.profile,
+                  summarizationHistoryList: state.profile.summarizationHistoryList.filter((item) => item.id !== summaryId),
+                },
+              };
+            });
+          } else {
+            throw new Error("Delete failed");
+          }
         } catch (err) {
           throw err;
         }

@@ -1,13 +1,19 @@
 package com.aissummarizer.jennet.user.controller;
 
 import com.aissummarizer.jennet.common.model.ApiResponse;
+import com.aissummarizer.jennet.common.model.HttpResponse;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
+import com.aissummarizer.jennet.user.dto.UserProfileImageDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
+import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * User controller handling authenticated user actions such as retrieving profile data.
@@ -36,5 +42,11 @@ public class UserController {
     @PostMapping("/update-profile")
     public ResponseEntity<String> updateProfile(@RequestBody UserProfileDto userProfileDto) {
         return ResponseEntity.ok(userService.updateProfile(userProfileDto));
+    }
+
+    @DeleteMapping("/delete-summarization")
+    public ResponseEntity<String>deleteSummarization (@RequestParam String summaryId) {
+        userService.deleteSummary(summaryId);
+        return ResponseEntity.ok("Success");
     }
 }

@@ -3,6 +3,7 @@ package com.aissummarizer.jennet.auth.service;
 
 import com.aissummarizer.jennet.auth.dto.*;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
+import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.security.JwtService;
 import com.aissummarizer.jennet.passwordreset.service.PasswordResetService;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -51,13 +53,10 @@ public class AuthServiceImpl implements AuthService {
 
         // Generate a signed JWT refresh token for the successfully authenticated user.
         String refreshToken = jwtService.generateRefreshToken(request.username());
-
-        System.out.println("-=======================================");
-        System.out.println(UserProfileDto.from(user).toString());
         return new AuthResponse(
                 accessToken,
                 refreshToken,
-                UserProfileDto.from(user)
+                UserProfileDto.from(user, userService.userSummarizationHistory(user.getId()))
         );
     }
 
@@ -107,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
         return new AuthResponse(
                 newAccessToken,
                 newRefreshToken,
-                UserProfileDto.from(user)
+                UserProfileDto.from(user, userService.userSummarizationHistory(user.getId()))
         );
     }
 }

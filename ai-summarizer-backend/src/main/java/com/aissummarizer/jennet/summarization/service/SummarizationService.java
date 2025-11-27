@@ -11,4 +11,6 @@ public interface SummarizationService {
     public SummarizationEntity saveSummarization(SummarizationEntity summarization);
 
     public List<SummarizationEntity> findByUserId(String userId);
+
+    void deleteById(String summaryId);
 }

@@ -3,8 +3,10 @@ package com.aissummarizer.jennet.user.service;
 import com.aissummarizer.jennet.auth.dto.RegisterRequest;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
+import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,4 +67,8 @@ public interface UserService {
     void saveRefreshToken(String userId, String refreshToken);
 
     Optional<UserEntity> findByRefreshToken(String refreshToken);
+
+    List<UserSummarizationHistoryResponse> userSummarizationHistory(String userId);
+
+    void deleteSummary(String summaryId);
 }

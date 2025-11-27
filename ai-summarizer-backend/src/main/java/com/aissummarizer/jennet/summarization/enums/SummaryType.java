@@ -8,7 +8,8 @@ public enum SummaryType {
     KEY_POINTS("Bullet-point key information"),
     EXECUTIVE("Professional executive summary"),
     SENTIMENT("Sentiment and tone analysis"),
-    TECHNICAL("Technical documentation summary");
+    TECHNICAL("Technical documentation summary"),
+    CUSTOM("Custom summarization");
 
     private final String description;
 

@@ -5,7 +5,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -61,9 +63,5 @@ public class UserEntity {
 
     @Column(name = "refresh_token_expires_at")
     private LocalDateTime refreshTokenExpiresAt;
-
-    @Lob
-    @Column(name = "profile_image_data")
-    private byte[] profileImageData;
 
 }

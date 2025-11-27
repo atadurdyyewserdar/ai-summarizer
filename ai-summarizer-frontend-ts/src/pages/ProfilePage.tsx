@@ -1,9 +1,11 @@
-import profile from "../assets/profile.jpeg";
-import { Navbar } from "../components/Navbar";
-import fileIcon from "../assets/file.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import profile from "../assets/profile-picture.png";
+import editGif from "../assets/edit.gif";
+import fileIcon from "../assets/file.png";
+import dustBinIcon from "../assets/dust-bin.png";
+import { Navbar } from "../components/Navbar";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -14,12 +16,11 @@ const ProfilePage = () => {
     loadingProfile: loading,
     profileError: error,
     fetchProfile,
-    updateProfile,
     user,
   } = useAuthStore();
   const [isHydrated, setIsHydrated] = useState(false);
 
-  const [isEditing, setIsEditing] = useState({
+  const [isEditing] = useState({
     firstName: false,
     lastName: false,
     email: false,
@@ -66,46 +67,40 @@ const ProfilePage = () => {
     }
   }, [profileData]);
 
-  const handleEditToggle = (field: "firstName" | "lastName" | "email") => {
-    setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log("Changed", name, "to", value);
-  };
-
-  const handleSave = async () => {
-    try {
-      await updateProfile(formData);
-      setIsEditing({ firstName: false, lastName: false, email: false });
-      fetchProfile();
-    } catch (error) {
-      // Error is handled in the store
-    }
-  };
-
-  const imgSrc = profileData?.profileImageUrl || profile;
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       <div className="w-full max-w-[1200px] mx-auto flex min-h-screen gap-x-8">
-        <div className="min-w-1/3 h-700px mt-8">
-          <img
-            src={imgSrc}
-            alt="Profile"
-            className="mx-auto w-[300px] h-[300px] object-cover mb-6 border-1 border-gray-900"
-          />
+        <div className="min-w-1/3 h-700px relative flex flex-col items-center mt-[27px]">
+          <div className="text-2xl mb flex items-center w-full text-left">
+            <span>Profile picture</span>
+          </div>
+          <hr className="mb-5 border-gray-300 w-full" />
+          <div className="relative w-[300px] h-[300px] mx-auto mb-6">
+            <img
+              src={profile}
+              alt="Profile"
+              className="w-full h-full object-cover border-1 border-gray-900 rounded-full"
+            />
+            <label htmlFor="profile-image-input" className="absolute bottom-2 right-2 flex items-center bg-white rounded-md shadow cursor-pointer py-1 px-5" style={{ zIndex: 2 }}>
+              <img src={editGif} alt="Edit" className="w-3 h-3 mr-4" />
+              <span className="text-black text-sm">Edit</span>
+              <input
+                id="profile-image-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+              />
+            </label>
+          </div>
           <div className="mx-auto text-center mb-6">
             <div className="text-xl text-black">{profileData?.username}</div>
             <div className="text-base text-gray-600">{profileData?.email}</div>
           </div>
         </div>
-        <div className="min-w-2/3 flex flex-col mt-8">
+        <div className="min-w-2/3 flex flex-col mt-2">
           <div className="rounded-none p-5 bg-white">
-            <div className="text-2xl mb-2 flex items-center">
+            <div className="text-2xl mb flex items-center">
               <span>Personal Details</span>
             </div>
             <hr className="mb-5 border-gray-300" />
@@ -118,13 +113,13 @@ const ProfilePage = () => {
                     disabled={!isEditing.firstName}
                     name="firstName"
                     value={formData.firstName}
-                    onChange={handleInputChange}
+                    // onChange removed: handler not implemented
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
                   <svg
-                    onClick={() => handleEditToggle("firstName")}
+                    // onClick removed: handler not implemented
                     className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +131,7 @@ const ProfilePage = () => {
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
-                      strokeLinejoin="round"
+                        // onChange removed: handler not implemented
                       strokeWidth="2"
                       d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
                     />
@@ -151,13 +146,13 @@ const ProfilePage = () => {
                     disabled={!isEditing.lastName}
                     name="lastName"
                     value={formData.lastName}
-                    onChange={handleInputChange}
+                    // onChange removed: handler not implemented
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
                   <svg
-                    onClick={() => handleEditToggle("lastName")}
+                    // onClick removed: handler not implemented
                     className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +164,7 @@ const ProfilePage = () => {
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
-                      strokeLinejoin="round"
+                        // onChange removed: handler not implemented
                       strokeWidth="2"
                       d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
                     />
@@ -184,13 +179,13 @@ const ProfilePage = () => {
                     disabled={!isEditing.email}
                     name="email"
                     value={formData.email}
-                    onChange={handleInputChange}
+                    // onChange removed: handler not implemented
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
                   <svg
-                    onClick={() => handleEditToggle("email")}
+                    // onClick removed: handler not implemented
                     className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
                     aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +197,7 @@ const ProfilePage = () => {
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
-                      strokeLinejoin="round"
+                        // onChange removed: handler not implemented
                       strokeWidth="2"
                       d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
                     />
@@ -214,8 +209,8 @@ const ProfilePage = () => {
 
             <div className="text-sm mt-5 text-left">
               <button
-                onClick={handleSave}
-                className="hover:scale-101 w-45 text-sm cursor-pointer bg-black text-white h-9 p-0 rounded"
+                // onClick removed: handler not implemented
+                className="hover:scale-101 w-45 text-sm cursor-pointer text-white rounded bg-green-700 hover:bg-green-900 py-1.5 px-7 "
                 style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
               >
                 Update
@@ -233,7 +228,8 @@ const ProfilePage = () => {
                 style={{ backgroundColor: "#f8f9fa" }}
               />
               <button
-                className="mt-3 hover:scale-101 w-45 text-sm cursor-pointer bg-black text-white h-9 p-0 rounded cursor-pointer"
+                // onClick removed: handler not implemented
+                className="mt-3 hover:scale-101 w-45 bg-green-700 hover:bg-green-900 text-sm cursor-pointer text-white py-1.5 px-7 rounded cursor-pointer"
                 style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
               >
                 Submit
@@ -249,39 +245,62 @@ const ProfilePage = () => {
                 {(profileData?.summarizationHistoryList ?? []).map((it) => (
                   <div
                     key={it.id}
-                    className="hover:text-black hover:scale-102 cursor-pointer mb-1 border-gray-400 border-1 min-h-10 text-sm p-2 "
-                    onClick={() =>
-                      navigate(`/summarization/${it.id}`, {
-                        state: {
-                          summarizationList:
-                            profileData?.summarizationHistoryList ?? [],
-                          selectedId: it.id,
-                        },
-                      })
-                    }
+                    className="hover:text-black hover:scale-102 cursor-pointer mb-1 border-gray-400 border-1 min-h-10 text-sm p-2 flex justify-between items-center"
                     style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
                   >
-                    <div className="flex flex-col items-start mb-2 pb-2 border-b border-gray-200">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={getFileIcon()}
-                          alt={it.documentType + " icon"}
-                          className="w-4 h-4 object-contain"
-                        />
-                        <span className="text-base text-gray-700">
-                          {it.fileName}
+                    <div
+                      className="flex-1"
+                      onClick={() =>
+                        navigate(`/summarization/${it.id}`, {
+                          state: {
+                            summarizationList:
+                              profileData?.summarizationHistoryList ?? [],
+                            selectedId: it.id,
+                          },
+                        })
+                      }
+                    >
+                      <div className="flex flex-col items-start mb-2 pb-2 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={getFileIcon()}
+                            alt={it.documentType + " icon"}
+                            className="w-4 h-4 object-contain"
+                          />
+                          <span className="text-base text-gray-700">
+                            {it.fileName}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center mt-2">
+                        <span style={{ fontSize: "0.95rem" }}>
+                          {(it.summaryText || it.inputText)?.length > 80
+                            ? (it.summaryText || it.inputText).slice(0, 80) +
+                              "..."
+                            : it.summaryText || it.inputText}
                         </span>
+                        <span className="text-xs ml-2">&#8594;</span>
                       </div>
                     </div>
-                    <div className="flex items-center mt-2">
-                      <span style={{ fontSize: "0.95rem" }}>
-                        {(it.summaryText || it.inputText)?.length > 80
-                          ? (it.summaryText || it.inputText).slice(0, 80) +
-                            "..."
-                          : it.summaryText || it.inputText}
-                      </span>
-                      <span className="text-xs ml-2">&#8594;</span>
-                    </div>
+                    <button
+                      className="ml-3 text-red-500 hover:text-red-700"
+                      title="Delete summary"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          await useAuthStore.getState().deleteSummarization(it.id);
+                        } catch (err) {
+                          alert("Failed to delete summary");
+                        }
+                      }}
+                    >
+                      <img
+                        src={dustBinIcon}
+                        alt="Delete"
+                        className="w-4 h-4 object-contain cursor-pointer"
+                        style={{ filter: 'grayscale(1)' }}
+                      />
+                    </button>
                   </div>
                 ))}
               </>

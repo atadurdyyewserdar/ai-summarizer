@@ -21,6 +21,8 @@ function NewSummarizationPage() {
   const [showResult, setShowResult] = useState(false);
   const [summaryResult, setSummaryResult] = useState("");
   const [typingText, setTypingText] = useState("");
+  const [isTypingDone, setIsTypingDone] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,38 +54,60 @@ function NewSummarizationPage() {
 
   const handleSubmit = async () => {
     if (selectedFile) {
-      setShowResult(true); // Hide UI immediately
+      setShowResult(true); // Show typewriter area immediately
+      setTypingText("Summarizing...");
+      setIsTypingDone(false);
+      setSummaryResult("");
       try {
-        // Get the full backend response
-        const res = await uploadFile(selectedFile, summaryType.toUpperCase());
-        // Show only result.data.summary
-        setSummaryResult(res?.data?.summary);
+        // Pass customSummary only if summaryType is 'Custom'
+        const res = await uploadFile(
+          selectedFile,
+          summaryType.toUpperCase(),
+          summaryType === "Custom" ? customSummary : undefined
+        );
+        // Show only result.data.summary, ensure it's a string
+        setSummaryResult(typeof res?.data?.summary === "string" ? res.data.summary : "");
         setTypingText("");
         // Refresh profile to update summarization history
         await fetchProfile();
+        // setShowResult(true) will be handled by useEffect below
       } catch (err) {
         setSummaryResult("An error occurred while summarizing the document.");
         setTypingText("");
+        // setShowResult(true) will be handled by useEffect below
       }
     } else {
       // Optionally handle no file selected
     }
   };
 
-  // Typing animation effect
+  // Show result when summaryResult is set
   useEffect(() => {
-    if (showResult && summaryResult) {
-      setTypingText("");
+    if (summaryResult) {
+      setShowResult(true);
+    }
+  }, [summaryResult]);
+
+  // Plain text typewriter effect, then show markdown when done
+  useEffect(() => {
+    if (showResult && typeof summaryResult === 'string' && summaryResult.length > 0) {
+      setTypingText(""); 
+      setIsTypingDone(false);
       let i = 0;
-      const interval = setInterval(() => {
-        if (i < summaryResult.length) {
-          setTypingText((prev) => prev + summaryResult[i]);
+      const safeSummary = summaryResult;
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(() => {
+        if (i < safeSummary.length) {
+          setTypingText(safeSummary.slice(0, i + 1));
           i++;
         } else {
-          clearInterval(interval);
+          setIsTypingDone(true);
+          if (intervalRef.current) clearInterval(intervalRef.current);
         }
-      }, 30);
-      return () => clearInterval(interval);
+      }, 10);
+      return () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+      };
     }
   }, [showResult, summaryResult]);
 
@@ -91,6 +115,7 @@ function NewSummarizationPage() {
     setShowResult(false);
     setSummaryResult("");
     setTypingText("");
+    setIsTypingDone(false);
     setSelectedFile(null);
     setSummaryType(SUMMARY_OPTIONS[0]);
     setCustomSummary("");
@@ -164,7 +189,7 @@ function NewSummarizationPage() {
 
               <div className="text-right p-0 mb-5">
                 <button
-                  className="cursor-pointer m-0 p-0 border-2 border-black text-black bg-white-500 hover:bg-black hover:text-white py-2 px-4 rounded"
+                  className="text-base cursor-pointer m-0 p-0 text-white bg-green-700 hover:bg-green-900 hover:text-white py-1.5 px-7 rounded"
                   style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
                   onClick={handleSubmit}
                 >
@@ -178,8 +203,11 @@ function NewSummarizationPage() {
             <>
               <div className="justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
                 <div className="p-5 text-lg mb-8 text-gray-700 w-full text-left" style={{ minHeight: 80, fontFamily: 'Segoe UI, Arial, sans-serif' }}>
-                  {typingText}
-                  <span className="animate-pulse">|</span>
+                  {!isTypingDone ? (
+                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0}}>{typingText}<span className="animate-pulse">|</span></pre>
+                  ) : (
+                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0}}>{summaryResult}</pre>
+                  )}
                 </div>
               </div>
               <div className="flex justify-end">

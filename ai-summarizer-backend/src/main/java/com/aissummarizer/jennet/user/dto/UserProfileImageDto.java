@@ -1,4 +1,6 @@
 package com.aissummarizer.jennet.user.dto;
 
-public class UserProfileImageDto {
+import org.springframework.web.multipart.MultipartFile;
+
+public record UserProfileImageDto (String userName, MultipartFile imageFile){
 }

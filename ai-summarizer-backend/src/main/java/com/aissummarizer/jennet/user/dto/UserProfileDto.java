@@ -2,6 +2,9 @@ package com.aissummarizer.jennet.user.dto;
 
 import com.aissummarizer.jennet.user.entity.UserEntity;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * Lightweight representation of user profile data to expose via APIs.
  */
@@ -12,13 +15,16 @@ public record UserProfileDto(
         String lastName,
         String email,
         String profileImageUrl,
-        String role
+        String role,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        List<UserSummarizationHistoryResponse> summarizationHistoryList
 ) {
 
     /**
      * Builds a DTO from a {@link UserEntity}.
      */
-    public static UserProfileDto from(UserEntity user) {
+    public static UserProfileDto from(UserEntity user, List<UserSummarizationHistoryResponse> summarizationHistoryList) {
         return new UserProfileDto(
                 user.getId(),
                 user.getUserName(),
@@ -26,7 +32,10 @@ public record UserProfileDto(
                 user.getLastName(),
                 user.getEmail(),
                 user.getProfileImageUrl(),
-                user.getRole()
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                summarizationHistoryList
         );
     }
 }

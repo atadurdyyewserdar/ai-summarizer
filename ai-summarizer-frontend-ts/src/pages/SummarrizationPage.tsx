@@ -3,6 +3,8 @@ import { Navbar } from "../components/Navbar";
 import { useAuthStore } from "../store/authStore";
 import type { SummarizationItem } from "../store/authStore";
 import { useEffect } from "react";
+import { useState } from "react";
+import dustBinIcon from "../assets/dust-bin.png";
 import fileIcon from "../assets/file.png";
 import NewSummarizationPage from "./NewSummarizationPage";
 
@@ -16,8 +18,11 @@ export const SummarrizationPage = () => {
   const profile = useAuthStore((s) => s.profile);
   const loadingProfile = useAuthStore((s) => s.loadingProfile);
   const profileError = useAuthStore((s) => s.profileError);
-  const summarizationList: SummarizationItem[] = profile?.summarizationHistoryList || [];
-  const selected = summarizationList.find((item) => item.id === summarizationId);
+  const [localList, setLocalList] = useState<SummarizationItem[]>(profile?.summarizationHistoryList || []);
+  useEffect(() => {
+    setLocalList(profile?.summarizationHistoryList || []);
+  }, [profile]);
+  const selected = localList.find((item) => item.id === summarizationId);
 
   useEffect(() => {
     fetchProfile();
@@ -30,7 +35,7 @@ export const SummarrizationPage = () => {
       <div className="flex justify-center items-start min-h-[calc(100vh-80px)]">
         <div className="w-full max-w-[1200px] mx-auto bg-white border border-gray-300 rounded-lg flex min-h-[400px]" style={{ marginTop: 32, height: 'calc(100vh - 120px)' }}>
           {/* Left: List */}
-          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto">
+          <div className="w-1/3 border-r border-gray-200 p-4 overflow-y-auto min-w-[180px]" style={{ flexBasis: 'auto' }}>
             <div className="mb-4">
               <button
                 className="bg-black text-white w-full py-2 rounded hover:bg-gray-900 text-base cursor-pointer text-center"
@@ -44,23 +49,45 @@ export const SummarrizationPage = () => {
             </div>
             {loadingProfile && <div className="text-gray-400 text-center my-4">Loading...</div>}
             {profileError && <div className="text-red-500 text-center my-4">{profileError}</div>}
-            {summarizationList.map((item) => (
+            {localList.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-2 p-2 mb-2 rounded cursor-pointer transition-all ${item.id === summarizationId
+                className={`flex items-center gap-2 p-2 mb-2 rounded cursor-pointer transition-all justify-between ${item.id === summarizationId
                   ? "bg-gray-200 border-l-4 border-blue-500 font-medium"
                   : "hover:bg-gray-100"}`}
-                onClick={() => {
-                  navigate(`/summarization/${item.id}`);
-                }}
               >
-                    <img src={getFileIcon()} alt="file icon" className="w-5 h-5 object-contain" />
-                <span className="text-base text-gray-800" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}>{item.fileName}</span>
+                <div
+                  className="flex items-center gap-2 flex-1"
+                  onClick={() => {
+                    navigate(`/summarization/${item.id}`);
+                  }}
+                >
+                  <img src={getFileIcon()} alt="file icon" className="w-5 h-5 object-contain" />
+                  <span className="text-base text-gray-800" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}>{item.fileName}</span>
+                </div>
+                <button
+                  className="ml-2"
+                  title="Delete summary"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      await useAuthStore.getState().deleteSummarization(item.id);
+                      setLocalList((prev) => prev.filter((x) => x.id !== item.id));
+                      if (item.id === summarizationId) {
+                        navigate('/summarization');
+                      }
+                    } catch (err) {
+                      alert("Failed to delete summary");
+                    }
+                  }}
+                >
+                  <img src={dustBinIcon} alt="Delete" className="w-4 h-4 object-contain opacity-80 hover:opacity-100 cursor-pointer" />
+                </button>
               </div>
             ))}
           </div>
           {/* Right: Summary or New Summarization */}
-          <div className="w-2/3 p-3 flex flex-col h-full">
+          <div className="w-2/3 min-w-0 p-3 flex flex-col h-full overflow-x-auto" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
             {summarizationId === undefined ? (
               <NewSummarizationPage />
             ) : selected ? (

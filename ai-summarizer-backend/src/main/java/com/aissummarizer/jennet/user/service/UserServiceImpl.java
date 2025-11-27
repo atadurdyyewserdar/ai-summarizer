@@ -12,10 +12,12 @@ import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -171,5 +173,32 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .filter(u -> refreshToken.equals(u.getRefreshToken()))
                 .findFirst();
+    }
+
+    @Override
+    public List<UserSummarizationHistoryResponse> userSummarizationHistory(String userId) {
+        List<SummarizationEntity> summarizationEntities = summarizationService.findByUserId(userId);
+        return summarizationEntities.stream()
+                .map(h -> new UserSummarizationHistoryResponse(
+                        h.getId(),
+                        h.getCreatedAt(),
+                        h.getResult().getSummary(),
+                        h.getSummaryType().toString(),
+                        h.getDocumentType().getExtension(),
+                        h.getDocumentUpload().getOriginalFilename(),
+                        h.getMetadata().getImageCount(),
+                        h.getMetadata().getParagraphCount(),
+                        h.getMetadata().getSlideCount(),
+                        h.getMetadata().getProcessingTime(),
+                        h.getMetadata().getTableCount(),
+                        h.getMetadata().getWordCount(),
+                        h.getDocumentUpload().getFileSize()
+                ))
+                .toList();
+    }
+
+    @Override
+    public void deleteSummary(String summaryId) {
+        summarizationService.deleteById(summaryId);
     }
 }

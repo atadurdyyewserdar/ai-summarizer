@@ -125,6 +125,11 @@ public class OpenAiSummarizer implements AiSummarizer {
             summarization.setResult(result);
             summarizationService.saveSummarization(summarization);
 
+            logger.info("Summary before:");
+            logger.info(content.getAllText());
+            logger.info("Summary from openAI");
+            logger.info(summary);
+
             return new SummaryResult(
                     summary,
                     content.getType(),

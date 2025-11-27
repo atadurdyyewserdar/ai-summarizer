@@ -72,6 +72,11 @@ public class DocumentSummarizerService {
                     extractor.getDocumentType());
             // 3. Extract content
             DocumentContent content = extractWithLogging(extractor, file);
+            logger.info(options.getType().toString());
+            logger.info("========================================================");
+            logger.info(options.getCustomPrompt());
+            logger.info("========================================================");
+            logger.info(content.getAllText());
             // 4. Summarize with AI
             SummaryResult result = aiSummarizer.summarize(content, options, userName, documentUploadEntity);
             long duration = System.currentTimeMillis() - startTime;

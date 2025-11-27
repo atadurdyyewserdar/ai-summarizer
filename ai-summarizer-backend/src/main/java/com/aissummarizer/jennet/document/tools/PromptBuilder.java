@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 public class PromptBuilder {
 
     public String buildPrompt(DocumentContent content, SummaryOptions options) {
-        if (options.getCustomPrompt() != null) {
-            return buildCustomPrompt(content, options.getCustomPrompt());
-        }
-
         return switch (options.getType()) {
             case COMPREHENSIVE -> buildComprehensivePrompt(content);
             case BRIEF -> buildBriefPrompt(content);
@@ -19,6 +15,7 @@ public class PromptBuilder {
             case EXECUTIVE -> buildExecutivePrompt(content);
             case SENTIMENT -> buildSentimentPrompt(content);
             case TECHNICAL -> buildTechnicalPrompt(content);
+            case CUSTOM -> buildCustomPrompt(content, options.getCustomPrompt());
         };
     }
 

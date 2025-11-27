@@ -2,6 +2,7 @@ package com.aissummarizer.jennet.document.service;
 
 import com.aissummarizer.jennet.common.exception.InvalidFileException;
 import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeException;
+import com.aissummarizer.jennet.common.validator.FileValidator;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.document.repository.DocumentUploadRepository;
@@ -27,11 +28,14 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class DocumentUploadServiceImpl implements DocumentUploadService {
-
+    private final FileValidator fileValidator;
     private final DocumentUploadRepository documentUploadRepository;
     private final UserService userService;
+
     @Override
     public DocumentUploadEntity uploadDocument(MultipartFile file, String userName) throws InvalidFileException, UnsupportedDocumentTypeException {
+
+        fileValidator.validate(file);
 
         if (file.isEmpty()) {
             throw new InvalidFileException("Uploaded file is empty");

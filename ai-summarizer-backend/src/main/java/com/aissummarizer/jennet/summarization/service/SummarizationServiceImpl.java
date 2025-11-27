@@ -84,4 +84,9 @@ public class SummarizationServiceImpl implements SummarizationService {
     public List<SummarizationEntity> findByUserId(String userId) {
         return summarizationRepository.findByUserId(userId);
     }
+
+    @Override
+    public void deleteById(String summaryId) {
+        summarizationRepository.deleteById(summaryId);
+    }
 }
