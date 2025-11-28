@@ -59,6 +59,7 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
                 logger.debug("Could not resolve user for authentication name '{}': {}", authentication.getName(), e.getMessage());
             }
         }
+
         ApiUsageLogEntity log = ApiUsageLogEntity.builder()
                 .user(user)
                 .endpoint(endpoint)
