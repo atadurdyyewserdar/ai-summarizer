@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
 import { Navbar } from "../components/Navbar";
+import { UserDetails } from "../components/UserDetails";
+import { UsersTable } from "../components/UsersTable";
 
 const DASHBOARD_ITEMS = [
   { id: "users", label: "Users" },
@@ -8,6 +11,27 @@ const DASHBOARD_ITEMS = [
 
 export default function DashboardPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const getUsers = useAuthStore((s) => s.getUsers);
+
+  useEffect(() => {
+    if (selectedId === "users") {
+      setLoading(true);
+      setError(null);
+      getUsers()
+        .then((data) => {
+          setUsers(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError("Failed to fetch users");
+          setLoading(false);
+        });
+    }
+  }, [selectedId, getUsers]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -15,7 +39,7 @@ export default function DashboardPage() {
       <div className="flex justify-center items-start min-h-[calc(100vh-80px)]">
         <div className="w-full max-w-[1200px] mx-auto bg-white border border-gray-300 rounded-lg flex min-h-[400px]" style={{ marginTop: 32, height: 'calc(100vh - 120px)' }}>
           {/* Left: List */}
-          <div className="w-1/3 border-r border-gray-200 p-0 flex flex-col min-w-[180px]" style={{ flexBasis: 'auto' }}>
+          <div className="w-1/4 border-r border-gray-200 p-0 flex flex-col min-w-[120px]" style={{ flexBasis: 'auto' }}>
             <div className="p-4 pb-2">
               <div className="text-lg font-semibold text-black">Dashboard</div>
             </div>
@@ -31,14 +55,30 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-          {/* Right: Blank Page */}
-          <div className="w-2/3 min-w-0 p-3 flex flex-col h-full overflow-x-auto" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-            {/* Show blank for now, will update later */}
-            {selectedId && (
-              <div className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-2xl font-semibold">
-                {/* Blank content for selected item */}
-              </div>
-            )}
+          {/* Right: Content Panel */}
+          <div className="w-3/4 min-w-0 p-3 flex flex-col h-full overflow-x-auto relative" style={{ wordBreak: 'break-word', overflowWrap: 'break-word', maxHeight: 'calc(100vh - 120px)' }}>
+            <div className="w-full h-full">
+              {selectedId === "users" && (
+                <div>
+                  {loading && <div className="text-gray-400">Loading...</div>}
+                  {error && <div className="text-red-500">{error}</div>}
+                  {!loading && !error && users.length > 0 && !selectedUser && (
+                    <UsersTable users={users} onSelect={setSelectedUser} />
+                  )}
+                  {selectedUser && (
+                    <UserDetails user={selectedUser} onBack={() => setSelectedUser(null)} showHeadline />
+                  )}
+                  {!loading && !error && users.length === 0 && (
+                    <div className="text-gray-400">No users found.</div>
+                  )}
+                </div>
+              )}
+              {selectedId === "api-usage" && (
+                <div className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-2xl font-semibold">
+                  {/* Blank content for API usage */}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

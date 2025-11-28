@@ -1,4 +1,4 @@
-      // summarizeCustomText is now inside the zustand store below
+// summarizeCustomText is now inside the zustand store below
 // stray deleteSummarization removed; correct version is inside zustand store below
 // src/store/authStore.ts
 import { create } from "zustand";
@@ -115,6 +115,7 @@ interface AuthState {
   uploadFile: (file: File, type?: string, customSummary?:string) => Promise<any>;
   deleteSummarization: (summaryId: string) => Promise<void>;
   summarizeCustomText: (params: { userName: string, type: string, customSummary?: string, customText: string }) => Promise<any>;
+  getUsers: () => Promise<any>; // <-- Added getUsers here
 }
 
 const initialState: Omit<
@@ -134,6 +135,7 @@ const initialState: Omit<
   | "clearSessionExpired"
   | "uploadFile"
   | "summarizeCustomText"
+  | "getUsers" // <-- Exclude getUsers from initialState
 > = {
   user: null,
   accessToken: null,
@@ -424,6 +426,15 @@ export const useAuthStore = create<AuthState>()(
           } else {
             throw new Error("Delete failed");
           }
+        } catch (err) {
+          throw err;
+        }
+      },
+
+      async getUsers() {
+        try {
+          const res = await apiClient.get("/user/get-users");
+          return res.data;
         } catch (err) {
           throw err;
         }

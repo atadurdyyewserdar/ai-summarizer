@@ -10,6 +10,8 @@ import { ChangePasswordPage } from "./pages/ChangePasswordPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
+import { RoleProtectedRoute } from "./routes/RoleProtectedRoute";
+import DashboardPage from "./pages/DashboardPage";
 import { SummarrizationPage } from "./pages/SummarrizationPage";
 
 function AuthRedirect() {
@@ -60,6 +62,14 @@ function App() {
             <ProtectedRoute>
               <SummarrizationPage />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <RoleProtectedRoute allowedRoles={["ROLE_USER"]}>
+              <DashboardPage />
+            </RoleProtectedRoute>
           }
         />
         {/* Redirect logic: always as last route */}

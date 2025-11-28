@@ -71,4 +71,6 @@ public interface UserService {
     List<UserSummarizationHistoryResponse> userSummarizationHistory(String userId);
 
     void deleteSummary(String summaryId);
+
+    List<UserProfileDto> getAllUsers();
 }

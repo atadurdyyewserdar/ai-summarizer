@@ -203,4 +203,32 @@ public class UserServiceImpl implements UserService {
     public void deleteSummary(String summaryId) {
         summarizationService.deleteById(summaryId);
     }
+
+    @Override
+    public List<UserProfileDto> getAllUsers() {
+        List<UserEntity> users = userRepository.findAll();
+    return users.stream()
+        .map(user -> {
+            List<SummarizationEntity> history = summarizationService.findByUserId(user.getId());
+            List<UserSummarizationHistoryResponse> historyDtos = history.stream()
+                .map(h -> new UserSummarizationHistoryResponse(
+                        h.getId(),
+                        h.getCreatedAt(),
+                        h.getResult().getSummary(),
+                        h.getSummaryType().toString(),
+                        h.getDocumentType().getExtension(),
+                        h.getDocumentUpload().getOriginalFilename(),
+                        h.getMetadata().getImageCount(),
+                        h.getMetadata().getParagraphCount(),
+                        h.getMetadata().getSlideCount(),
+                        h.getMetadata().getProcessingTime(),
+                        h.getMetadata().getTableCount(),
+                        h.getMetadata().getWordCount(),
+                        h.getDocumentUpload().getFileSize()
+                ))
+                .toList();
+            return UserProfileDto.from(user, historyDtos);
+        })
+        .toList();
+    }
 }

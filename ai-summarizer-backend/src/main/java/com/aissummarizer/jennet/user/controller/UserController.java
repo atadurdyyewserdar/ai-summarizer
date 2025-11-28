@@ -9,11 +9,13 @@ import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * User controller handling authenticated user actions such as retrieving profile data.
@@ -48,5 +50,12 @@ public class UserController {
     public ResponseEntity<String>deleteSummarization (@RequestParam String summaryId) {
         userService.deleteSummary(summaryId);
         return ResponseEntity.ok("Success");
+    }
+
+    @GetMapping("/get-users")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<UserProfileDto>> getAllUsers() {
+        List<UserProfileDto> profileDtos = userService.getAllUsers();
+        return ResponseEntity.ok(profileDtos);
     }
 }
