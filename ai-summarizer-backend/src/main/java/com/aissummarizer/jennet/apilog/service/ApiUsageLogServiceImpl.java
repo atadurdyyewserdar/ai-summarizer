@@ -1,5 +1,6 @@
 package com.aissummarizer.jennet.apilog.service;
 
+import com.aissummarizer.jennet.apilog.dto.ApiUsageResponseDto;
 import com.aissummarizer.jennet.apilog.entity.ApiUsageLogEntity;
 import com.aissummarizer.jennet.apilog.repository.ApiUsageLogRepository;
 import com.aissummarizer.jennet.user.entity.UserEntity;
@@ -15,6 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the API usage logging service.
@@ -62,6 +65,7 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
 
         ApiUsageLogEntity log = ApiUsageLogEntity.builder()
                 .user(user)
+                .userName(user == null ? "Unknown" : user.getUserName())
                 .endpoint(endpoint)
                 .httpMethod(httpMethod)
                 .requestSizeBytes(requestSizeBytes)
@@ -74,4 +78,21 @@ public class ApiUsageLogServiceImpl implements ApiUsageLogService {
         apiUsageLogRepository.save(log);
         logger.debug("API log created via helper method for endpoint: {}", endpoint);
     }
+
+    @Override
+    public List<ApiUsageResponseDto> getAllLog() {
+        List<ApiUsageLogEntity> entities = apiUsageLogRepository.findAll();
+        return entities.stream()
+                .map(
+                    i -> new ApiUsageResponseDto(
+                            i.getEndpoint(),
+                            i.getHttpMethod(),
+                            i.getUser() == null ? "Unknown" : i.getUser().getUserName(),
+                            i.getProcessingTimeMs(),
+                            i.getCreatedAt()
+                    )
+                ).collect(Collectors.toList());
+    }
+
+
 }

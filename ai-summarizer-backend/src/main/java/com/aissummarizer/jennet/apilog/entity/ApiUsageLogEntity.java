@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.apilog.entity;
 
 import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,6 +31,9 @@ public class ApiUsageLogEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @Column
+    private String userName;
+
     @Column(nullable = false, length = 100)
     private String endpoint;
 
@@ -50,6 +54,7 @@ public class ApiUsageLogEntity {
 
     @CreationTimestamp
     @Column(nullable = false)
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime timestamp;
 
     @Column(nullable = false)
@@ -63,6 +68,7 @@ public class ApiUsageLogEntity {
 
     /** Timestamp of the request. */
     @Column(name = "created_at", nullable = false)
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime createdAt;
 
     /** How long the API call took (in milliseconds). */

@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.user.dto;
 
 import com.aissummarizer.jennet.common.enums.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,9 @@ public record UserProfileResponse(
         String firstname,
         String lastname,
         String profileImageUrl,
+        @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
         LocalDateTime createdAt,
+        @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
         LocalDateTime updatedAt,
         Role role,
         List<UserSummarizationHistoryResponse> summarizationHistoryList

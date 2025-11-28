@@ -1,6 +1,8 @@
 package com.aissummarizer.jennet.user.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 
 /**
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
  */
 public record UserSummarizationHistoryResponse(
         String id,
+        @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
         LocalDateTime createdAt,
         String summaryText,
         String summaryType,

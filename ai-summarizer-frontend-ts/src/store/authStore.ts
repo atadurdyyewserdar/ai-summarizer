@@ -80,6 +80,15 @@ export interface ProfileData {
   summarizationHistoryList: SummarizationItem[];
 }
 
+// API Usage Log DTO interface
+export interface ApiUsageLog {
+  endpoint: string;
+  httpMethod: string;
+  userName: string;
+  processingTime: number;
+  createdAt: string;
+}
+
 interface AuthState {
   user: User | null;
   accessToken: string | null;
@@ -116,6 +125,7 @@ interface AuthState {
   deleteSummarization: (summaryId: string) => Promise<void>;
   summarizeCustomText: (params: { userName: string, type: string, customSummary?: string, customText: string }) => Promise<any>;
   getUsers: () => Promise<any>; // <-- Added getUsers here
+  getApiUsageLogs: () => Promise<ApiUsageLog[]>;
 }
 
 const initialState: Omit<
@@ -135,7 +145,8 @@ const initialState: Omit<
   | "clearSessionExpired"
   | "uploadFile"
   | "summarizeCustomText"
-  | "getUsers" // <-- Exclude getUsers from initialState
+  | "getUsers"
+  | "getApiUsageLogs"
 > = {
   user: null,
   accessToken: null,
@@ -435,6 +446,15 @@ export const useAuthStore = create<AuthState>()(
         try {
           const res = await apiClient.get("/user/get-users");
           return res.data;
+        } catch (err) {
+          throw err;
+        }
+      },
+
+      async getApiUsageLogs() {
+        try {
+          const response = await apiClient.get<ApiUsageLog[]>("/usage/get-logs");
+          return response.data;
         } catch (err) {
           throw err;
         }

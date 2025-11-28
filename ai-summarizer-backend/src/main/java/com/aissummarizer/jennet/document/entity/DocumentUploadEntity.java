@@ -2,6 +2,7 @@ package com.aissummarizer.jennet.document.entity;
 
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,6 +39,7 @@ public class DocumentUploadEntity {
 
     @CreationTimestamp
     @Column(nullable = false)
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime uploadedAt;
 
     /** Original filename uploaded by the user. */

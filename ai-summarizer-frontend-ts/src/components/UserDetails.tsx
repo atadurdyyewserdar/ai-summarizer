@@ -32,7 +32,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ user, onBack, showHead
     <div className="w-full h-full flex items-center justify-center bg-gray-200 animate-slide-in-left" >
       <div className="bg-white p-6 w-full h-full relative flex flex-col" style={{ minHeight: 400 }}>
         <div className="flex items-center gap-4 absolute left-4 top-4">
-          <span className="text-lg font-bold text-left">User Details</span>
+          <span className="text-lg font-bold text-left text-gray-800">User Details</span>
           <button
             className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-semibold rounded transition-colors cursor-pointer text-sm"
             onClick={onBack}
@@ -49,70 +49,74 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ user, onBack, showHead
           <form className="flex flex-col gap-5 text-left flex-shrink-0">
             
             <div className="flex flex-col items-start">
-              <label className="text-sm font-bold mb-1" htmlFor="user-firstname">First Name</label>
+              <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-firstname">First Name</label>
               <input
                 id="user-firstname"
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
                 type="text"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
-                disabled
               />
             </div>
             <div className="flex flex-col items-start">
-              <label className="text-sm font-bold mb-1" htmlFor="user-lastname">Last Name</label>
+              <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-lastname">Last Name</label>
               <input
                 id="user-lastname"
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
                 type="text"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
-                disabled
               />
             </div>
             <div className="flex flex-col items-start">
-              <label className="text-sm font-bold mb-1" htmlFor="user-email">Email</label>
+              <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-email">Email</label>
               <input
                 id="user-email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 type="email"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
-                disabled
               />
             </div>
             <div className="flex flex-col items-start">
-              <label className="text-sm font-bold mb-1" htmlFor="user-username">Username</label>
+              <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-username">Username</label>
               <input
                 id="user-username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 type="text"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
-                disabled
               />
             </div>
             <div className="flex flex-col items-start">
-              <label className="text-sm font-bold mb-1" htmlFor="user-role">Role</label>
+              <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-role">Role</label>
               <input
                 id="user-role"
                 value={role}
                 onChange={e => setRole(e.target.value)}
                 type="text"
-                className="w-full text-sm h-8 border border-gray-400 p-2 rounded bg-gray-50"
-                disabled
+                className="w-full text-xs h-8 border border-gray-400 p-2 rounded bg-gray-50"
               />
+            </div>
+            <div className="text-sm mt-2 text-right">
+              <button
+                // onClick removed: handler not implemented
+                className="hover:scale-101 text-sm cursor-pointer text-white rounded bg-green-700 hover:bg-green-900 py-2 px-7 "
+                style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+              >
+                Update
+              </button>
             </div>
           </form>
         </div>
         <div className="mt-12">
-          <h3 className="text-lg font-semibold mb-2">Summarization History</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">Summarization History</h3>
           {summarizationHistory.length === 0 ? (
             <div className="text-gray-400">No summarization history found.</div>
           ) : (
-            <div className="max-h-48 overflow-y-auto border rounded p-2 bg-gray-50">
-              <table className="min-w-full text-sm">
-                <thead>
+            <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-sm p-2 bg-gray-50">
+              <table className="min-w-full text-sm border border-gray-200 rounded-sm">
+                <thead className="bg-gray-100 font-semibold text-gray-800">
                   <tr>
                     <th className="px-2 py-1 text-left">File Name</th>
                     <th className="px-2 py-1 text-left">Type</th>

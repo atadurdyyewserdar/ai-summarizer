@@ -6,9 +6,9 @@ interface UsersTableProps {
 }
 
 export const UsersTable: React.FC<UsersTableProps> = ({ users, onSelect }) => (
-  <div className="w-full h-full">
-    <table className="min-w-full text-sm">
-      <thead className="bg-gray-100">
+  <div className="w-full overflow-x-auto rounded-lg">
+    <table className="min-w-full text-sm border border-gray-200">
+      <thead className="bg-gray-100 text-gray-800">
         <tr>
           <th className="px-3 py-2 text-left whitespace-nowrap min-w-[110px] border-b border-gray-200">Username</th>
           <th className="px-3 py-2 text-left whitespace-nowrap min-w-[110px] border-b border-gray-200">First Name</th>

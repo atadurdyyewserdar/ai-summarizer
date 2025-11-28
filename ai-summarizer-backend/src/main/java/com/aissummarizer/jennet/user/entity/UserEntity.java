@@ -1,5 +1,6 @@
 package com.aissummarizer.jennet.user.entity;
 import com.aissummarizer.jennet.common.enums.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,9 +56,11 @@ public class UserEntity {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime updatedAt;
 
     @Column(name = "refresh_token", length = 512)

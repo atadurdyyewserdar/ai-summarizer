@@ -1,7 +1,10 @@
 package com.aissummarizer.jennet.apilog.service;
 
+import com.aissummarizer.jennet.apilog.dto.ApiUsageResponseDto;
 import com.aissummarizer.jennet.apilog.entity.ApiUsageLogEntity;
 import com.aissummarizer.jennet.user.entity.UserEntity;
+
+import java.util.List;
 
 /**
  * Service for recording usage logs of API requests.
@@ -35,4 +38,6 @@ public interface ApiUsageLogService {
             long responseSizeBytes,
             long processingTimeMs
     );
+
+    List<ApiUsageResponseDto> getAllLog();
 }

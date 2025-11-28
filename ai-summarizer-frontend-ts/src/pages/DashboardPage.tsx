@@ -3,6 +3,8 @@ import { useAuthStore } from "../store/authStore";
 import { Navbar } from "../components/Navbar";
 import { UserDetails } from "../components/UserDetails";
 import { UsersTable } from "../components/UsersTable";
+import { ApiUsageLogsTable } from "../components/ApiUsageLogsTable";
+import type { ApiUsageLog } from "../store/authStore";
 
 const DASHBOARD_ITEMS = [
   { id: "users", label: "Users" },
@@ -10,12 +12,16 @@ const DASHBOARD_ITEMS = [
 ];
 
 export default function DashboardPage() {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(DASHBOARD_ITEMS[0].id);
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [apiUsageLogs, setApiUsageLogs] = useState<ApiUsageLog[]>([]);
+  const [apiUsageLoading, setApiUsageLoading] = useState(false);
+  const [apiUsageError, setApiUsageError] = useState<string | null>(null);
   const getUsers = useAuthStore((s) => s.getUsers);
+  const getApiUsageLogs = useAuthStore((s) => s.getApiUsageLogs);
 
   useEffect(() => {
     if (selectedId === "users") {
@@ -31,7 +37,21 @@ export default function DashboardPage() {
           setLoading(false);
         });
     }
-  }, [selectedId, getUsers]);
+    if (selectedId === "api-usage") {
+
+      setApiUsageLoading(true);
+      setApiUsageError(null);
+      getApiUsageLogs()
+        .then((data) => {
+          setApiUsageLogs(data);
+          setApiUsageLoading(false);
+        })
+        .catch((err) => {
+          setApiUsageError("Failed to fetch API usage logs");
+          setApiUsageLoading(false);
+        });
+    }
+  }, [selectedId, getUsers, getApiUsageLogs]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -74,8 +94,16 @@ export default function DashboardPage() {
                 </div>
               )}
               {selectedId === "api-usage" && (
-                <div className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-2xl font-semibold">
+                <div className="flex flex-col items-center h-full w-full text-gray-700 text-2xl">
                   {/* Blank content for API usage */}
+                  {apiUsageLoading && <div className="text-gray-400">Loading...</div>}
+                  {apiUsageError && <div className="text-red-500">{apiUsageError}</div>}
+                  {!apiUsageLoading && !apiUsageError && apiUsageLogs.length > 0 && (
+                    <ApiUsageLogsTable logs={apiUsageLogs} />
+                  )}
+                  {!apiUsageLoading && !apiUsageError && apiUsageLogs.length === 0 && (
+                    <div className="text-gray-400">No API usage logs found.</div>
+                  )}
                 </div>
               )}
             </div>

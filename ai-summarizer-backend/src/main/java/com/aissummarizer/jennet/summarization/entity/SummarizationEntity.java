@@ -4,6 +4,7 @@ import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.user.entity.UserEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -38,6 +39,7 @@ public class SummarizationEntity {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "timestamp with time zone")
+    @JsonFormat(pattern = "MMM dd, yyyy 'on' HH:mm", locale = "en")
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
