@@ -43,6 +43,7 @@ const ProfilePage = () => {
     lastName: true,
     email: true,
   });
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

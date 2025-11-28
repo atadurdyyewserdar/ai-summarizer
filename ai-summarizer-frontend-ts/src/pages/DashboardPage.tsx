@@ -24,34 +24,49 @@ export default function DashboardPage() {
   const getApiUsageLogs = useAuthStore((s) => s.getApiUsageLogs);
 
   useEffect(() => {
-    if (selectedId === "users") {
-      setLoading(true);
-      setError(null);
-      getUsers()
-        .then((data) => {
+    const fetchData = async () => {
+      if (selectedId === "users") {
+        setLoading(true);
+        setError(null);
+        try {
+          const data = await getUsers();
           setUsers(data);
-          setLoading(false);
-        })
-        .catch((err) => {
+        } catch {
           setError("Failed to fetch users");
+        } finally {
           setLoading(false);
-        });
-    }
-    if (selectedId === "api-usage") {
-
-      setApiUsageLoading(true);
-      setApiUsageError(null);
-      getApiUsageLogs()
-        .then((data) => {
+        }
+      }
+      if (selectedId === "api-usage") {
+        setApiUsageLoading(true);
+        setApiUsageError(null);
+        try {
+          const data = await getApiUsageLogs();
           setApiUsageLogs(data);
-          setApiUsageLoading(false);
-        })
-        .catch((err) => {
+        } catch {
           setApiUsageError("Failed to fetch API usage logs");
+        } finally {
           setApiUsageLoading(false);
-        });
+        }
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  const handleOnBack = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch {
+      setError("Failed to fetch users");
+    } finally {
+      setLoading(false);
+      setSelectedUser(null);
     }
-  }, [selectedId, getUsers, getApiUsageLogs]);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -86,7 +101,7 @@ export default function DashboardPage() {
                     <UsersTable users={users} onSelect={setSelectedUser} />
                   )}
                   {selectedUser && (
-                    <UserDetails user={selectedUser} onBack={() => setSelectedUser(null)} showHeadline />
+                    <UserDetails user={selectedUser} onBack={handleOnBack} showHeadline />
                   )}
                   {!loading && !error && users.length === 0 && (
                     <div className="text-gray-400">No users found.</div>
