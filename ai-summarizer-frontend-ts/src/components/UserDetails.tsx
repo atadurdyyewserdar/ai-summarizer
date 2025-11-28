@@ -83,7 +83,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ user, onBack, showHead
               <input
                 id="user-username"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                disabled
                 type="text"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
               />

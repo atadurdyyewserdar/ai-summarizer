@@ -37,8 +37,8 @@ interface ResetPasswordPayload {
 }
 
 interface ChangePasswordPayload {
-  oldPassword: string;
-  newPassword: string;
+  userName: string;
+  password: string;
 }
 
 interface UpdateProfilePayload {
@@ -46,7 +46,6 @@ interface UpdateProfilePayload {
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
 }
 
 export interface SummarizationItem {
@@ -281,7 +280,7 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      async updateProfile(data) {
+      async updateProfile(data: UpdateProfilePayload) {
         try {
           set({ loadingProfile: true, profileError: null });
           const user = get().user;
@@ -334,7 +333,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      async changePassword(data) {
+      async changePassword(data: ChangePasswordPayload) {
         try {
           set({ loading: true, error: null });
 

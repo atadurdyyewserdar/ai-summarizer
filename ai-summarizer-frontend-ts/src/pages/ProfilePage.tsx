@@ -16,14 +16,32 @@ const ProfilePage = () => {
     loadingProfile: loading,
     profileError: error,
     fetchProfile,
+    updateProfile,
     user,
+    // ...existing code...
+    changePassword,
   } = useAuthStore();
+    const [newPassword, setNewPassword] = useState("");
+    const [passwordStatus, setPasswordStatus] = useState<null | "success" | "error">(null);
+
+    const handlePasswordChange = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setPasswordStatus(null);
+      try {
+        // Use username from persist store, not formData
+        await changePassword({ userName: user?.username || "", password: newPassword });
+        setPasswordStatus("success");
+        setNewPassword("");
+      } catch {
+        setPasswordStatus("error");
+      }
+    };
   const [isHydrated, setIsHydrated] = useState(false);
 
   const [isEditing] = useState({
-    firstName: false,
-    lastName: false,
-    email: false,
+    firstName: true,
+    lastName: true,
+    email: true,
   });
   const [formData, setFormData] = useState({
     firstName: "",
@@ -31,6 +49,7 @@ const ProfilePage = () => {
     username: "",
     email: "",
   });
+  const [updateStatus, setUpdateStatus] = useState<null | 'success' | 'error'>(null);
 
   useEffect(() => {
     // This effect ensures we wait for the store to be rehydrated from localStorage
@@ -57,7 +76,14 @@ const ProfilePage = () => {
   }, [isHydrated, user?.username, fetchProfile]);
 
   useEffect(() => {
-    if (profileData) {
+    // Only initialize formData from profileData if form is empty (initial load)
+    if (
+      profileData &&
+      !formData.firstName &&
+      !formData.lastName &&
+      !formData.email &&
+      !formData.username
+    ) {
       setFormData({
         email: profileData.email ?? "",
         firstName: profileData.firstname ?? "",
@@ -66,6 +92,29 @@ const ProfilePage = () => {
       });
     }
   }, [profileData]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdateStatus(null);
+    try {
+      await updateProfile({
+        username: formData.username,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      });
+      // Refetch full profile to restore summary history and all fields
+      await fetchProfile();
+      setUpdateStatus('success');
+    } catch (err) {
+      setUpdateStatus('error');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -113,29 +162,11 @@ const ProfilePage = () => {
                     disabled={!isEditing.firstName}
                     name="firstName"
                     value={formData.firstName}
-                    // onChange removed: handler not implemented
+                    onChange={handleInputChange}
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
-                  <svg
-                    // onClick removed: handler not implemented
-                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 30 30"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                        // onChange removed: handler not implemented
-                      strokeWidth="2"
-                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                    />
-                  </svg>
                 </div>
               </div>
               {/* Last Name */}
@@ -146,29 +177,11 @@ const ProfilePage = () => {
                     disabled={!isEditing.lastName}
                     name="lastName"
                     value={formData.lastName}
-                    // onChange removed: handler not implemented
+                    onChange={handleInputChange}
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
-                  <svg
-                    // onClick removed: handler not implemented
-                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 30 30"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                        // onChange removed: handler not implemented
-                      strokeWidth="2"
-                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                    />
-                  </svg>
                 </div>
               </div>
               {/* Email */}
@@ -179,62 +192,60 @@ const ProfilePage = () => {
                     disabled={!isEditing.email}
                     name="email"
                     value={formData.email}
-                    // onChange removed: handler not implemented
+                    onChange={handleInputChange}
                     type="text"
                     className="w-96 text-sm h-9 border-1 border-gray-400 p-2 disabled:bg-gray-100 rounded"
                     style={{ backgroundColor: "#f8f9fa" }}
                   />
-                  <svg
-                    // onClick removed: handler not implemented
-                    className="w-6 h-6 text-gray-800 dark:text-black cursor-pointer hover:scale-110 ml-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 30 30"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                        // onChange removed: handler not implemented
-                      strokeWidth="2"
-                      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
-                    />
-                  </svg>
                 </div>
               </div>
               {/* Set New Password */}
             </div>
 
-            <div className="text-sm mt-5 text-left">
+            <form className="text-sm mt-5 text-left" onSubmit={handleUpdateProfile}>
               <button
-                // onClick removed: handler not implemented
+                type="submit"
                 className="hover:scale-101 w-45 text-sm cursor-pointer text-white rounded bg-green-700 hover:bg-green-900 py-1.5 px-7 "
                 style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                disabled={loading}
               >
-                Update
+                {loading ? 'Updating...' : 'Update'}
               </button>
-            </div>
+              {updateStatus === 'success' && (
+                <span className="ml-4 text-green-700">Profile updated!</span>
+              )}
+              {updateStatus === 'error' && (
+                <span className="ml-4 text-red-700">Update failed. Please try again.</span>
+              )}
+            </form>
             {/* Set New Password - now under Update button */}
-            <div className="flex flex-col items-start mt-5">
+            <form className="flex flex-col items-start mt-5" onSubmit={handlePasswordChange}>
               <label className="text-sm font-bold mb-1 text-red-700">
                 Set new password:
               </label>
               <input
                 placeholder="New Password"
                 type="password"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
                 className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded mb-2 cursor-pointer"
                 style={{ backgroundColor: "#f8f9fa" }}
               />
               <button
-                // onClick removed: handler not implemented
-                className="mt-3 hover:scale-101 w-45 bg-green-700 hover:bg-green-900 text-sm cursor-pointer text-white py-1.5 px-7 rounded cursor-pointer"
+                type="submit"
+                className="mt-3 hover:scale-101 w-45 bg-green-700 hover:bg-green-900 text-sm cursor-pointer text-white py-1.5 px-7 rounded"
                 style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                disabled={loading}
               >
-                Update
+                Change Password
               </button>
-            </div>
+              {passwordStatus === "success" && (
+                <span className="ml-4 text-green-700">Password changed!</span>
+              )}
+              {passwordStatus === "error" && (
+                <span className="ml-4 text-red-700">Change failed. Please try again.</span>
+              )}
+            </form>
           </div>
           <div className="rounded-none p-5 bg-white text-gray-500">
             <div className="text-xl text-black mb-5">Your Summaries </div>
