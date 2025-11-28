@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Generate a signed JWT refresh token for the successfully authenticated user.
         String refreshToken = jwtService.generateRefreshToken(request.username());
+
         return new AuthResponse(
                 accessToken,
                 refreshToken,

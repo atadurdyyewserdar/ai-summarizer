@@ -16,7 +16,7 @@ public record UserProfileDto(
         String lastName,
         String email,
         String profileImageUrl,
-        Role role,
+        String role,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<UserSummarizationHistoryResponse> summarizationHistoryList
@@ -33,7 +33,7 @@ public record UserProfileDto(
                 user.getLastName(),
                 user.getEmail(),
                 user.getProfileImageUrl(),
-                user.getRole(),
+                user.getRole().getValue(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
                 summarizationHistoryList

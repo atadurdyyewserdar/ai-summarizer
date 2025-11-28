@@ -12,7 +12,6 @@ export interface User {
   username: string;
   email: string;
   role: string;
-  // add more as needed
 }
 
 interface LoginPayload {
@@ -47,6 +46,7 @@ interface UpdateProfilePayload {
   firstName: string;
   lastName: string;
   email: string;
+  role: string;
 }
 
 export interface SummarizationItem {
@@ -76,11 +76,11 @@ export interface ProfileData {
   profileImageUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  role: string;
   summarizationHistoryList: SummarizationItem[];
 }
 
 interface AuthState {
-    summarizeCustomText: (params: { userName: string, type: string, customSummary?: string, customText: string }) => Promise<any>;
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -114,6 +114,7 @@ interface AuthState {
   clearSessionExpired: () => void;
   uploadFile: (file: File, type?: string, customSummary?:string) => Promise<any>;
   deleteSummarization: (summaryId: string) => Promise<void>;
+  summarizeCustomText: (params: { userName: string, type: string, customSummary?: string, customText: string }) => Promise<any>;
 }
 
 const initialState: Omit<

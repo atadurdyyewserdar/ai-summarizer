@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
                 user.getProfileImageUrl(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
+                user.getRole(),
                 historyDtos
         );
     }
