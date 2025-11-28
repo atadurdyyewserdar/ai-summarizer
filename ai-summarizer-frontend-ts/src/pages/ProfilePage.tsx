@@ -223,7 +223,7 @@ const ProfilePage = () => {
               </label>
               <input
                 placeholder="New Password"
-                type="text"
+                type="password"
                 className="w-96 text-sm h-9 border-1 border-gray-400 p-2 rounded mb-2 cursor-pointer"
                 style={{ backgroundColor: "#f8f9fa" }}
               />

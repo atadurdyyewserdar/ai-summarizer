@@ -67,6 +67,17 @@ export const Navbar = () => {
                 >
                   My profile
                 </button>
+                {user?.role === 'admin' && (
+                  <button
+                    onClick={() => {
+                      navigate('/dashboard');
+                      setDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-800 border-t border-gray-700 cursor-pointer"
+                  >
+                    Dashboard
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     navigate('/summarization');

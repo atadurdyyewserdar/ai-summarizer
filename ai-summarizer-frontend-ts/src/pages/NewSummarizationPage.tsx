@@ -49,7 +49,7 @@ const loaderStyle = `
 const SUMMARY_OPTIONS = [
   "Brief",
   "Comprehensive",
-  "Key Points",
+  "Key_Points",
   "Executive",
   "Sentiment",
   "Technical",
@@ -58,10 +58,13 @@ const SUMMARY_OPTIONS = [
 
 function NewSummarizationPage() {
   const uploadFile = useAuthStore((state) => state.uploadFile);
+  const summarizeCustomText = useAuthStore((state) => state.summarizeCustomText);
   const fetchProfile = useAuthStore((state) => state.fetchProfile);
+  const profile = useAuthStore((state) => state.profile);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [summaryType, setSummaryType] = useState<string>(SUMMARY_OPTIONS[0]);
   const [customSummary, setCustomSummary] = useState<string>("");
+  const [customText, setCustomText] = useState<string>("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [summaryResult, setSummaryResult] = useState("");
@@ -100,7 +103,6 @@ function NewSummarizationPage() {
   const handleSubmit = async () => {
     if (selectedFile) {
       setShowResult(true); // Show typewriter area immediately
-      setTypingText("Summarizing...");
       setIsTypingDone(false);
       setSummaryResult("");
       try {
@@ -110,19 +112,31 @@ function NewSummarizationPage() {
           summaryType.toUpperCase(),
           summaryType === "Custom" ? customSummary : undefined
         );
-        // Show only result.data.summary, ensure it's a string
         setSummaryResult(typeof res?.data?.summary === "string" ? res.data.summary : "");
-        setTypingText("");
-        // Refresh profile to update summarization history
         await fetchProfile();
-        // setShowResult(true) will be handled by useEffect below
       } catch (err) {
         setSummaryResult("An error occurred while summarizing the document.");
-        setTypingText("");
-        // setShowResult(true) will be handled by useEffect below
       }
-    } else {
-      // Optionally handle no file selected
+    } else if (customText.trim()) {
+      setShowResult(true);
+      setIsTypingDone(false);
+      setSummaryResult("");
+      try {
+        const userName = profile?.username || "";
+        const type = summaryType.toUpperCase();
+        const res = await summarizeCustomText({
+          userName,
+          type,
+          customSummary: summaryType === "Custom" ? customSummary : undefined,
+          customText,
+        });
+        setSummaryResult(typeof res?.data?.summary === "string" ? res.data.summary : "");
+        await fetchProfile();
+      } catch (err) {
+        setSummaryResult("An error occurred while summarizing the text.");
+      }
+      setCustomText("");
+      setCustomSummary("")
     }
   };
 
@@ -159,7 +173,6 @@ function NewSummarizationPage() {
   const handleNewSummarization = () => {
     setShowResult(false);
     setSummaryResult("");
-    setTypingText("");
     setIsTypingDone(false);
     setSelectedFile(null);
     setSummaryType(SUMMARY_OPTIONS[0]);
@@ -229,7 +242,13 @@ function NewSummarizationPage() {
               <div className="title text-3xl mb-5 text-center">or</div>
 
               <div className="text-container mb-5">
-                <textarea placeholder="Paste your text here to summarize..." className="min-h-32 p-4 w-full border-1 border-gray-400 focus:border-2 focus:border-blue-200 rounded" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }} />
+                <textarea
+                  placeholder="Paste your text here to summarize..."
+                  className="min-h-32 p-4 w-full border-1 border-gray-400 focus:border-2 focus:border-blue-200 rounded"
+                  style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}
+                  value={customText}
+                  onChange={e => setCustomText(e.target.value)}
+                />
               </div>
 
               <div className="flex justify-end p-0 mb-5">
@@ -246,13 +265,17 @@ function NewSummarizationPage() {
 
           {/* Show loading GIF while waiting for backend, then show typewriter/result */}
           {showResult && !summaryResult && (
-            <div className="flex flex-col items-center justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
-              <style>{loaderStyle}</style>
-              <div className="loader" />
-            </div>
+            <>
+              <div className="text-xl font-bold text-left mb-2">Summary</div>
+              <div className="flex flex-col items-center justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
+                <style>{loaderStyle}</style>
+                <div className="loader" />
+              </div>
+            </>
           )}
           {showResult && summaryResult && (
             <>
+              <div className="text-xl font-bold text-left mb-2">Summary</div>
               <div className="justify-center min-h-80 bg-white border border-gray-400 rounded mb-4">
                 <div className="p-5 text-lg mb-8 text-gray-700 w-full text-left" style={{ minHeight: 80, fontFamily: 'Segoe UI, Arial, sans-serif' }}>
                   {!isTypingDone ? (

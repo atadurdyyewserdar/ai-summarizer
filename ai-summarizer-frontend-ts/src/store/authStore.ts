@@ -1,3 +1,4 @@
+      // summarizeCustomText is now inside the zustand store below
 // stray deleteSummarization removed; correct version is inside zustand store below
 // src/store/authStore.ts
 import { create } from "zustand";
@@ -10,6 +11,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  role: string;
   // add more as needed
 }
 
@@ -78,6 +80,7 @@ export interface ProfileData {
 }
 
 interface AuthState {
+    summarizeCustomText: (params: { userName: string, type: string, customSummary?: string, customText: string }) => Promise<any>;
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -129,6 +132,7 @@ const initialState: Omit<
   | "clearError"
   | "clearSessionExpired"
   | "uploadFile"
+  | "summarizeCustomText"
 > = {
   user: null,
   accessToken: null,
@@ -143,6 +147,7 @@ const initialState: Omit<
   profileError: null,
   deleteSummarization: async () => {},
 };
+type SummarizeCustomTextParams = { userName: string; type: string; customSummary?: string; customText: string };
 
 type AuthResponse = {
   profile: User;
@@ -371,6 +376,29 @@ export const useAuthStore = create<AuthState>()(
             }
           );
           // Return the full backend response data
+          return res.data;
+        } catch (err) {
+          throw err;
+        }
+      },
+
+      async summarizeCustomText(params: SummarizeCustomTextParams) {
+        try {
+          const formData = new FormData();
+          formData.append("userName", params.userName);
+          formData.append("type", params.type);
+          if (params.customSummary) {
+            formData.append("customSummary", params.customSummary);
+          }
+          formData.append("customText", params.customText);
+
+          const res = await apiClient.post(
+            "/v1/documents/summarize/custom-text",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
           return res.data;
         } catch (err) {
           throw err;
