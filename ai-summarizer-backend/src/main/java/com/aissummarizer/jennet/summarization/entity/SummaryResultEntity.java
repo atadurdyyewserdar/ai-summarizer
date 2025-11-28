@@ -32,11 +32,11 @@ public class SummaryResultEntity {
     private String summary;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "summary_type", length = 30, nullable = false)
+    @Column(name = "summary_type", length = 30)
     private SummaryType summaryType;
 
     /**

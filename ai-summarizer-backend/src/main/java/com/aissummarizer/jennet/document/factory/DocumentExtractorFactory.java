@@ -4,6 +4,7 @@ import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeExceptio
 import com.aissummarizer.jennet.document.service.DocumentExtractor;
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.document.tools.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,7 @@ public class DocumentExtractorFactory {
     public DocumentExtractor<?> getExtractor(String filename)
             throws UnsupportedDocumentTypeException {
         String extension = FileUtils.getFileExtension(filename);
-        logger.info(("extension is: " + extension));
         DocumentType type = DocumentType.fromExtension(extension);
-        logger.info("DocumentType is: " + type);
         DocumentExtractor<?> extractor = extractors.get(type);
         if (extractor == null) {
             throw new UnsupportedDocumentTypeException(extension);

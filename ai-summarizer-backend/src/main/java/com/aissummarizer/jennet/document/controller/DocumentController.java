@@ -36,6 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,7 +65,7 @@ public class DocumentController {
      */
     @PostMapping(value = "/summarize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<SummaryResult>> summarize(
-            @RequestParam("file") @NotNull MultipartFile file,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam("userName") @NotNull String userName,
             @RequestParam(value = "type", defaultValue = "COMPREHENSIVE")
             @Valid SummaryType type,
@@ -131,26 +135,31 @@ public class DocumentController {
         }
     }
 
-    @PostMapping(value = "/summarize/custom", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<SummaryResult>> summarizeWithCustomPrompt(
-            @RequestParam("file") @NotNull MultipartFile file, @RequestParam("userName") String userName,
-            @RequestParam("prompt") @NotBlank @Size(min = 10, max = 1000) String customPrompt) {
+    @PostMapping(value = "/summarize/custom-text")
+    public ResponseEntity<ApiResponse<SummaryResult>> summarizeTextWithoutFile(
+            @RequestParam("userName") String userName,
+            @RequestParam(value = "type", defaultValue = "COMPREHENSIVE")
+            @Valid SummaryType type,
+            @RequestParam(value = "customSummary", required = false)
+            String customPrompt,
+            @RequestParam(value = "customText", required = false)
+            String customText
+            ) throws DocumentProcessingException {
 
-        log.info("Received custom summarization request: file={}", file.getOriginalFilename());
+            log.info("Received custom summarization request");
 
-        try {
-            SummaryOptions options = SummaryOptions.builder()
-                    .customPrompt(customPrompt)
-                    .build();
+            SummaryOptions.Builder optionsBuilder = SummaryOptions.builder()
+                    .type(type)
+                    .customPrompt(customPrompt);
 
-            DocumentUploadEntity uploadEntity = documentUploadService.uploadDocument(file, userName);
+            DocumentUploadEntity documentUploadEntity = documentUploadService.uploadMockDocument(customText, userName);
 
-            SummaryResult result = summarizerService.summarizeDocument(file, options, userName,uploadEntity);
+            SummaryOptions options = optionsBuilder.build();
+
+            SummaryResult result = summarizerService.summarizeDocument(customText, options, userName, documentUploadEntity);
+
             return ResponseEntity.ok(ApiResponse.success(result));
 
-        } catch (DocumentProcessingException e) {
-            return handleProcessingException(e, file.getOriginalFilename());
-        }
     }
 
     @GetMapping("/supported-types")

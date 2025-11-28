@@ -58,7 +58,7 @@ public class SummarizationEntity {
     private String summaryText;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "document_type", length = 20, nullable = false)
+    @Column(name = "document_type", length = 20)
     private DocumentType documentType;
 
     @OneToOne(mappedBy = "summarization", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

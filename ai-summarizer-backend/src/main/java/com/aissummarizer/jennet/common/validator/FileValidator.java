@@ -23,7 +23,7 @@ public class FileValidator {
      * @param file File to validate
      * @throws InvalidFileException if validation fails
      */
-    public void     validate(MultipartFile file) throws InvalidFileException {
+    public void validate(MultipartFile file) throws InvalidFileException {
         validateNotNull(file);
         validateNotEmpty(file);
         validateSize(file);

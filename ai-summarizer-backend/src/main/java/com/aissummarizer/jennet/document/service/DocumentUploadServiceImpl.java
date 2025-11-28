@@ -46,16 +46,10 @@ public class DocumentUploadServiceImpl implements DocumentUploadService {
             throw new InvalidFileException("Uploaded file has no name");
         }
 
-        // Extract file extension
-//        String extension = FileUtils.getFileExtension(originalFilename);
-
         // Validate extension (throws if unsupported)
         FileUtils.getFileExtension(originalFilename);
 
-        // ─────────────────────────────────────────────
         // STORE METADATA IN DATABASE
-        // ─────────────────────────────────────────────
-
         UserEntity user = userService.getByUserName(userName);
 
         DocumentUploadEntity entity = DocumentUploadEntity.builder()
@@ -67,10 +61,38 @@ public class DocumentUploadServiceImpl implements DocumentUploadService {
                 .documentType(DocumentType.fromExtension(FileUtils.getFileExtension(file.getOriginalFilename())))
                 .fileExtension(FileUtils.getFileExtension(file.getOriginalFilename()))
                 .build();
+        return documentUploadRepository.save(entity);
+    }
 
-        // You may store file physically (local or S3)
-        // NOT IMPLEMENTED HERE — depends on your chosen storage path.
-        // file.transferTo(...)
+    /**
+     * If user sends text instead of file, we need to create MockDocument to save smth in DB
+     * @param customText users text
+     * @param userName users username
+     * @return DocumentUploadEntity
+     */
+    @Override
+    public DocumentUploadEntity uploadMockDocument(String customText, String userName) throws InvalidFileException {
+        if (customText.isBlank()) {
+            throw new InvalidFileException("Text is blank");
+        }
+
+        String originalFilename = customText.substring(0, customText.indexOf(" "));
+        if (originalFilename.isEmpty()) {
+            throw new InvalidFileException("Text is blank");
+        }
+
+        // STORE METADATA IN DATABASE
+        UserEntity user = userService.getByUserName(userName);
+
+        DocumentUploadEntity entity = DocumentUploadEntity.builder()
+                .id(UUID.randomUUID().toString())
+                .user(user)
+                .originalFilename(originalFilename)
+                .fileSize(customText.getBytes().length)
+                .uploadedAt(LocalDateTime.now())
+                .documentType(DocumentType.TXT)
+                .fileExtension("TXT")
+                .build();
 
         return documentUploadRepository.save(entity);
     }

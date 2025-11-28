@@ -35,4 +35,6 @@ public interface DocumentUploadService {
      * @return DocumentUploadEntity
      */
     DocumentUploadEntity getById(String documentId) throws InvalidFileException;
+
+    DocumentUploadEntity uploadMockDocument(String customText, String userName) throws InvalidFileException;
 }

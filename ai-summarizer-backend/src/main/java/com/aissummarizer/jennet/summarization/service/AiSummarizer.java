@@ -21,4 +21,6 @@ public interface AiSummarizer {
      */
     SummaryResult summarize(DocumentContent content, SummaryOptions options, String userName, DocumentUploadEntity uploadEntity)
             throws AiSummarizationException;
+
+    SummaryResult summarize(String customText, SummaryOptions options, String userName) throws AiSummarizationException;
 }

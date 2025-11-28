@@ -3,6 +3,7 @@ package com.aissummarizer.jennet.summarization.service;
 import com.aissummarizer.jennet.config.AiSummarizerConfig;
 import com.aissummarizer.jennet.common.exception.AiSummarizationException;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
+import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.document.service.DocumentContent;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
 import com.aissummarizer.jennet.summarization.entity.SummaryMetadataEntity;
@@ -144,6 +145,85 @@ public class OpenAiSummarizer implements AiSummarizer {
         }
     }
 
+    @Override
+    public SummaryResult summarize(String customText, SummaryOptions options, String userName) throws AiSummarizationException {
+        try {
+            long startTime = System.currentTimeMillis();
+
+            // Build prompt
+            String prompt = promptBuilder.buildPrompt(customText, options);
+
+            // Create message parts
+            List<ChatCompletionContentPart> contentParts = createContentParts(prompt);
+
+            // Call OpenAI API
+            String summary = callOpenAi(contentParts, options);
+
+            // Build metadata model
+            SummaryMetadata metadata = buildMetadata(customText, startTime);
+
+            UserEntity user = userService.getByUserName(userName);
+
+            // Create and persist summarization first (owner of neither result nor metadata)
+            SummarizationEntity summarization = new SummarizationEntity();
+            summarization.setId(UUID.randomUUID().toString());
+            summarization.setUser(user);
+            summarization.setInputText(prompt);
+            summarization.setSummaryText(summary);
+            summarization.setSummaryType(options.getType());
+            summarization.setCreatedAt(LocalDateTime.now());
+            summarization.setDocumentType(DocumentType.TXT);
+
+            summarization = summarizationRepository.save(summarization);
+//             optional: summarizationRepository.flush();
+
+            SummaryResultEntity result = new SummaryResultEntity();
+            result.setId(UUID.randomUUID().toString());
+            result.setSummarization(summarization); // owning side set before save
+            result.setSummary(summary);
+            result.setSummaryType(options.getType());
+            result.setDocumentType(DocumentType.TXT);
+            result = summaryResultRepository.save(result);
+
+//             optional: summaryResultRepository.flush();
+
+            // Create metadata (owning side for both summary_result_id and summarization_id)
+            SummaryMetadataEntity metadataEntity = new SummaryMetadataEntity();
+            metadataEntity.setId(UUID.randomUUID().toString());
+            metadataEntity.setSummarization(summarization);
+            metadataEntity.setWordCount(metadata.getWordCount());
+            metadataEntity.setImageCount(metadata.getImageCount());
+            metadataEntity.setSlideCount(metadata.getSlideCount());
+            metadataEntity.setParagraphCount(metadata.getParagraphCount());
+            metadataEntity.setTableCount(metadata.getTableCount());
+            metadataEntity.setProcessingTime(metadata.getProcessingTimeMs());
+            metadataEntity.setSummaryResult(result);
+            metadataEntity = metadataRepository.save(metadataEntity);
+//             optional: metadataRepository.flush();
+
+            // update inverse sides in memory for consistency
+            summarization.setMetadata(metadataEntity);
+            summarization.setResult(result);
+            summarizationService.saveSummarization(summarization);
+
+            logger.info("Summary before:");
+            logger.info(customText);
+            logger.info("Summary from openAI");
+            logger.info(summary);
+
+            return new SummaryResult(
+                    summary,
+                    DocumentType.TXT,
+                    options.getType(),
+                    metadata
+            );
+
+        } catch (Exception e) {
+            logger.error("Failed to summarize document", e);
+            throw new AiSummarizationException("AI summarization failed", e);
+        }
+    }
+
     private void save(SummarizationEntity summarization, SummaryMetadataEntity metadata, SummaryResultEntity summaryResultEntity) {
         summarizationService.saveSummarization(summarization);
         metadataRepository.save(metadata);
@@ -185,6 +265,26 @@ public class OpenAiSummarizer implements AiSummarizer {
                         ));
             }
         }
+
+        return parts;
+    }
+
+    private List<ChatCompletionContentPart> createContentParts(
+            String prompt) {
+
+        List<ChatCompletionContentPart> parts = new ArrayList<>();
+
+        // Add text
+
+
+
+        parts.add(
+                ChatCompletionContentPart.ofText(
+                        ChatCompletionContentPartText.builder()
+                                .text(prompt)
+                                .build()
+                )
+        );
 
         return parts;
     }
@@ -246,6 +346,14 @@ public class OpenAiSummarizer implements AiSummarizer {
             builder.paragraphCount(txt.getParagraphs().size());
         }
 
+        return builder.build();
+    }
+
+    private SummaryMetadata buildMetadata(String content, long startTime) {
+        SummaryMetadata.Builder builder = SummaryMetadata.builder()
+                .wordCount(content.getBytes().length)
+                .imageCount(0)
+                .processingTimeMs(System.currentTimeMillis() - startTime);
         return builder.build();
     }
 }

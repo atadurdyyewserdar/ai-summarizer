@@ -1,4 +1,5 @@
 package com.aissummarizer.jennet.user.entity;
+import com.aissummarizer.jennet.common.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,8 +40,9 @@ public class UserEntity {
     @Column(name = "email", nullable = false, unique = true, length = 180)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role; // e.g. ROLE_USER, ROLE_ADMIN
+    private Role role;
 
     @Column(name = "first_name", length = 60)
     private String firstName;

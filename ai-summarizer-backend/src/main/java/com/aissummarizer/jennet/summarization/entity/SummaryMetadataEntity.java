@@ -27,7 +27,7 @@ public class SummaryMetadataEntity {
     private SummaryResultEntity summaryResult;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "summarization_id", nullable = false, unique = true)
+    @JoinColumn(name = "summarization_id", unique = true)
     private SummarizationEntity summarization;
 
     private int wordCount;

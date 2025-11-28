@@ -1,5 +1,6 @@
 package com.aissummarizer.jennet.user.dto;
 
+import com.aissummarizer.jennet.common.enums.Role;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public record UserProfileDto(
         String lastName,
         String email,
         String profileImageUrl,
-        String role,
+        Role role,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         List<UserSummarizationHistoryResponse> summarizationHistoryList

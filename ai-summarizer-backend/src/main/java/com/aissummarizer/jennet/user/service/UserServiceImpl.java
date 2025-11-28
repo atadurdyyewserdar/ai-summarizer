@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.user.service;
 
 import com.aissummarizer.jennet.auth.dto.RegisterRequest;
+import com.aissummarizer.jennet.common.enums.Role;
 import com.aissummarizer.jennet.common.exception.BadRequestException;
 import com.aissummarizer.jennet.common.exception.NotFoundException;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
@@ -107,7 +108,7 @@ public class UserServiceImpl implements UserService {
                 .email(registerRequest.email())
                 .firstName(registerRequest.firstName())
                 .lastName(registerRequest.lastName())
-                .role("ROLE_USER")
+                .role(Role.ROLE_USER)
                 .profileImageUrl(null)
                 .build();
 

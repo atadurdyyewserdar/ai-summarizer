@@ -2,7 +2,10 @@ package com.aissummarizer.jennet.document.service;
 
 import com.aissummarizer.jennet.common.exception.DocumentProcessingException;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
+import com.aissummarizer.jennet.document.extractor.MockTxtExtractor;
+import com.aissummarizer.jennet.document.extractor.TxtDocumentExtractor;
 import com.aissummarizer.jennet.document.factory.DocumentExtractorFactory;
+import com.aissummarizer.jennet.document.model.TxtDocumentContent;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
 import com.aissummarizer.jennet.document.tools.FileUtils;
@@ -90,6 +93,28 @@ public class DocumentSummarizerService {
             logger.error("Unexpected error processing file: {}", file.getOriginalFilename(), e);
             throw new DocumentProcessingException("Unexpected error: " + e.getMessage(), e);
         }
+    }
+
+    public SummaryResult summarizeDocument(
+            String customText,
+            SummaryOptions options,
+            String userName,
+            DocumentUploadEntity documentUploadEntity
+    ) throws DocumentProcessingException {
+            long startTime = System.currentTimeMillis();
+            String filename = customText.substring(0, customText.indexOf(" "));
+            // 3. Extract content
+            DocumentContent content = MockTxtExtractor.extract(customText);
+            logger.info(options.getType().toString());
+            logger.info("========================================================");
+            logger.info(options.getCustomPrompt());
+            logger.info("========================================================");
+            logger.info(content.getAllText());
+            // 4. Summarize with AI
+            SummaryResult result = aiSummarizer.summarize(content, options, userName, documentUploadEntity);
+            long duration = System.currentTimeMillis() - startTime;
+            logger.info("Successfully processed {} in {}ms", filename, duration);
+            return result;
     }
 
     private DocumentContent extractWithLogging(
