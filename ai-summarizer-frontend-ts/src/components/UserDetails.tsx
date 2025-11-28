@@ -19,7 +19,6 @@ interface UserDetailsProps {
 
 export const UserDetails: React.FC<UserDetailsProps> = ({ user, onBack, showHeadline }) => {
   // Local state for input fields (not saving, just for display)
-  const [username, setUsername] = useState(user.username || "");
   const [firstName, setFirstName] = useState(user.firstName || user.firstname || "");
   const [lastName, setLastName] = useState(user.lastName || user.lastname || "");
   const [email, setEmail] = useState(user.email || "");
@@ -82,7 +81,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ user, onBack, showHead
               <label className="text-sm font-bold mb-1 text-gray-800" htmlFor="user-username">Username</label>
               <input
                 id="user-username"
-                value={username}
+                value={user.username || ""}
                 disabled
                 type="text"
                 className="w-full text-sm h-9 border border-gray-400 p-2 rounded bg-gray-50"
