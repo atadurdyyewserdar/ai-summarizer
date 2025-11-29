@@ -55,9 +55,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/summarization" element={<SummarrizationPage />} />
         <Route
-          path="/summarization/:summarizationId"
+          path="/summarization/*"
           element={
             <ProtectedRoute>
               <SummarrizationPage />
