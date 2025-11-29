@@ -29,8 +29,7 @@ function MainPage() {
     }
     type();
     return () => clearTimeout(timeout);
-    // eslint-disable-next-line
-  }, []);
+  }, [introText, indexRef]);
 
   return (
     <>

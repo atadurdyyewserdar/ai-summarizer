@@ -81,11 +81,7 @@ apiClient.interceptors.response.use(
     }
 
     isRefreshing = true;
-    // Debug log for refresh attempts
-    if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.log("[apiClient] Attempting to refresh access token...");
-    }
+
     try {
       const refreshResponse = await axios.post(
         `${API_BASE_URL}/auth/refresh`,
@@ -95,18 +91,12 @@ apiClient.interceptors.response.use(
           withCredentials: true 
         }
       );
-
-      const newAccessToken = (refreshResponse.data as any).accessToken as string;
-
+      type RefreshResponse = { accessToken: string; refreshToken?: string };
+      const { accessToken: newAccessToken, refreshToken: newRefreshTokenRaw } = refreshResponse.data as RefreshResponse;
+      const newRefreshToken = newRefreshTokenRaw || refreshToken;
       console.log("New access token:", newAccessToken);
       console.log("Refresh response data:", refreshResponse.data);
-      const newRefreshToken =
-        (refreshResponse.data as any).refreshToken || refreshToken;
-
       setTokens(newAccessToken, newRefreshToken);
-
-      // Zustand persist does not expose a flush method; setTokens is sufficient for updating state and localStorage.
-
       processQueue(null, newAccessToken);
       isRefreshing = false;
 

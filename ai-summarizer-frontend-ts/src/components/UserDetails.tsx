@@ -36,7 +36,6 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
   const {
     profile: profileData,
     loadingProfile: loading,
-    profileError: error,
     fetchProfile,
     updateProfile,
   } = useAuthStore();
@@ -249,12 +248,3 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
     </div>
   );
 };
-
-// Tailwind animation
-// .animate-slide-in-left {
-//   animation: slide-in-left 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-// }
-// @keyframes slide-in-left {
-//   0% { transform: translateX(-100%); opacity: 0; }
-//   100% { transform: translateX(0); opacity: 1; }
-// }

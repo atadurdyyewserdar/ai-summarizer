@@ -51,8 +51,7 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedId]);
+  }, [selectedId, getUsers, getApiUsageLogs]);
 
   const handleOnBack = async () => {
     setLoading(true);
@@ -110,7 +109,6 @@ export default function DashboardPage() {
               )}
               {selectedId === "api-usage" && (
                 <div className="flex flex-col items-center h-full w-full text-gray-700 text-2xl">
-                  {/* Blank content for API usage */}
                   {apiUsageLoading && <div className="text-gray-400">Loading...</div>}
                   {apiUsageError && <div className="text-red-500">{apiUsageError}</div>}
                   {!apiUsageLoading && !apiUsageError && apiUsageLogs.length > 0 && (

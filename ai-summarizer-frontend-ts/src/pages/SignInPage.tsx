@@ -32,8 +32,8 @@ function SignInPage() {
       await login({ username, password });
       clearError();
       navigate("/summarization", { replace: true });
-    } catch {
-      // store handles error state
+    } catch (error) {
+      // TODO store handles error state
     }
   };
 

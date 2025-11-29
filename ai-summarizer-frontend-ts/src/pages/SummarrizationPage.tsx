@@ -8,7 +8,6 @@ import dustBinIcon from "../assets/dust-bin.png";
 import fileIcon from "../assets/file.png";
 import NewSummarizationPage from "./NewSummarizationPage";
 
-
 const getFileIcon = () => fileIcon;
 
 export const SummarrizationPage = () => {
@@ -19,7 +18,9 @@ export const SummarrizationPage = () => {
   const profile = useAuthStore((s) => s.profile);
   const loadingProfile = useAuthStore((s) => s.loadingProfile);
   const profileError = useAuthStore((s) => s.profileError);
-  const [localList, setLocalList] = useState<SummarizationItem[]>(profile?.summarizationHistoryList || []);
+  const [localList, setLocalList] = useState<SummarizationItem[]>(
+    profile?.summarizationHistoryList || []
+  );
   useEffect(() => {
     setLocalList(profile?.summarizationHistoryList || []);
   }, [profile]);
@@ -27,23 +28,37 @@ export const SummarrizationPage = () => {
 
   useEffect(() => {
     fetchProfile();
-    // eslint-disable-next-line
-  }, []);
+  }, [fetchProfile]);
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       <div className="flex justify-center items-start min-h-[calc(100vh-80px)]">
-        <div className="w-full max-w-[1200px] mx-auto bg-white border border-gray-300 rounded-lg flex min-h-[400px]" style={{ marginTop: 32, height: 'calc(100vh - 120px)' }}>
+        <div
+          className="w-full max-w-[1200px] mx-auto bg-white border border-gray-300 rounded-lg flex min-h-[400px]"
+          style={{ marginTop: 32, height: "calc(100vh - 120px)" }}
+        >
           {/* Left: List */}
-          <div className="w-1/3 border-r border-gray-200 p-0 flex flex-col min-w-[180px]" style={{ flexBasis: 'auto' }}>
+          <div
+            className="w-1/3 border-r border-gray-200 p-0 flex flex-col min-w-[180px]"
+            style={{ flexBasis: "auto" }}
+          >
             <div className="p-4 pb-2">
               <button
                 type="button"
-                className={`relative overflow-hidden text-center text-base align-center border border-black w-full py-2 rounded transition-colors duration-200 group shadow ${isCreating ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
-                style={{ fontFamily: 'Segoe UI, Arial, sans-serif', fontWeight: 600, background: 'white', color: 'black' }}
+                className={`relative overflow-hidden text-center text-base align-center border border-black w-full py-2 rounded transition-colors duration-200 group shadow ${
+                  isCreating
+                    ? "cursor-not-allowed opacity-60"
+                    : "cursor-pointer"
+                }`}
+                style={{
+                  fontFamily: "Segoe UI, Arial, sans-serif",
+                  fontWeight: 600,
+                  background: "white",
+                  color: "black",
+                }}
                 onClick={() => {
-                  if (!isCreating) navigate('/summarization');
+                  if (!isCreating) navigate("/summarization");
                 }}
                 disabled={isCreating}
               >
@@ -56,10 +71,17 @@ export const SummarrizationPage = () => {
                     strokeWidth="2"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                 </span>
-                <span className="absolute left-0 top-0 h-full w-0 group-hover:w-full bg-black transition-all duration-300 ease-out z-0" style={{transitionProperty: 'width'}}></span>
+                <span
+                  className="absolute left-0 top-0 h-full w-0 group-hover:w-full bg-black transition-all duration-300 ease-out z-0"
+                  style={{ transitionProperty: "width" }}
+                ></span>
               </button>
               <style>{`
                 .group:hover .group-hover\\:w-full { width: 100% !important; }
@@ -73,90 +95,150 @@ export const SummarrizationPage = () => {
               `}</style>
             </div>
             <div className="flex-1 overflow-y-auto p-4 pt-0">
-              {loadingProfile && <div className="text-gray-400 text-center my-4">Loading...</div>}
-              {profileError && <div className="text-red-500 text-center my-4">{profileError}</div>}
+              {loadingProfile && (
+                <div className="text-gray-400 text-center my-4">Loading...</div>
+              )}
+              {profileError && (
+                <div className="text-red-500 text-center my-4">
+                  {profileError}
+                </div>
+              )}
               {localList.map((item) => (
-              <div
-                key={item.id}
-                className={`flex items-center gap-2 p-2 mb-2 rounded cursor-pointer transition-all justify-between ${item.id === summarizationId
-                  ? "bg-gray-200 border-l-4 border-blue-500 font-medium"
-                  : "hover:bg-gray-100"}`}
-              >
                 <div
-                  className="flex items-center gap-2 flex-1"
+                  key={item.id}
+                  className={`flex items-center gap-2 p-2 mb-2 rounded cursor-pointer transition-all justify-between ${
+                    item.id === summarizationId
+                      ? "bg-gray-200 border-l-4 border-blue-500 font-medium"
+                      : "hover:bg-gray-100"
+                  }`}
                   onClick={() => {
                     navigate(`/summarization/${item.id}`);
                   }}
                 >
-                  <img src={getFileIcon()} alt="file icon" className="w-5 h-5 object-contain" />
-                  <span className="text-base text-gray-800" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}>{item.fileName}</span>
-                </div>
-                <button
-                  className="ml-2"
-                  title="Delete summary"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    try {
-                      await useAuthStore.getState().deleteSummarization(item.id);
-                      setLocalList((prev) => prev.filter((x) => x.id !== item.id));
-                      if (item.id === summarizationId) {
-                        navigate('/summarization');
+                  <div className="flex items-center gap-2 flex-1">
+                    <img
+                      src={getFileIcon()}
+                      alt="file icon"
+                      className="w-5 h-5 object-contain"
+                    />
+                    <span
+                      className="text-base text-gray-800"
+                      style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                    >
+                      {item.fileName}
+                    </span>
+                  </div>
+                  <button
+                    className="ml-2"
+                    title="Delete summary"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        await useAuthStore
+                          .getState()
+                          .deleteSummarization(item.id);
+                        setLocalList((prev) =>
+                          prev.filter((x) => x.id !== item.id)
+                        );
+                        if (item.id === summarizationId) {
+                          navigate("/summarization");
+                        }
+                      } catch (err) {
+                        alert("Failed to delete summary");
                       }
-                    } catch (err) {
-                      alert("Failed to delete summary");
-                    }
-                  }}
-                >
-                  <img src={dustBinIcon} alt="Delete" className="w-4 h-4 object-contain opacity-80 hover:opacity-100 cursor-pointer" />
-                </button>
-              </div>
-            ))}
+                    }}
+                  >
+                    <img
+                      src={dustBinIcon}
+                      alt="Delete"
+                      className="w-4 h-4 object-contain opacity-80 hover:opacity-100 cursor-pointer"
+                    />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
           {/* Right: Summary or New Summarization */}
-          <div className="w-2/3 min-w-0 p-3 flex flex-col h-full overflow-x-auto" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <div
+            className="w-2/3 min-w-0 p-3 flex flex-col h-full overflow-x-auto"
+            style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+          >
             {summarizationId === undefined ? (
               <NewSummarizationPage />
             ) : selected ? (
               <div className="flex flex-col flex-1 h-full">
                 <div>
-                  <div className="text-lg font-semibold mb-2 w-full text-left">Summary</div>
-                  <div className="text-gray-700 text-base whitespace-pre-line break-words w-full text-left mb-4" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}>
+                  <div className="text-lg font-semibold mb-2 w-full text-left">
+                    Summary
+                  </div>
+                  <div
+                    className="text-gray-700 text-base whitespace-pre-line break-words w-full text-left mb-4"
+                    style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                  >
                     {selected.summaryText || selected.inputText}
                   </div>
                 </div>
                 <div className="mt-auto">
-                  <div className="grid grid-cols-2 gap-4 text-sm text-black bg-gray-50 border border-gray-200 rounded-lg p-4 w-full" style={{ fontFamily: 'Segoe UI, Arial, sans-serif' }}>
+                  <div
+                    className="grid grid-cols-2 gap-4 text-sm text-black bg-gray-50 border border-gray-200 rounded-lg p-4 w-full"
+                    style={{ fontFamily: "Segoe UI, Arial, sans-serif" }}
+                  >
                     {selected.summaryType !== undefined && (
-                      <div><span className="font-semibold">Summary Type:</span> {selected.summaryType}</div>
+                      <div>
+                        <span className="font-semibold">Summary Type:</span>{" "}
+                        {selected.summaryType}
+                      </div>
                     )}
                     {selected.imageCount !== undefined && (
-                      <div><span className="font-semibold">Images:</span> {selected.imageCount}</div>
+                      <div>
+                        <span className="font-semibold">Images:</span>{" "}
+                        {selected.imageCount}
+                      </div>
                     )}
                     {selected.paragraphCount !== undefined && (
-                      <div><span className="font-semibold">Paragraphs:</span> {selected.paragraphCount}</div>
+                      <div>
+                        <span className="font-semibold">Paragraphs:</span>{" "}
+                        {selected.paragraphCount}
+                      </div>
                     )}
                     {selected.slideCount !== undefined && (
-                      <div><span className="font-semibold">Slides:</span> {selected.slideCount}</div>
+                      <div>
+                        <span className="font-semibold">Slides:</span>{" "}
+                        {selected.slideCount}
+                      </div>
                     )}
                     {selected.processingTime !== undefined && (
-                      <div><span className="font-semibold">Processing Time:</span> {(selected.processingTime / 1000).toFixed(2)} s</div>
+                      <div>
+                        <span className="font-semibold">Processing Time:</span>{" "}
+                        {(selected.processingTime / 1000).toFixed(2)} s
+                      </div>
                     )}
                     {selected.tableCount !== undefined && (
-                      <div><span className="font-semibold">Tables:</span> {selected.tableCount}</div>
+                      <div>
+                        <span className="font-semibold">Tables:</span>{" "}
+                        {selected.tableCount}
+                      </div>
                     )}
                     {selected.wordCount !== undefined && (
-                      <div><span className="font-semibold">Words:</span> {selected.wordCount}</div>
+                      <div>
+                        <span className="font-semibold">Words:</span>{" "}
+                        {selected.wordCount}
+                      </div>
                     )}
                     {selected.fileSize !== undefined && (
-                      <div><span className="font-semibold">File Size:</span> {(selected.fileSize / (1024 * 1024)).toFixed(2)} MB</div>
+                      <div>
+                        <span className="font-semibold">File Size:</span>{" "}
+                        {(selected.fileSize / (1024 * 1024)).toFixed(2)} MB
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
             ) : (
               <div className="text-gray-400 text-lg font-mono flex flex-col items-center justify-center h-full">
-                <div className="mb-4">Select summarization from list or create new one.</div>
+                <div className="mb-4">
+                  Select summarization from list or create new one.
+                </div>
               </div>
             )}
           </div>
