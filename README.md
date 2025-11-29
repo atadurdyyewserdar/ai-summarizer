@@ -1,6 +1,6 @@
 # AI Summarizer
 
-[![Java](https://img.shields.io/badge/Backend-Java-blue?logo=java)](https://www.java.com/)
+[![Java](https://img.shields.io/badge/Java-blue?logo=java)](https://www.java.com/)
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#)[![TypeScript](https://img.shields.io/badge/Frontend-TypeScript-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Build with Gradle](https://img.shields.io/badge/build-gradle-brightgreen?logo=gradle)](https://gradle.org/)
 
