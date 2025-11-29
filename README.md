@@ -39,9 +39,7 @@
 ---
 
 ## Demo
-
-> _Include screenshots/gif here if available_
-
+![CleanShot 2025-11-29 at 17 25 21](https://github.com/user-attachments/assets/460502bf-1462-4748-b25e-f32998c55abd)
 ---
 
 ## Tech Stack
@@ -71,7 +69,8 @@
 ### Prerequisites
 
 - Java 21
-- Node.js (v16+ recommended)
+- Node.js (v18+ recommended)
+- PostgreSQL v16
 - Yarn or npm
 
 ### Clone the repository
