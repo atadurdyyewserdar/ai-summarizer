@@ -21,7 +21,6 @@
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [API](#api)
 - [Contributing](#contributing)
 - [License](#license)
 
