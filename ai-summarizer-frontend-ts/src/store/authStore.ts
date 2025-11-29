@@ -14,6 +14,10 @@ export interface User {
   role: string;
 }
 
+interface ApiResponse<T> {
+  data: T;
+}
+
 interface LoginPayload {
   username: string;
   password: string;
@@ -108,8 +112,6 @@ interface AuthState {
   // actions
   login: (data: LoginPayload) => Promise<void>;
   register: (data: RegisterPayload) => Promise<void>;
-  forgotPassword: (data: ForgotPasswordPayload) => Promise<void>;
-  resetPassword: (data: ResetPasswordPayload) => Promise<void>;
   changePassword: (data: ChangePasswordPayload) => Promise<void>;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: UpdateProfilePayload) => Promise<void>;
@@ -133,8 +135,6 @@ const initialState: Omit<
   | "register"
   | "fetchProfile"
   | "updateProfile"
-  | "forgotPassword"
-  | "resetPassword"
   | "changePassword"
   | "logout"
   | "setTokens"
@@ -160,6 +160,7 @@ const initialState: Omit<
   profileError: null,
   deleteSummarization: async () => {},
 };
+
 type SummarizeCustomTextParams = { userName: string; type: string; customSummary?: string; customText: string };
 
 type AuthResponse = {
@@ -188,17 +189,12 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true, error: null });
 
-          const res = await apiClient.post<AuthResponse>("/auth/login", data);
-          const resData = res.data;
-          console.log("Login response data:", resData);
-          // Ensure username is preserved from login payload if not in response
+          const res = await apiClient.post<ApiResponse<AuthResponse>>("/auth/login", data);
+          const resData = res.data.data;
           const user = {
             ...resData.profile,
             username: resData.profile.username || data.username,
           };
-
-          console.log("Derived user object:", user);
-
           set({
             user,
             accessToken: resData.accessToken,
@@ -222,7 +218,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      async register(data) {
+      async register(data: RegisterPayload) {
         try {
           set({ loading: true, error: null });
 
@@ -301,38 +297,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      async forgotPassword(data) {
-        try {
-          set({ loading: true, error: null });
-
-          await apiClient.post("/auth/forgot-password", data);
-
-          set({ loading: false });
-        } catch (err: any) {
-          const message =
-            err?.response?.data?.message ||
-            "Could not send reset instructions. Please try again.";
-          set({ loading: false, error: message });
-          throw err;
-        }
-      },
-
-      async resetPassword(data) {
-        try {
-          set({ loading: true, error: null });
-
-          await apiClient.post("/auth/reset-password", data);
-
-          set({ loading: false });
-        } catch (err: any) {
-          const message =
-            err?.response?.data?.message ||
-            "Could not reset password. Please try again.";
-          set({ loading: false, error: message });
-          throw err;
-        }
-      },
-
       async changePassword(data: ChangePasswordPayload) {
         try {
           set({ loading: true, error: null });
@@ -404,7 +368,6 @@ export const useAuthStore = create<AuthState>()(
             formData.append("customSummary", params.customSummary);
           }
           formData.append("customText", params.customText);
-
           const res = await apiClient.post(
             "/v1/documents/summarize/custom-text",
             formData,
@@ -423,7 +386,7 @@ export const useAuthStore = create<AuthState>()(
           const res = await apiClient.delete("/user/delete-summarization", {
             params: { summaryId },
           });
-          if (res.data === "Success") {
+          if (res.data.data === "Success") {
             set((state) => {
               if (!state.profile) return {};
               return {

@@ -1,16 +1,18 @@
 package com.aissummarizer.jennet.common.model;
 
 import com.aissummarizer.jennet.common.enums.ErrorCode;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.util.Objects;
 
-@Getter
+@Data
 public final class ApiResponse<T> {
-    // Getters
     private final boolean success;
     private final T data;
     private final ErrorInfo error;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss", timezone = "Europe/Minsk")
     private final long timestamp;
 
     private ApiResponse(boolean success, T data, ErrorInfo error) {

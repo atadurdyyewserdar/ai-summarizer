@@ -1,7 +1,10 @@
 package com.aissummarizer.jennet.common.model;
 
+import lombok.Getter;
+
 import java.util.Set;
 
+@Getter
 public final class HealthStatus {
     private final String status;
     private final Set<String> supportedTypes;
@@ -13,7 +16,4 @@ public final class HealthStatus {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public String getStatus() { return status; }
-    public Set<String> getSupportedTypes() { return supportedTypes; }
-    public long getTimestamp() { return timestamp; }
 }

@@ -42,20 +42,20 @@ public class UserController {
     }
 
     @PostMapping("/update-profile")
-    public ResponseEntity<String> updateProfile(@RequestBody UserProfileDto userProfileDto) {
-        return ResponseEntity.ok(userService.updateProfile(userProfileDto));
+    public ResponseEntity<ApiResponse<String>> updateProfile(@RequestBody UserProfileDto userProfileDto) {
+        return ResponseEntity.ok(ApiResponse.success(userService.updateProfile(userProfileDto)));
     }
 
     @DeleteMapping("/delete-summarization")
-    public ResponseEntity<String>deleteSummarization (@RequestParam String summaryId) {
+    public ResponseEntity<ApiResponse<String>> deleteSummarization (@RequestParam String summaryId) {
         userService.deleteSummary(summaryId);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(ApiResponse.success("Success"));
     }
 
     @GetMapping("/get-users")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<List<UserProfileDto>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserProfileDto>>> getAllUsers() {
         List<UserProfileDto> profileDtos = userService.getAllUsers();
-        return ResponseEntity.ok(profileDtos);
+        return ResponseEntity.ok(ApiResponse.success(profileDtos));
     }
 }

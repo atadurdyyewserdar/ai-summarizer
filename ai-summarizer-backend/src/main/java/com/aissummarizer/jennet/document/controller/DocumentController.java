@@ -5,11 +5,8 @@ import com.aissummarizer.jennet.common.exception.DocumentProcessingException;
 import com.aissummarizer.jennet.common.exception.InvalidFileException;
 import com.aissummarizer.jennet.common.exception.UnsupportedDocumentTypeException;
 import com.aissummarizer.jennet.common.enums.ErrorCode;
-import com.aissummarizer.jennet.common.validator.FileValidator;
 import com.aissummarizer.jennet.document.entity.DocumentUploadEntity;
 import com.aissummarizer.jennet.document.service.DocumentUploadService;
-import com.aissummarizer.jennet.document.tools.FileUtils;
-import com.aissummarizer.jennet.security.JwtService;
 import com.aissummarizer.jennet.summarization.enums.SummaryType;
 import com.aissummarizer.jennet.document.enums.DocumentType;
 import com.aissummarizer.jennet.summarization.model.SummaryOptions;
@@ -18,15 +15,9 @@ import com.aissummarizer.jennet.document.model.DocumentTypeInfo;
 import com.aissummarizer.jennet.common.model.HealthStatus;
 import com.aissummarizer.jennet.summarization.model.SummaryResult;
 import com.aissummarizer.jennet.document.service.DocumentSummarizerService;
-import com.aissummarizer.jennet.summarization.repository.SummarizationRepository;
-import com.aissummarizer.jennet.summarization.repository.SummaryMetadataRepository;
-import com.aissummarizer.jennet.summarization.repository.SummaryResultRepository;
-import com.aissummarizer.jennet.user.entity.UserEntity;
-import com.aissummarizer.jennet.user.service.UserService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +39,6 @@ public class DocumentController {
     private static final Logger log = LoggerFactory.getLogger(DocumentController.class);
 
     private final DocumentSummarizerService summarizerService;
-    private final FileValidator fileValidator;
     private final DocumentUploadService documentUploadService;
 
     /**

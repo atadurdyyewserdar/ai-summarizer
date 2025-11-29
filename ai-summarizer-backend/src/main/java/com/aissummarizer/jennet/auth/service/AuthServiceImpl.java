@@ -3,19 +3,14 @@ package com.aissummarizer.jennet.auth.service;
 
 import com.aissummarizer.jennet.auth.dto.*;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
-import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
 import com.aissummarizer.jennet.user.entity.UserEntity;
 import com.aissummarizer.jennet.security.JwtService;
-import com.aissummarizer.jennet.passwordreset.service.PasswordResetService;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Concrete implementation of authentication operations.
@@ -30,7 +25,6 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
-    private final PasswordResetService passwordResetService;
 
     /**
      * {@inheritDoc}
@@ -69,22 +63,6 @@ public class AuthServiceImpl implements AuthService {
         userService.registerUser(
                 request
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String initiatePasswordReset(ForgotPasswordRequest request) {
-        return passwordResetService.createResetToken(request.username());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void completePasswordReset(ResetPasswordRequest request) {
-        passwordResetService.resetPassword(request.token(), request.newPassword());
     }
 
     @Override

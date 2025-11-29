@@ -34,20 +34,5 @@ public interface AuthService {
      */
     void register(RegisterRequest request);
 
-    /**
-     * Creates a password reset token and (normally) emails it to the user.
-     *
-     * @param request contains the username requesting the reset
-     * @return the generated reset token (returned only for development/testing)
-     */
-    String initiatePasswordReset(ForgotPasswordRequest request);
-
-    /**
-     * Completes a password reset by validating the token and updating the password.
-     *
-     * @param request contains the token and new password
-     */
-    void completePasswordReset(ResetPasswordRequest request);
-
     void updatePassword(UpdatePasswordRequest request);
 }

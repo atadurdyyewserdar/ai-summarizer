@@ -2,6 +2,7 @@ package com.aissummarizer.jennet.auth.controller;
 
 import com.aissummarizer.jennet.auth.dto.*;
 import com.aissummarizer.jennet.auth.service.AuthService;
+import com.aissummarizer.jennet.common.model.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +25,13 @@ public class AuthController {
      * @return JWT response
      */
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
-        return authService.login(request);
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authService.login(request)));
     }
 
     @PostMapping("/refresh")
-    public AuthResponse refresh(@RequestParam String refreshToken) {
-        return authService.refresh(refreshToken);
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestParam String refreshToken) {
+        return ResponseEntity.ok(ApiResponse.success(authService.refresh(refreshToken)));
     }
 
     /**
@@ -41,43 +42,13 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        System.out.println("============== request user");
-        System.out.println(request);
         authService.register(request);
         return ResponseEntity.ok("User registered");
     }
 
-    /**
-     * Initiates a password reset request by generating a reset token.
-     * <p>
-     * NOTE: In production, the token would be emailed.
-     * Returning it in the response is intended only for development.
-     *
-     * @param request payload containing the username
-     * @return the generated reset token
-     */
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        String token = authService.initiatePasswordReset(request);
-        return ResponseEntity.ok(java.util.Map.of("resetToken", token));
-    }
-
-    /**
-     * Completes the password reset by validating the token
-     * and updating the user's password.
-     *
-     * @param request token + new password
-     * @return confirmation message
-     */
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        authService.completePasswordReset(request);
-        return ResponseEntity.ok("Password updated successfully");
-    }
-
     @PostMapping("/change-password")
-    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest request) {
+    public ResponseEntity<ApiResponse<String>> updatePassword(@RequestBody UpdatePasswordRequest request) {
         authService.updatePassword(request);
-        return ResponseEntity.ok("Password updated successfully");
+        return ResponseEntity.ok(ApiResponse.success("Password updated successfully"));
     }
 }
