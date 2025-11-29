@@ -6,7 +6,7 @@
 
 ## Overview
 
-**AI Summarizer** is a full-stack application for AI-powered document and text summarization. Users can upload various file types (such as PDF, DOCX, TXT, PPTX) or paste text, and receive concise or comprehensive summaries using state-of-the-art AI technology.
+**AI Summarizer** full-stack application for document and text summarization. Users can upload various file types (such as PDF, DOCX, TXT, PPTX) or paste text, and receive concise or comprehensive summaries.
 
 - **Backend:** Java (Spring Boot), REST API
 - **Frontend:** TypeScript (React, Vite, TailwindCSS)
@@ -70,8 +70,8 @@
 
 ### Prerequisites
 
-- Java 17+
-- Node.js (v18+ recommended)
+- Java 21
+- Node.js (v16+ recommended)
 - Yarn or npm
 
 ### Clone the repository
@@ -96,23 +96,10 @@ You may need to configure `application.yml` or `application.properties` for data
 
 ```sh
 cd ai-summarizer-frontend-ts
-yarn install        # or: npm install
-yarn dev            # or: npm run dev
+npm install         # or: yarn install
+npm run dev         # or: yarn dev
 ```
 _Frontend runs on: **http://localhost:5173**_
-
----
-
-## API
-
-The backend exposes several REST endpoints, such as:
-
-- `POST /api/documents/summarize` — Upload and summarize a document
-- `GET /api/summaries/{id}` — Retrieve summary by ID
-- `GET /api/user/history` — Fetch user's summarization history
-- `POST /api/auth/signin` / `POST /api/auth/signup` — User authentication
-
-> See [OpenAPI spec](#) or in-code documentation for more.
 
 ---
 
