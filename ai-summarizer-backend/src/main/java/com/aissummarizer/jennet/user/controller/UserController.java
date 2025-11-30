@@ -2,10 +2,7 @@ package com.aissummarizer.jennet.user.controller;
 
 import com.aissummarizer.jennet.common.model.ApiResponse;
 import com.aissummarizer.jennet.common.model.HttpResponse;
-import com.aissummarizer.jennet.user.dto.UserProfileDto;
-import com.aissummarizer.jennet.user.dto.UserProfileImageDto;
-import com.aissummarizer.jennet.user.dto.UserProfileResponse;
-import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
+import com.aissummarizer.jennet.user.dto.*;
 import com.aissummarizer.jennet.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +39,8 @@ public class UserController {
     }
 
     @PostMapping("/update-profile")
-    public ResponseEntity<ApiResponse<String>> updateProfile(@RequestBody UserProfileDto userProfileDto) {
-        return ResponseEntity.ok(ApiResponse.success(userService.updateProfile(userProfileDto)));
+    public ResponseEntity<ApiResponse<String>> updateProfile(@RequestBody UpdateDto dto) {
+        return ResponseEntity.ok(ApiResponse.success(userService.updateProfile(dto)));
     }
 
     @DeleteMapping("/delete-summarization")

@@ -1,6 +1,7 @@
 package com.aissummarizer.jennet.user.service;
 
 import com.aissummarizer.jennet.auth.dto.RegisterRequest;
+import com.aissummarizer.jennet.user.dto.UpdateDto;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
@@ -62,7 +63,7 @@ public interface UserService {
     /**
      * Updates user's profile info (name, lastname, image, email).
      */
-    String updateProfile(UserProfileDto userProfileDto);
+    String updateProfile(UpdateDto userProfileDto);
 
     void saveRefreshToken(String userId, String refreshToken);
 

@@ -38,7 +38,7 @@ public class UserEntity {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "email", nullable = false, unique = true, length = 180)
+    @Column(name = "email", nullable = false, length = 180)
     private String email;
 
     @Enumerated(EnumType.STRING)

@@ -6,6 +6,7 @@ import com.aissummarizer.jennet.common.exception.BadRequestException;
 import com.aissummarizer.jennet.common.exception.NotFoundException;
 import com.aissummarizer.jennet.summarization.entity.SummarizationEntity;
 import com.aissummarizer.jennet.summarization.service.SummarizationService;
+import com.aissummarizer.jennet.user.dto.UpdateDto;
 import com.aissummarizer.jennet.user.dto.UserProfileDto;
 import com.aissummarizer.jennet.user.dto.UserProfileResponse;
 import com.aissummarizer.jennet.user.dto.UserSummarizationHistoryResponse;
@@ -136,27 +137,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateProfile(UserProfileDto userProfileDto) {
+    public String updateProfile(UpdateDto dto) {
+        log.info(dto.email());
+        log.info(dto.firstName());
+        log.info(dto.lastName());
+        log.info(dto.username());
+        UserEntity user = getByUserName(dto.username());
 
-        UserEntity user = getByUserName(userProfileDto.username());
-
-        // prevent email conflict
-        if (!userProfileDto.email().isBlank()) {
-            userRepository.findByEmail(userProfileDto.email()).ifPresent(existing -> {
-                if (!existing.getUserName().equals(userProfileDto.username())) {
-                    throw new BadRequestException("Email already in use.");
-                }
-            });
+        if (!dto.firstName().isBlank()) {
+            user.setFirstName(dto.firstName());
         }
-
-        if (!userProfileDto.firstName().isBlank()) {
-            user.setFirstName(userProfileDto.firstName());
+        if (!dto.lastName().isBlank()) {
+            user.setLastName(dto.lastName());
         }
-        if (!userProfileDto.lastName().isBlank()) {
-            user.setLastName(userProfileDto.lastName());
-        }
-        if (!userProfileDto.email().isBlank()) {
-            user.setEmail(userProfileDto.email());
+        if (!dto.email().isBlank()) {
+            user.setEmail(dto.email());
         }
         userRepository.save(user);
         return "Success";
