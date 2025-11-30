@@ -73,7 +73,10 @@ export const UserDetails: React.FC<UserDetailsProps> = ({
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdateStatus(null);
+    console.log(user);
+    
     try {
+        console.log(formData)
       await updateProfile({
         username: user?.username || "",
         firstName: formData.firstName,

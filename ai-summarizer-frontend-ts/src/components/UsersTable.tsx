@@ -18,7 +18,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({ users, onSelect }) => (
       </thead>
       <tbody>
         {users.map((user) => (
-          <tr key={user.id} className="hover:bg-gray-50 cursor-pointer border-b border-gray-200" onClick={() => onSelect(user)}>
+          <tr key={user.username} className="hover:bg-gray-50 cursor-pointer border-b border-gray-200" onClick={() => onSelect(user)}>
             <td className="px-3 py-2 text-left whitespace-nowrap">{user.username}</td>
             <td className="px-3 py-2 text-left whitespace-nowrap">{user.firstName}</td>
             <td className="px-3 py-2 text-left whitespace-nowrap">{user.lastName}</td>

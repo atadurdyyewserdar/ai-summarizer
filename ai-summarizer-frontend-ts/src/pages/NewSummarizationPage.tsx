@@ -166,7 +166,7 @@ function NewSummarizationPage() {
                   dropdownRef={dropdownRef}
                   summaryOptions={SUMMARY_OPTIONS}
                 />
-                {summaryType === "Custom" && (
+                {/* {summaryType === "Custom" && (
                   <div className="flex flex-col flex-1">
                     <label className="mb-2 text-lg font-bold">
                       Custom Summary Instructions
@@ -179,7 +179,7 @@ function NewSummarizationPage() {
                       onChange={(e) => setCustomSummary(e.target.value)}
                     />
                   </div>
-                )}
+                )} */}
               </div>
               <div className="title text-3xl mb-5 text-center">or</div>
               <div className="text-container mb-5">

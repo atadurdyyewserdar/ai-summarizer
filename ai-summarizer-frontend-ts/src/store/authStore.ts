@@ -280,12 +280,11 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loadingProfile: true, profileError: null });
           const user = get().user;
-          data.username = user?.username || data.username;
           if (!user?.username) {
             throw new Error("User not authenticated");
           }
           const res = await apiClient.post(`/user/update-profile`, data);
-          const payload = res.data && res.data.data ? res.data.data : res.data;
+          const payload = res.data ? res.data : res.data.data;
           set({ profile: payload as ProfileData, loadingProfile: false });
         } catch (err: any) {
           const message =
@@ -407,7 +406,7 @@ export const useAuthStore = create<AuthState>()(
       async getUsers() {
         try {
           const res = await apiClient.get("/user/get-users");
-          return res.data;
+          return res.data.data;
         } catch (err) {
           throw err;
         }
