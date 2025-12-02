@@ -14,7 +14,7 @@ public class AiSummarizerConfig {
     private String apiKey;
 
     @NotBlank(message = "Model name is required")
-    private String model = "gpt-5-nano-2025-08-07";
+    private String model = "gpt-5-mini";
 
     @Min(value = 100, message = "Max tokens must be at least 100")
     @Max(value = 10000, message = "Max tokens cannot exceed 10000")
@@ -28,7 +28,7 @@ public class AiSummarizerConfig {
     private long maxFileSizeBytes = 50_000_000; // 50MB
 
     @Min(value = 1000, message = "Request timeout must be at least 1 second")
-    private int requestTimeoutMs = 30000; // 30 seconds
+    private int requestTimeoutMs = 60000; // 60 seconds
 
     // Getters and setters
     public String getApiKey() { return apiKey; }

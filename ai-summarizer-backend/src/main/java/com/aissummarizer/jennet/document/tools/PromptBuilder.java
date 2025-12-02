@@ -16,6 +16,7 @@ public class PromptBuilder {
             case SENTIMENT -> buildSentimentPrompt(content);
             case TECHNICAL -> buildTechnicalPrompt(content);
             case CUSTOM -> buildCustomPrompt(content, options.getCustomPrompt());
+            case QUIZ -> buildQuiz(content);
         };
     }
 
@@ -28,6 +29,7 @@ public class PromptBuilder {
             case SENTIMENT -> buildSentimentPrompt(content);
             case TECHNICAL -> buildTechnicalPrompt(content);
             case CUSTOM -> buildCustomPrompt(content, options.getCustomPrompt());
+            case QUIZ -> buildQuiz(content);
         };
     }
 
@@ -87,6 +89,22 @@ public class PromptBuilder {
             2. Tone (formal, informal, technical, etc.)
             3. Emotional elements
             
+            Content:
+            %s
+            """, content.getType().getDescription(), content.getAllText());
+    }
+
+    private String buildQuiz(DocumentContent content) {
+        return String.format("""
+            Please provide a comprehensive summary of this %s.
+            Include:
+            1. Main topic/theme
+            2. Key points covered
+            3. Visual elements analysis (if any)
+            4. Important takeaways
+            5. Overall structure
+
+            Make quiz of 20 questions with A, B, C, D choices, without showing right answers:
             Content:
             %s
             """, content.getType().getDescription(), content.getAllText());
@@ -197,5 +215,21 @@ public class PromptBuilder {
             Content:
             %s
             """, customPrompt, content);
+    }
+
+    private String buildQuiz(String content) {
+        return String.format("""
+            Please provide a comprehensive summary of this text.
+            Include:
+            1. Main topic/theme
+            2. Key points covered
+            3. Visual elements analysis (if any)
+            4. Important takeaways
+            5. Overall structure
+
+            Make quiz of 20 questions with A, B, C, D choices, without showing right answers:
+            Content:
+            %s
+            """, content);
     }
 }

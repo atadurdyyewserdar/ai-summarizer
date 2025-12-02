@@ -13,6 +13,7 @@ const SUMMARY_OPTIONS = [
   "Sentiment",
   "Technical",
   "Custom",
+  "Quiz"
 ];
 
 function NewSummarizationPage() {

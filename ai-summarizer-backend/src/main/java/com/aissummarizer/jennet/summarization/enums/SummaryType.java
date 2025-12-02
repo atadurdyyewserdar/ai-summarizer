@@ -9,7 +9,8 @@ public enum SummaryType {
     EXECUTIVE("Professional executive summary"),
     SENTIMENT("Sentiment and tone analysis"),
     TECHNICAL("Technical documentation summary"),
-    CUSTOM("Custom summarization");
+    CUSTOM("Custom summarization"),
+    QUIZ("Quiz 20 questions");
 
     private final String description;
 
