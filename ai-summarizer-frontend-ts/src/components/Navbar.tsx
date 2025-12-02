@@ -39,7 +39,7 @@ export const Navbar = () => {
     <nav className="w-full p-4 bg-black rounded-b shadow">
       <div className="flex items-center justify-between" style={{marginLeft: 'auto', marginRight: 'auto', maxWidth: '1200px'}}>
         <div className="flex items-center gap-4">
-          <Link to="/" className="title text-xl font-mono text-white hover:text-yellow-300 transition-colors">AI Summarizer</Link>
+          <Link to="/" className="title text-xl font-mono text-white hover:text-yellow-300 transition-colors">SmartRevise</Link>
         </div>
 
         <div className="flex items-center">
