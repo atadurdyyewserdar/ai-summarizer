@@ -67,7 +67,7 @@ export const Navbar = () => {
                 >
                   My profile
                 </button>
-                {user?.role === 'ROLE_USER' && (
+                {user?.role === 'ROLE_ADMIN' && (
                   <button
                     onClick={() => {
                       navigate('/dashboard');
