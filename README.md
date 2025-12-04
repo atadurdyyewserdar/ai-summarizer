@@ -90,6 +90,11 @@ _Backend runs on: **http://localhost:8080**_
 
 You may need to configure `application.yml` or `application.properties` for database and AI service endpoints.
 
+Add envireonmet variables for:
+- OPENAI_API_KEY
+- DB_USERNAME
+- DB_PASSWORD
+
 ### Frontend Setup
 
 ```sh
